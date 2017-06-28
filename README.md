@@ -1,0 +1,39 @@
+atlas-github
+===========
+
+[![Gradle Plugin ID](https://img.shields.io/badge/gradle-net.wooga.github-brightgreen.svg?style=flat-square)](https://plugins.gradle.org/plugin/net.wooga.github)
+[![Build Status](https://img.shields.io/travis/wooga/atlas-github/master.svg?style=flat-square)](https://travis-ci.org/wooga/atlas-github)
+[![Coveralls Status](https://img.shields.io/coveralls/wooga/atlas-github/master.svg?style=flat-square)](https://coveralls.io/github/wooga/atlas-github?branch=master)
+[![Apache 2.0](https://img.shields.io/badge/license-Apache%202-blue.svg?style=flat-square)](https://raw.githubusercontent.com/wooga/atlas-github/master/LICENSE)
+[![GitHub tag](https://img.shields.io/github/tag/wooga/atlas-github.svg?style=flat-square)]()
+[![GitHub release](https://img.shields.io/github/release/wooga/atlas-github.svg?style=flat-square)]()
+
+This plugin provides tasks and conventions to publish artifacts to github releases.
+
+
+LICENSE
+=======
+
+Copyright 2017 Wooga GmbH
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+<http://www.apache.org/licenses/LICENSE-2.0>
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+<!-- Links -->
+[unity]:                https://unity3d.com/ "Unity 3D"
+[unity_cmd]:            https://docs.unity3d.com/Manual/CommandLineArguments.html
+[gradle]:               https://gradle.org/ "Gradle"
+[gradle_finalizedBy]:   https://docs.gradle.org/3.5/dsl/org.gradle.api.Task.html#org.gradle.api.Task:finalizedBy
+[gradle_dependsOn]:     https://docs.gradle.org/3.5/dsl/org.gradle.api.Task.html#org.gradle.api.Task:dependsOn
+
+[yes]:                  http://atlas-resources.wooga.com/icons/icon_check.svg "yes"
+[no]:                   http://atlas-resources.wooga.com/icons/icon_uncheck.svg "no"
