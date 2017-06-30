@@ -8,8 +8,157 @@ atlas-github
 [![GitHub tag](https://img.shields.io/github/tag/wooga/atlas-github.svg?style=flat-square)]()
 [![GitHub release](https://img.shields.io/github/release/wooga/atlas-github.svg?style=flat-square)]()
 
-This plugin provides tasks and conventions to publish artifacts to github releases.
+This plugin provides tasks and conventions to publish artifacts to github with the help of [github-api.kohsuke.org][github-api].
 
+# Applying the plugin
+
+**build.gradle**
+```groovy
+plugins {
+    id 'net.wooga.github' version '0.1.0'
+}
+```
+
+#Usage
+
+**build.gradle**
+
+```groovy
+plugins {
+    id "net.wooga.github" version "0.1.0"
+}
+
+github {
+    owner = "wooga"
+    repository "atlas-github"
+    token "a github access token"
+    baseUrl = null
+}
+
+githubPublish {
+    owner = "wooga"
+    repository "atlas-github"
+    token "a github access token"
+    baseUrl = null
+    targetCommitish = "master"
+    tagName = project.version
+    releaseName = project.version
+    body = null
+    prerelease = false
+    draft = false
+    
+    //copySpec values
+    from() {
+        into
+    }
+}
+```
+
+## Tasks
+| Task name          | Depends on            | Type                                           | Description |
+| ------------------ | --------------------- | ---------------------------------------------- | ----------- |
+| githubPublish      |                       | `wooga.gradle.github.publish.GithubPublish`    | Copies files and folder configured to temp directory and uploads them to github release |
+
+The plugin will only add one task `githubPublish` which needs further configuration before it executes.
+
+### Authentication
+To authenticate with [github] you need to set either the `owner` and `token` parameter in the `github` plugin extension or in the `GithubPublish` task configuration.
+If you specify the values in the extension configuration all tasks of type `wooga.gradle.github.publish.GithubPublish` will be configured with these values by default. You can create multiple publish tasks with different credentials or repository values.
+You can also use [github-api.kohsuke.org][github-api] authentication fallback logic [fromCredentials][github-cred-auth] or [fromEnvironment][github-env-auth].
+
+**kohsuke api docs fromEnvironment**
+```
+    The following environment variables are recognized:
+
+    GITHUB_LOGIN: username like 'kohsuke'
+    GITHUB_PASSWORD: raw password
+    GITHUB_OAUTH: OAuth token to login
+    GITHUB_ENDPOINT: URL of the API endpoint 
+```
+
+### Files to publish
+The publishing process works in three steps.
+
+1. copy files configured in [`CopySpec`][copy-spec] to temp directory. You can use all of the [`copy`][copy-spec] tasks methods, except [`into`][copy-spec-into] and [`destinationDir`][copy-destinationDir].
+2. iterate items in `temp` directory and zip all directories (archive name is `${directory.name}.zip`) and copy files to second `temp` dir
+3. create github release and upload all files (regular and compressed) in `temp` directory
+
+#### examples
+
+**build.gradle (publish single file)**
+```groovy
+githubPublish {
+    description "publish a single file"
+    from "testFiles/file1.txt"
+    tagName = "singleFile"
+}
+```
+In this example the plugin will upload only a single file referenced.
+
+**build.gradle (publish all files in directory)**
+```groovy
+githubPublish {
+    description "publish all files in a directory"
+    from "testFiles/dirWithFiles"
+    tagName = "allFilesInDirectory"
+}
+```
+Gradle will iterate through `dirWithFiles` directory and upload all files located in this directory.
+
+**build.gradle (publish directory as zip)**
+```groovy
+githubPublish {
+    description "publish a directory as zip"
+        from("testFiles/dirWithFiles") {
+          into "package"
+        }
+        tagName = "directoryAsZip"
+}
+```
+Here gradle will publish one zip `package.zip` to github.
+
+**build.gradle (publish files and directories)**
+```groovy
+githubPublish {
+    description "publish a directory as zip"
+        description "publish all files in folder. Folders inside will get zipped before upload"
+        from("testFiles")
+        tagName = "wholeStructure"
+}
+```
+
+**build.gradle (publish files in configuration)**
+```groovy
+dependencies {
+    archive files("testFiles/files1/file1")
+    archive files("testFiles/file1.txt")
+}
+
+githubPublish {
+    description "publish a configuration"
+    from(configurations.archive)
+    tagName = "configuration"
+}
+```
+
+Gradle and Java Compatibility
+=============================
+
+Built with Oracle JDK7
+Tested with Oracle JDK8
+
+| Gradle Version | Works       |
+| :------------- | :---------: |
+| <= 2.13        | ![no]       |
+| 2.14           | ![yes]      |
+| 3.0            | ![yes]      |
+| 3.1            | ![yes]      |
+| 3.2            | ![yes]      |
+| 3.4            | ![yes]      |
+| 3.4.1          | ![yes]      |
+| 3.5            | ![yes]      |
+| 3.5.1          | ![yes]      |
+| 4.0            | ![yes]      |
 
 LICENSE
 =======
@@ -29,11 +178,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 <!-- Links -->
-[unity]:                https://unity3d.com/ "Unity 3D"
-[unity_cmd]:            https://docs.unity3d.com/Manual/CommandLineArguments.html
-[gradle]:               https://gradle.org/ "Gradle"
-[gradle_finalizedBy]:   https://docs.gradle.org/3.5/dsl/org.gradle.api.Task.html#org.gradle.api.Task:finalizedBy
-[gradle_dependsOn]:     https://docs.gradle.org/3.5/dsl/org.gradle.api.Task.html#org.gradle.api.Task:dependsOn
-
+[github]:               https://github.com
+[github-env-auth]:      http://github-api.kohsuke.org/apidocs/org/kohsuke/github/GitHubBuilder.html#fromEnvironment--
+[github-cred-auth]:     http://github-api.kohsuke.org/apidocs/org/kohsuke/github/GitHubBuilder.html#fromCredentials--
 [yes]:                  http://atlas-resources.wooga.com/icons/icon_check.svg "yes"
 [no]:                   http://atlas-resources.wooga.com/icons/icon_uncheck.svg "no"
+[github-api]:           http://github-api.kohsuke.org/source-repository.html
+[copy-spec]:            https://docs.gradle.org/3.4/javadoc/org/gradle/api/file/CopySpec.html
+[copy-spec-into]:       https://docs.gradle.org/3.4/javadoc/org/gradle/api/file/CopySpec.html#into(java.lang.Object)
+[copy-destinationDir]:  https://docs.gradle.org/current/dsl/org.gradle.api.tasks.Copy.html#org.gradle.api.tasks.Copy:destinationDir
