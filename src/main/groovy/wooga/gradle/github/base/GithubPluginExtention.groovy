@@ -17,8 +17,6 @@
 
 package wooga.gradle.github.base
 
-import wooga.gradle.github.base.GithubSpec
-
 interface GithubPluginExtention extends GithubSpec {
 
 }

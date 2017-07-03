@@ -17,15 +17,20 @@
 
 package wooga.gradle.github.base
 
+
 interface GithubSpec {
 
-    String getRepositoryName()
+    String getUserName()
 
-    String getOwner()
+    GithubSpec setUserName(String userName)
 
-    GithubSpec setOwner(String owner)
+    GithubSpec userName(String userName)
 
-    GithubSpec Owner(String owner)
+    String getPassword()
+
+    GithubSpec setPassword(String password)
+
+    GithubSpec password(String password)
 
     String getToken()
 

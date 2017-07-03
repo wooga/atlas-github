@@ -30,13 +30,9 @@ import org.gradle.api.tasks.AbstractCopyTask
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
-import org.kohsuke.github.GHRelease
-import org.kohsuke.github.GHReleaseBuilder
-import org.kohsuke.github.GHRepository
-import org.kohsuke.github.GitHub
-import org.kohsuke.github.GitHubBuilder
-import org.kohsuke.github.PagedIterable
+import org.kohsuke.github.*
 import org.zeroturnaround.zip.ZipUtil
+import wooga.gradle.github.base.GithubRepositoryValidator
 
 class GithubPublish extends Copy implements GithubPublishSpec {
 
@@ -46,8 +42,14 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     protected GitHub getClient() {
         def builder = new GitHubBuilder()
 
-        if (getOwner() && getToken()) {
-            builder = builder.withOAuthToken(getToken(), getOwner())
+        if (getUserName() && getPassword()) {
+            builder = builder.withPassword(getUserName(), getPassword())
+        } else if (getUserName() && getToken()) {
+            builder = builder.withOAuthToken(getToken(), getUserName())
+
+        } else if (getToken()) {
+            builder = builder.withOAuthToken(getToken())
+
         } else {
             builder = GitHubBuilder.fromCredentials()
         }
@@ -74,6 +76,7 @@ class GithubPublish extends Copy implements GithubPublishSpec {
             setDidWork(false)
             prepareAssets()
             publishGithubRelease()
+            setDidWork(true)
         }
     }
 
@@ -93,10 +96,10 @@ class GithubPublish extends Copy implements GithubPublishSpec {
         GitHub client = getClient()
         GHRepository repository
         try {
-            repository = client.getRepository(getRepositoryName())
+            repository = client.getRepository(getRepository())
         }
         catch (Exception e) {
-            throw new GradleException("can't find repository ${getRepositoryName()}")
+            throw new GradleException("can't find repository ${getRepository()}")
         }
 
         PagedIterable<GHRelease> releases = repository.listReleases()
@@ -173,8 +176,8 @@ class GithubPublish extends Copy implements GithubPublishSpec {
 
     private String repository
     private String baseUrl
-    private String acceptHeader
-    private String owner
+    private String userName
+    private String password
     private String token
 
     private String tagName
@@ -185,12 +188,6 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     private boolean prerelease
     private boolean draft
 
-    @Input
-    @Override
-    String getRepositoryName() {
-        return getOwner() + '/' + getRepository()
-    }
-
     @Override
     String getRepository() {
         return repository
@@ -200,6 +197,10 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     GithubPublish setRepository(String repository) {
         if (repository == null || repository.isEmpty()) {
             throw new IllegalArgumentException("repository")
+        }
+
+        if (!GithubRepositoryValidator.validateRepositoryName(repository)) {
+            throw new IllegalArgumentException("Repository value '$repository' is not a valid github repository name. Expecting `owner/repo`.")
         }
 
         this.repository = repository
@@ -227,25 +228,6 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     @Override
     GithubPublishSpec baseUrl(String baseUrl) {
         return this.setBaseUrl(baseUrl)
-    }
-
-    @Override
-    String getOwner() {
-        return this.owner
-    }
-
-    @Override
-    GithubPublish setOwner(String owner) {
-        if (owner == null || owner.isEmpty()) {
-            throw new IllegalArgumentException("owner")
-        }
-        this.owner = owner
-        return this
-    }
-
-    @Override
-    GithubPublish Owner(String owner) {
-        return this.setOwner(owner)
     }
 
     @Input
@@ -369,5 +351,43 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     @Override
     GithubPublish draft(boolean draft) {
         return this.setDraft(draft)
+    }
+
+    @Optional
+    @Input
+    @Override
+    String getUserName() {
+        return this.userName
+    }
+
+    @Override
+    GithubPublish setUserName(String userName) {
+        this.userName = userName
+        return this
+    }
+
+    @Override
+    GithubPublish userName(String userName) {
+        this.setUserName(userName)
+        return this
+    }
+
+    @Optional
+    @Input
+    @Override
+    String getPassword() {
+        return this.password
+    }
+
+    @Override
+    GithubPublish setPassword(String password) {
+        this.password = password
+        return this
+    }
+
+    @Override
+    GithubPublish password(String password) {
+        this.setPassword(password)
+        return this
     }
 }

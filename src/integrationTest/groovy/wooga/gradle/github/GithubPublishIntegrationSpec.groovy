@@ -22,7 +22,6 @@ import org.kohsuke.github.GHRelease
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
 import spock.lang.Shared
-import wooga.gradle.github.base.GithubBasePlugin
 
 class GithubPublishIntegrationSpec extends IntegrationSpec {
 
@@ -36,13 +35,13 @@ class GithubPublishIntegrationSpec extends IntegrationSpec {
     }
 
     @Shared
-    def availableRepo = "atlas-github-integration" + uniquePostfix()
+    def testUserName = System.getenv("ATLAS_GITHUB_INTEGRATION_USER")
 
     @Shared
-    def availableOwner = System.getenv("ATLAS_GITHUB_INTEGRATION_USER")
+    def testUserToken = System.getenv("ATLAS_GITHUB_INTEGRATION_PASSWORD")
 
     @Shared
-    def availableToken = System.getenv("ATLAS_GITHUB_INTEGRATION_PASSWORD")
+    def testRepositoryName = "${testUserName}/atlas-github-integration" + uniquePostfix()
 
     @Shared
     GitHub client
@@ -53,7 +52,7 @@ class GithubPublishIntegrationSpec extends IntegrationSpec {
     def createTestRepo() {
 
         try {
-            def repository = client.getRepository("$availableOwner/$availableRepo")
+            def repository = client.getRepository("$testRepositoryName")
             repository.delete()
         }
         catch (Exception e) {
@@ -61,7 +60,7 @@ class GithubPublishIntegrationSpec extends IntegrationSpec {
         }
 
 
-        def builder = client.createRepository(availableRepo)
+        def builder = client.createRepository(testRepositoryName.split('/')[1])
         builder.description("Integration test repo for wooga/atlas-github")
         builder.autoInit(false)
         builder.licenseTemplate('MIT')
@@ -77,7 +76,7 @@ class GithubPublishIntegrationSpec extends IntegrationSpec {
     }
 
     def setupSpec() {
-        client = GitHub.connectUsingOAuth(availableToken)
+        client = GitHub.connectUsingOAuth(testUserToken)
         createTestRepo()
     }
 
@@ -86,9 +85,9 @@ class GithubPublishIntegrationSpec extends IntegrationSpec {
             ${applyPlugin(GithubPlugin)}
 
             github {
-                owner = "$availableOwner"
-                repository = "$availableRepo"
-                token = "$availableToken"
+                userName = "$testUserName"
+                repository = "$testRepositoryName"
+                token = "$testUserToken"
             }
         """.stripIndent()
     }
@@ -213,14 +212,14 @@ class GithubPublishIntegrationSpec extends IntegrationSpec {
         buildFile << """
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "fileToPublish"
-                repository = "customRepo"
+                repository = "${testUserName}/customRepo"
                 tagName = "test"
             }
         """
 
         expect:
         def result = runTasksWithFailure("testPublish")
-        result.standardError.contains("can't find repository $availableOwner/customRepo")
+        result.standardError.contains("can't find repository $testUserName/customRepo")
     }
 
     def "fails when release already exists"() {

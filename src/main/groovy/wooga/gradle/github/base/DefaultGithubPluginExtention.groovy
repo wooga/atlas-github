@@ -30,8 +30,11 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     private String repository
     private String baseUrl
-    private String owner
+
+    private String userName
+    private String password
     private String token
+
     private Project project
 
     DefaultGithubPluginExtention(Project project) {
@@ -39,8 +42,37 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     }
 
     @Override
-    String getRepositoryName() {
-        return getOwner() + '/' + getRepository()
+    String getUserName() {
+        return userName
+    }
+
+    @Override
+    GithubSpec setUserName(String userName) {
+        this.userName = userName
+        return this
+    }
+
+    @Override
+    GithubSpec userName(String userName) {
+        this.setUserName(userName)
+        return this
+    }
+
+    @Override
+    String getPassword() {
+        return this.password
+    }
+
+    @Override
+    GithubSpec setPassword(String password) {
+        this.password = password
+        return this
+    }
+
+    @Override
+    GithubSpec password(String password) {
+        this.setPassword(password)
+        return this
     }
 
     @Override
@@ -48,6 +80,11 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
         if (!this.repository && project.properties.hasProperty(GITHUB_REPOSITORY_OPTION)) {
             return project.properties[GITHUB_REPOSITORY_OPTION]
         }
+
+        if (!GithubRepositoryValidator.validateRepositoryName(repository)) {
+            throw new IllegalArgumentException("Repository value '$repository' is not a valid github repository name. Expecting `owner/repo`.")
+        }
+
         return this.repository
     }
 
@@ -55,6 +92,10 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     DefaultGithubPluginExtention setRepository(String repository) {
         if (repository == null || repository.isEmpty()) {
             throw new IllegalArgumentException("repository")
+        }
+
+        if (!GithubRepositoryValidator.validateRepositoryName(repository)) {
+            throw new IllegalArgumentException("Repository value '$repository' is not a valid github repository name. Expecting `owner/repo`.")
         }
 
         this.repository = repository
@@ -80,28 +121,6 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     @Override
     DefaultGithubPluginExtention baseUrl(String baseUrl) {
         return this.setBaseUrl(baseUrl)
-    }
-
-    @Override
-    String getOwner() {
-        if (!this.owner && project.properties.hasProperty(GITHUB_OWNER_OPTION)) {
-            return project.properties[GITHUB_OWNER_OPTION]
-        }
-        return this.owner
-    }
-
-    @Override
-    DefaultGithubPluginExtention setOwner(String owner) {
-        if (owner == null || owner.isEmpty()) {
-            throw new IllegalArgumentException("owner")
-        }
-        this.owner = owner
-        return this
-    }
-
-    @Override
-    DefaultGithubPluginExtention Owner(String owner) {
-        return this.setOwner(owner)
     }
 
     @Override

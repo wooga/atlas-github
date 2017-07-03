@@ -57,7 +57,8 @@ class GithubPublishPlugin implements Plugin<Project> {
 
                 taskConventionMapping.map("baseUrl", { extention.getBaseUrl() })
                 taskConventionMapping.map("repository", { extention.getRepository() })
-                taskConventionMapping.map("owner", { extention.getOwner() })
+                taskConventionMapping.map("userName", { extention.getUserName() })
+                taskConventionMapping.map("password", { extention.getPassword() })
                 taskConventionMapping.map("token", { extention.getToken() })
                 taskConventionMapping.map("targetCommitish", { "master" })
                 taskConventionMapping.map("prerelease", { false })
