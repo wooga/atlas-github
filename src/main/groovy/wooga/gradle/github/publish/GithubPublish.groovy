@@ -75,8 +75,17 @@ class GithubPublish extends Copy implements GithubPublishSpec {
         if (didWork) {
             setDidWork(false)
             prepareAssets()
-            publishGithubRelease()
+            GHRelease release = createGithubRelease()
+            publishAssets(release)
+            release.setDraft(isDraft())
             setDidWork(true)
+        }
+    }
+
+    protected void publishAssets(GHRelease release) {
+        assetUploadDirectory.eachFile { File assetFile ->
+            def contentType = getAssetContentType(assetFile)
+            release.uploadAsset(assetFile, contentType)
         }
     }
 
@@ -92,7 +101,7 @@ class GithubPublish extends Copy implements GithubPublishSpec {
         }
     }
 
-    protected void publishGithubRelease() {
+    protected GHRelease createGithubRelease() {
         GitHub client = getClient()
         GHRepository repository
         try {
@@ -120,14 +129,7 @@ class GithubPublish extends Copy implements GithubPublishSpec {
             builder.name(getReleaseName())
         }
 
-        GHRelease release = builder.create()
-
-        assetUploadDirectory.eachFile { File assetFile ->
-            def contentType = getAssetContentType(assetFile)
-            release.uploadAsset(assetFile, contentType)
-        }
-
-        release.setDraft(isDraft())
+        return builder.create()
     }
 
     String getAssetContentType(File assetFile) {
