@@ -20,13 +20,10 @@ package wooga.gradle.github.base
 import org.gradle.api.Project
 
 class DefaultGithubPluginExtention implements GithubPluginExtention {
-    static final String GITHUB_OWNER_OPTION = "github.owner"
+    static final String GITHUB_USER_NAME_OPTION = "github.userName"
+    static final String GITHUB_USER_PASSWORD_OPTION = "github.password"
     static final String GITHUB_TOKEN_OPTION = "github.token"
     static final String GITHUB_REPOSITORY_OPTION = "github.repository"
-
-    static final String GITHUB_USER_ENV_VAR = "GITHUB_USR"
-    static final String GITHUB_PASSWORD_ENV_VAR = "GITHUB_PWD"
-    static final String GITHUB_REPOSITORY_ENV_VAR = "GITHUB_REPOSITORY"
 
     private String repository
     private String baseUrl
@@ -43,7 +40,11 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     String getUserName() {
-        return userName
+        if (!this.repository && project.hasProperty(GITHUB_USER_NAME_OPTION)) {
+            return project.properties[GITHUB_USER_NAME_OPTION]
+        }
+
+        return this.userName
     }
 
     @Override
@@ -60,6 +61,10 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     String getPassword() {
+        if (!this.repository && project.hasProperty(GITHUB_USER_PASSWORD_OPTION)) {
+            return project.properties[GITHUB_USER_PASSWORD_OPTION]
+        }
+
         return this.password
     }
 
@@ -77,15 +82,16 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     String getRepository() {
-        if (!this.repository && project.properties.hasProperty(GITHUB_REPOSITORY_OPTION)) {
-            return project.properties[GITHUB_REPOSITORY_OPTION]
+        String value = this.repository
+        if (!this.repository && project.hasProperty(GITHUB_REPOSITORY_OPTION)) {
+            value = project.properties[GITHUB_REPOSITORY_OPTION]
         }
 
-        if (!GithubRepositoryValidator.validateRepositoryName(repository)) {
-            throw new IllegalArgumentException("Repository value '$repository' is not a valid github repository name. Expecting `owner/repo`.")
+        if (!GithubRepositoryValidator.validateRepositoryName(value)) {
+            throw new IllegalArgumentException("Repository value '$value' is not a valid github repository name. Expecting `owner/repo`.")
         }
 
-        return this.repository
+        return value
     }
 
     @Override
@@ -125,7 +131,7 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     String getToken() {
-        if (!this.token && project.properties.hasProperty(GITHUB_TOKEN_OPTION)) {
+        if (!this.token && project.hasProperty(GITHUB_TOKEN_OPTION)) {
             return project.properties[GITHUB_TOKEN_OPTION]
         }
         return this.token

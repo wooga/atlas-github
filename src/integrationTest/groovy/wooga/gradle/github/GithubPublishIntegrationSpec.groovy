@@ -17,7 +17,6 @@
 
 package wooga.gradle.github
 
-import spock.lang.Shared
 import spock.lang.Unroll
 
 class GithubPublishIntegrationSpec extends GithubPublishIntegration {
@@ -110,20 +109,23 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegration {
         buildFile << """
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "sources"
-                into "buildDir"
+                $api
             }
-        """
+
+            class CustomAction implements Action<CopySpec> { void execute(CopySpec copySpec) {} }
+        """.stripIndent()
+
         expect:
         def result = runTasksWithFailure("testPublish")
         result.standardError.contains("method not supported")
 
 
         where:
-        api                                                                           | _
-        'into "buildDir"'                                                             | _
-        'into("buildDir"){}'                                                          | _
-        'destinationDir file("buildDir")'                                             | _
-        "into(new Action<CopySpec> { @Override void execute(CopySpec copySpec) {} })" | _
+        api                                    | _
+        'into "buildDir"'                      | _
+        'into("buildDir"){}'                   | _
+        'destinationDir file("buildDir")'      | _
+        'into("buildDir", new CustomAction())' | _
     }
 
     def "fails when repo is not available"() {
