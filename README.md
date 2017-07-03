@@ -29,16 +29,18 @@ plugins {
 }
 
 github {
-    owner = "wooga"
-    repository "atlas-github"
+    userName = "wooga"
+    password = "a password."
     token "a github access token"
+    repository "wooga/atlas-github"
     baseUrl = null
 }
 
 githubPublish {
-    owner = "wooga"
-    repository "atlas-github"
+    userName = "wooga"
+    password = "a password."
     token "a github access token"
+    repository "wooga/atlas-github"
     baseUrl = null
     targetCommitish = "master"
     tagName = project.version
@@ -62,7 +64,7 @@ githubPublish {
 The plugin will only add one task `githubPublish` which needs further configuration before it executes.
 
 ### Authentication
-To authenticate with [github] you need to set either the `owner` and `token` parameter in the `github` plugin extension or in the `GithubPublish` task configuration.
+To authenticate with [github] you need to set either the `userName` and `token` parameter in the `github` plugin extension or in the `GithubPublish` task configuration.
 If you specify the values in the extension configuration all tasks of type `wooga.gradle.github.publish.GithubPublish` will be configured with these values by default. You can create multiple publish tasks with different credentials or repository values.
 You can also use [github-api.kohsuke.org][github-api] authentication fallback logic [fromCredentials][github-cred-auth] or [fromEnvironment][github-env-auth].
 
