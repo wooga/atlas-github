@@ -162,6 +162,20 @@ Tested with Oracle JDK8
 | 3.5.1          | ![yes]      |
 | 4.0            | ![yes]      |
 
+Development
+===========
+
+#### Running the tests
+The integration tests will access github with a botUser which credentials needs to be provided via environment variables.
+
+| Name                                | Description                                                                          |
+| ----------------------------------- | ------------------------------------------------------------------------------------ |
+| `ATLAS_GITHUB_INTEGRATION_USER`     | The username for of the BotUser. The name will also be used for the test repository. |
+| `ATLAS_GITHUB_INTEGRATION_PASSWORD` | A password for the gihub user or acces token.                                        |
+
+If the value of `ATLAS_GITHUB_INTEGRATION_PASSWORD` is a access token, it needs the scopes: `delete_repo`, `repo`
+see [github-oauth-scopes] for more information.
+
 LICENSE
 =======
 
@@ -189,3 +203,4 @@ limitations under the License.
 [copy-spec]:            https://docs.gradle.org/3.4/javadoc/org/gradle/api/file/CopySpec.html
 [copy-spec-into]:       https://docs.gradle.org/3.4/javadoc/org/gradle/api/file/CopySpec.html#into(java.lang.Object)
 [copy-destinationDir]:  https://docs.gradle.org/current/dsl/org.gradle.api.tasks.Copy.html#org.gradle.api.tasks.Copy:destinationDir
+[github-oauth-scopes]:  https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-scopes-for-oauth-apps/
