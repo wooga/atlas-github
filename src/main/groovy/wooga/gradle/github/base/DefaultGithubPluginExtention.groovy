@@ -49,6 +49,10 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     GithubSpec setUserName(String userName) {
+        if (userName == null || userName.isEmpty()) {
+            throw new IllegalArgumentException("userName")
+        }
+
         this.userName = userName
         return this
     }
@@ -70,6 +74,10 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     GithubSpec setPassword(String password) {
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("password")
+        }
+
         this.password = password
         return this
     }
@@ -120,6 +128,10 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     DefaultGithubPluginExtention setBaseUrl(String baseUrl) {
+        if (baseUrl == null || baseUrl.isEmpty()) {
+            throw new IllegalArgumentException("baseUrl")
+        }
+
         this.baseUrl = baseUrl
         return this
     }

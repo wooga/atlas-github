@@ -27,28 +27,52 @@ class DefaultGithubPluginExtentionSpec extends Specification {
     def extension = new DefaultGithubPluginExtention(project)
 
     @Unroll
-    def "retrieve default values from properties when set #valueToTest:#propertyValue"() {
+    def "retrieve default values from properties when set #userNameValue:#passwordValue:#tokenValue:#repositoryValue"() {
         given: "project properties with values"
         Map<String, String> properties = [:]
-        if (propertyValue) {
-            properties[propertyKey] = propertyValue
+        if (userNameValue) {
+            properties[DefaultGithubPluginExtention.GITHUB_USER_NAME_OPTION] = userNameValue
+            project.hasProperty(DefaultGithubPluginExtention.GITHUB_USER_NAME_OPTION) >> true
         }
+
+        if (passwordValue) {
+            properties[DefaultGithubPluginExtention.GITHUB_USER_PASSWORD_OPTION] = passwordValue
+            project.hasProperty(DefaultGithubPluginExtention.GITHUB_USER_PASSWORD_OPTION) >> true
+        }
+
+        if (tokenValue) {
+            properties[DefaultGithubPluginExtention.GITHUB_TOKEN_OPTION] = tokenValue
+            project.hasProperty(DefaultGithubPluginExtention.GITHUB_TOKEN_OPTION) >> true
+        }
+
+        if (repositoryValue) {
+            properties[DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION] = repositoryValue
+            project.hasProperty(DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION) >> true
+        }
+
         and: "a project mocked with properties"
         project.properties >> properties
-        project.hasProperty(propertyKey) >> (propertyValue != null)
+
 
         expect:
-        extension.getProperty(valueToTest) == propertyValue
+        with(extension) {
+            userName == userNameValue
+            getUserName() == userNameValue
+
+            password == passwordValue
+            getPassword() == passwordValue
+
+            token == tokenValue
+            getToken() == tokenValue
+
+            repository == repositoryValue
+            getRepository() == repositoryValue
+        }
 
         where:
-        valueToTest  | propertyKey                                              | propertyValue
-        "userName"   | DefaultGithubPluginExtention.GITHUB_USER_NAME_OPTION     | null
-        "userName"   | DefaultGithubPluginExtention.GITHUB_USER_NAME_OPTION     | "testUser"
-        "password"   | DefaultGithubPluginExtention.GITHUB_USER_PASSWORD_OPTION | null
-        "password"   | DefaultGithubPluginExtention.GITHUB_USER_PASSWORD_OPTION | "testPassword"
-        "token"      | DefaultGithubPluginExtention.GITHUB_TOKEN_OPTION         | null
-        "token"      | DefaultGithubPluginExtention.GITHUB_TOKEN_OPTION         | "testToken"
-        "repository" | DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION    | "test/repo"
+        userNameValue | passwordValue  | tokenValue  | repositoryValue
+        "testUser"    | "testPassword" | "testToken" | "test/repo"
+        null          | null           | null        | "test/repo"
     }
 
     @Unroll
@@ -77,31 +101,123 @@ class DefaultGithubPluginExtentionSpec extends Specification {
     }
 
     @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
-    def "setter throws IllegalArgumentException"() {
+    def "token throws IllegalArgumentException"() {
         when:
-
         if (useSetter) {
-            extension.setProperty(valueToTest, propertyValue)
+            extension.setToken(propertyValue)
         } else {
-            extension.invokeMethod(valueToTest, propertyValue)
+            extension.token(propertyValue)
         }
 
         then:
         IllegalArgumentException e = thrown()
-        e.message == valueToTest
+        e.message == "token"
 
         where:
-        valueToTest  | propertyValue | useSetter
-        "repository" | null          | true
-        "repository" | null          | false
-        "repository" | ""            | true
-        "repository" | ""            | false
-        "token"      | null          | true
-        "token"      | null          | false
-        "token"      | ""            | true
-        "token"      | ""            | false
+        propertyValue | useSetter
+        null          | true
+        null          | false
+        ""            | true
+        ""            | false
 
         propertyMessage = propertyValue == null ? propertyValue : "empty"
-        methodName = useSetter ? "set" + valueToTest.capitalize() : valueToTest
+        methodName = useSetter ? "setToken" : "token"
     }
+
+    @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
+    def "repository setter throws IllegalArgumentException"() {
+        when:
+        if (useSetter) {
+            extension.setRepository(propertyValue)
+        } else {
+            extension.repository(propertyValue)
+        }
+
+        then:
+        IllegalArgumentException e = thrown()
+        e.message == "repository"
+
+        where:
+        propertyValue | useSetter
+        null          | true
+        null          | false
+        ""            | true
+        ""            | false
+
+        propertyMessage = propertyValue == null ? propertyValue : "empty"
+        methodName = useSetter ? "setRepository" : "repository"
+    }
+
+    @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
+    def "userName setter throws IllegalArgumentException"() {
+        when:
+        if (useSetter) {
+            extension.setUserName(propertyValue)
+        } else {
+            extension.userName(propertyValue)
+        }
+
+        then:
+        IllegalArgumentException e = thrown()
+        e.message == "userName"
+
+        where:
+        propertyValue | useSetter
+        null          | true
+        null          | false
+        ""            | true
+        ""            | false
+
+        propertyMessage = propertyValue == null ? propertyValue : "empty"
+        methodName = useSetter ? "setUserName" : "userName"
+    }
+
+    @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
+    def "password setter throws IllegalArgumentException"() {
+        when:
+        if (useSetter) {
+            extension.setPassword(propertyValue)
+        } else {
+            extension.password(propertyValue)
+        }
+
+        then:
+        IllegalArgumentException e = thrown()
+        e.message == "password"
+
+        where:
+        propertyValue | useSetter
+        null          | true
+        null          | false
+        ""            | true
+        ""            | false
+
+        propertyMessage = propertyValue == null ? propertyValue : "empty"
+        methodName = useSetter ? "setPassword" : "password"
+    }
+
+    @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
+    def "baseUrl setter throws IllegalArgumentException"() {
+        when:
+        if (useSetter) {
+            extension.setBaseUrl(propertyValue)
+        } else {
+            extension.baseUrl(propertyValue)
+        }
+
+        then:
+        IllegalArgumentException e = thrown()
+        e.message == "baseUrl"
+
+        where:
+        propertyValue | useSetter
+        null          | true
+        null          | false
+        ""            | true
+        ""            | false
+
+        propertyMessage = propertyValue == null ? propertyValue : "empty"
+        methodName = useSetter ? "setBaseUrl" : "baseUrl"
+    }
+
 }
