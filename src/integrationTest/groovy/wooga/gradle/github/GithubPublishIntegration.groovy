@@ -92,6 +92,10 @@ abstract class GithubPublishIntegration extends IntegrationSpec {
     }
 
     def cleanup() {
+        cleanupReleases()
+    }
+
+    void cleanupReleases() {
         def releases = testRepo.listReleases()
         releases.each {
             it.delete()
@@ -100,6 +104,27 @@ abstract class GithubPublishIntegration extends IntegrationSpec {
 
     def cleanupSpec() {
         testRepo.delete()
+    }
+
+    File createTestAssetsToPublish(int numberOfFiles) {
+        return createTestAssetsToPublish(numberOfFiles, null)
+    }
+
+    File createTestAssetsToPublish(int numberOfFiles, String packageName) {
+        File assets = new File(projectDir, "releaseAssets")
+        assets.mkdirs()
+        File packageDirectory = assets
+
+        if (packageName) {
+            packageDirectory = new File(assets, packageName)
+            packageDirectory.mkdirs()
+        }
+
+        numberOfFiles.eachWithIndex { int entry, int i ->
+            createFile("file${i}", packageDirectory) << "test content"
+        }
+
+        return assets
     }
 
     GHRelease getRelease(String tagName) {

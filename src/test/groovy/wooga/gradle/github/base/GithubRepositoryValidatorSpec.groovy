@@ -30,6 +30,7 @@ class GithubRepositoryValidatorSpec extends Specification {
         where:
         repository                     | isValid
         "user/repo"                    | true
+        null                           | false
         "https://github.com/user/repo" | false
         "user"                         | false
         "some/funny/value"             | false

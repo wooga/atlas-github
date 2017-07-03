@@ -141,7 +141,7 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     }
 
     @Override
-    DefaultGithubPluginExtention Token(String token) {
+    DefaultGithubPluginExtention token(String token) {
         return this.setToken(token)
     }
 }

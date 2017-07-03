@@ -17,6 +17,9 @@
 
 package wooga.gradle.github
 
+import spock.lang.Shared
+import spock.lang.Unroll
+
 class GithubPublishIntegrationSpec extends GithubPublishIntegration {
 
     def "task gets skipped when source is empty"() {
@@ -57,8 +60,8 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegration {
         def release = getRelease("test")
         def assets = release.assets
         assets.size() == 2
-        assets.any {it.name == "fileOne"}
-        assets.any {it.name == "fileTwo"}
+        assets.any { it.name == "fileOne" }
+        assets.any { it.name == "fileTwo" }
     }
 
     def "can nest export directory"() {
@@ -91,11 +94,12 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegration {
         def release = getRelease("test")
         def assets = release.assets
         assets.size() == 2
-        assets.any {it.name == "one.zip"}
-        assets.any {it.name == "two.zip"}
+        assets.any { it.name == "one.zip" }
+        assets.any { it.name == "two.zip" }
     }
 
-    def "fails when using into"() {
+    @Unroll("fails when calling unsurported Copy API #api")
+    def "fails when using unsurported Copy API"() {
         given: "some test files to publish"
         File sources = new File(projectDir, "sources")
         sources.mkdirs()
@@ -109,9 +113,17 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegration {
                 into "buildDir"
             }
         """
-
         expect:
-        runTasksWithFailure("testPublish")
+        def result = runTasksWithFailure("testPublish")
+        result.standardError.contains("method not supported")
+
+
+        where:
+        api                                                                           | _
+        'into "buildDir"'                                                             | _
+        'into("buildDir"){}'                                                          | _
+        'destinationDir file("buildDir")'                                             | _
+        "into(new Action<CopySpec> { @Override void execute(CopySpec copySpec) {} })" | _
     }
 
     def "fails when repo is not available"() {
@@ -180,7 +192,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegration {
         def release = getRelease("v0.1.0")
         def assets = release.assets
         assets.size() == 1
-        assets.any {it.name == "fileToPublish.json"}
+        assets.any { it.name == "fileToPublish.json" }
     }
 
 

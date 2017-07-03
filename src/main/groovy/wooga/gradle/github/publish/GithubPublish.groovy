@@ -26,6 +26,8 @@ import org.apache.tika.parser.AutoDetectParser
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.file.CopySpec
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.AbstractCopyTask
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Input
@@ -35,6 +37,7 @@ import org.zeroturnaround.zip.ZipUtil
 import wooga.gradle.github.base.GithubRepositoryValidator
 
 class GithubPublish extends Copy implements GithubPublishSpec {
+    static Logger logger = Logging.getLogger(GithubPublish)
 
     private File assetCollectDirectory
     private File assetUploadDirectory
@@ -114,6 +117,11 @@ class GithubPublish extends Copy implements GithubPublishSpec {
         try {
             repository = client.getRepository(getRepository())
         }
+        catch (HttpException httpException) {
+            logger.info("error retrieving repository ${getRepository()} ${httpException.responseMessage}")
+            throw httpException
+        }
+
         catch (Exception e) {
             throw new GradleException("can't find repository ${getRepository()}")
         }
@@ -255,7 +263,7 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     }
 
     @Override
-    GithubPublish Token(String token) {
+    GithubPublish token(String token) {
         return this.setToken(token)
     }
 

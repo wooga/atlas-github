@@ -36,7 +36,7 @@ interface GithubSpec {
 
     GithubSpec setToken(String token)
 
-    GithubSpec Token(String token)
+    GithubSpec token(String token)
 
     String getRepository()
 
