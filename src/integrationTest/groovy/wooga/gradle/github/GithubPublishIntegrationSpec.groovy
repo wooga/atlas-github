@@ -17,96 +17,7 @@
 
 package wooga.gradle.github
 
-import nebula.test.IntegrationSpec
-import org.kohsuke.github.GHRelease
-import org.kohsuke.github.GHRepository
-import org.kohsuke.github.GitHub
-import spock.lang.Shared
-
-class GithubPublishIntegrationSpec extends IntegrationSpec {
-
-    String uniquePostfix() {
-        String key = "TRAVIS_JOB_NUMBER"
-        def env = System.getenv()
-        if(env.containsKey(key)) {
-            return env.get(key)
-        }
-        return ""
-    }
-
-    @Shared
-    def testUserName = System.getenv("ATLAS_GITHUB_INTEGRATION_USER")
-
-    @Shared
-    def testUserToken = System.getenv("ATLAS_GITHUB_INTEGRATION_PASSWORD")
-
-    @Shared
-    def testRepositoryName = "${testUserName}/atlas-github-integration" + uniquePostfix()
-
-    @Shared
-    GitHub client
-
-    @Shared
-    GHRepository testRepo
-
-    def createTestRepo() {
-
-        try {
-            def repository = client.getRepository("$testRepositoryName")
-            repository.delete()
-        }
-        catch (Exception e) {
-
-        }
-
-
-        def builder = client.createRepository(testRepositoryName.split('/')[1])
-        builder.description("Integration test repo for wooga/atlas-github")
-        builder.autoInit(false)
-        builder.licenseTemplate('MIT')
-        builder.private_(false)
-        builder.issues(false)
-        builder.wiki(false)
-        testRepo = builder.create()
-    }
-
-    def createRelease(String tagName) {
-        def builder = testRepo.createRelease(tagName)
-        builder.create()
-    }
-
-    def setupSpec() {
-        client = GitHub.connectUsingOAuth(testUserToken)
-        createTestRepo()
-    }
-
-    def setup() {
-        buildFile << """
-            ${applyPlugin(GithubPlugin)}
-
-            github {
-                userName = "$testUserName"
-                repository = "$testRepositoryName"
-                token = "$testUserToken"
-            }
-        """.stripIndent()
-    }
-
-    def cleanup() {
-        def releases = testRepo.listReleases()
-        releases.each {
-            it.delete()
-        }
-    }
-
-    def cleanupSpec() {
-        testRepo.delete()
-    }
-
-    GHRelease getRelease(String tagName) {
-        (GHRelease) testRepo.listReleases().find({it.tagName == tagName})
-    }
-
+class GithubPublishIntegrationSpec extends GithubPublishIntegration {
 
     def "task gets skipped when source is empty"() {
         given: "a buildfile with publish task"
@@ -271,4 +182,6 @@ class GithubPublishIntegrationSpec extends IntegrationSpec {
         assets.size() == 1
         assets.any {it.name == "fileToPublish.json"}
     }
+
+
 }

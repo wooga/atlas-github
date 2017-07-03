@@ -76,8 +76,15 @@ class GithubPublish extends Copy implements GithubPublishSpec {
             setDidWork(false)
             prepareAssets()
             GHRelease release = createGithubRelease()
-            publishAssets(release)
-            release.setDraft(isDraft())
+            try {
+                publishAssets(release)
+                release.setDraft(isDraft())
+            }
+            catch (Exception e) {
+                release.delete()
+                setDidWork(false)
+                throw new GradleException("error while uploading assets. Rollback release ${getReleaseName()}")
+            }
             setDidWork(true)
         }
     }
