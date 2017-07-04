@@ -32,16 +32,16 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     private String password
     private String token
 
-    private Project project
+    private Map<String, ?> properties
 
-    DefaultGithubPluginExtention(Project project) {
-        this.project = project
+    DefaultGithubPluginExtention(Map<String, ?> properties) {
+        this.properties = properties
     }
 
     @Override
     String getUserName() {
-        if (!this.repository && project.hasProperty(GITHUB_USER_NAME_OPTION)) {
-            return project.properties[GITHUB_USER_NAME_OPTION]
+        if (!this.repository && properties[GITHUB_USER_NAME_OPTION]) {
+            return properties[GITHUB_USER_NAME_OPTION]
         }
 
         return this.userName
@@ -59,14 +59,13 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     GithubSpec userName(String userName) {
-        this.setUserName(userName)
-        return this
+        return setUserName(userName)
     }
 
     @Override
     String getPassword() {
-        if (!this.repository && project.hasProperty(GITHUB_USER_PASSWORD_OPTION)) {
-            return project.properties[GITHUB_USER_PASSWORD_OPTION]
+        if (!this.repository && properties[GITHUB_USER_PASSWORD_OPTION]) {
+            return properties[GITHUB_USER_PASSWORD_OPTION]
         }
 
         return this.password
@@ -84,15 +83,14 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     GithubSpec password(String password) {
-        this.setPassword(password)
-        return this
+        return setPassword(password)
     }
 
     @Override
     String getRepository() {
         String value = this.repository
-        if (!this.repository && project.hasProperty(GITHUB_REPOSITORY_OPTION)) {
-            value = project.properties[GITHUB_REPOSITORY_OPTION]
+        if (!this.repository && properties[GITHUB_REPOSITORY_OPTION]) {
+            value = properties[GITHUB_REPOSITORY_OPTION]
         }
 
         if (!GithubRepositoryValidator.validateRepositoryName(value)) {
@@ -118,7 +116,7 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     DefaultGithubPluginExtention repository(String repo) {
-        return this.setRepository(repo)
+        return setRepository(repo)
     }
 
     @Override
@@ -138,13 +136,13 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     DefaultGithubPluginExtention baseUrl(String baseUrl) {
-        return this.setBaseUrl(baseUrl)
+        return setBaseUrl(baseUrl)
     }
 
     @Override
     String getToken() {
-        if (!this.token && project.hasProperty(GITHUB_TOKEN_OPTION)) {
-            return project.properties[GITHUB_TOKEN_OPTION]
+        if (!this.token && properties[GITHUB_TOKEN_OPTION]) {
+            return properties[GITHUB_TOKEN_OPTION]
         }
         return this.token
     }
@@ -160,6 +158,6 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     DefaultGithubPluginExtention token(String token) {
-        return this.setToken(token)
+        return setToken(token)
     }
 }

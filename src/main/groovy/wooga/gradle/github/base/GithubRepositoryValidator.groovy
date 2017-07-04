@@ -21,7 +21,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 class GithubRepositoryValidator {
-    static Logger logger = Logging.getLogger(GithubRepositoryValidator)
+    private static final Logger logger = Logging.getLogger(GithubRepositoryValidator)
 
     static Boolean validateRepositoryName(String repository) {
         logger.debug("validating repository value $repository")

@@ -27,7 +27,7 @@ import wooga.gradle.github.base.GithubPluginExtention
 
 class GithubPublishPlugin implements Plugin<Project> {
 
-    static String PUBLISH_TASK_NAME = "githubPublish"
+    static final String PUBLISH_TASK_NAME = "githubPublish"
 
     private Project project
     private TaskContainer tasks

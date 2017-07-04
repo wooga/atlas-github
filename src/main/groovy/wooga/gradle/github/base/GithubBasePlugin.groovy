@@ -22,11 +22,11 @@ import org.gradle.api.Project
 
 class GithubBasePlugin implements Plugin<Project> {
 
-    static String EXTENSION_NAME = "github"
-    static String GROUP = "github"
+    static final String EXTENSION_NAME = "github"
+    static final String GROUP = "github"
 
     @Override
     void apply(Project project) {
-        project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtention.class, project)
+        project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtention.class, project.rootProject.properties)
     }
 }

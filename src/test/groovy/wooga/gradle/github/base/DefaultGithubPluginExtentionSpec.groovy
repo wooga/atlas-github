@@ -17,42 +17,34 @@
 
 package wooga.gradle.github.base
 
-import org.gradle.api.Project
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class DefaultGithubPluginExtentionSpec extends Specification {
 
-    def project = Mock(Project)
-    def extension = new DefaultGithubPluginExtention(project)
+    Map<String, String> properties = [:]
+
+    def extension = new DefaultGithubPluginExtention(properties)
 
     @Unroll
     def "retrieve default values from properties when set #userNameValue:#passwordValue:#tokenValue:#repositoryValue"() {
         given: "project properties with values"
-        Map<String, String> properties = [:]
+
         if (userNameValue) {
             properties[DefaultGithubPluginExtention.GITHUB_USER_NAME_OPTION] = userNameValue
-            project.hasProperty(DefaultGithubPluginExtention.GITHUB_USER_NAME_OPTION) >> true
         }
 
         if (passwordValue) {
             properties[DefaultGithubPluginExtention.GITHUB_USER_PASSWORD_OPTION] = passwordValue
-            project.hasProperty(DefaultGithubPluginExtention.GITHUB_USER_PASSWORD_OPTION) >> true
         }
 
         if (tokenValue) {
             properties[DefaultGithubPluginExtention.GITHUB_TOKEN_OPTION] = tokenValue
-            project.hasProperty(DefaultGithubPluginExtention.GITHUB_TOKEN_OPTION) >> true
         }
 
         if (repositoryValue) {
             properties[DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION] = repositoryValue
-            project.hasProperty(DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION) >> true
         }
-
-        and: "a project mocked with properties"
-        project.properties >> properties
-
 
         expect:
         with(extension) {
@@ -78,13 +70,9 @@ class DefaultGithubPluginExtentionSpec extends Specification {
     @Unroll
     def "retrieve default values from properties when set repository:#propertyValue"() {
         given: "project properties with values"
-        Map<String, String> properties = [:]
         if (propertyValue) {
             properties[propertyKey] = propertyValue
         }
-        and: "a project mocked with properties"
-        project.properties >> properties
-        project.hasProperty(propertyKey) >> (propertyValue != null)
 
         when:
         extension.repository
@@ -218,6 +206,43 @@ class DefaultGithubPluginExtentionSpec extends Specification {
 
         propertyMessage = propertyValue == null ? propertyValue : "empty"
         methodName = useSetter ? "setBaseUrl" : "baseUrl"
+    }
+
+    @Unroll("can set values via #methodName")
+    def "can set values with setter and set method"() {
+        when:
+        if (useSetter) {
+            with(extension) {
+                setBaseUrl("baseURL")
+                setUserName("userName")
+                setPassword("password")
+                setToken("token")
+                setRepository("test/repository")
+            }
+
+        } else {
+            with(extension) {
+                baseUrl("baseURL")
+                userName("userName")
+                password("password")
+                token("token")
+                repository("test/repository")
+            }
+        }
+
+        then:
+        with(extension){
+            baseUrl == "baseURL"
+            userName == "userName"
+            password == "password"
+            token == "token"
+            repository == "test/repository"
+        }
+
+
+        where:
+        useSetter << [true, false]
+        methodName = useSetter ? "setter" : "set short method"
     }
 
 }

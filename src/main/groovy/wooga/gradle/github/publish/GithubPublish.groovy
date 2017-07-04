@@ -37,7 +37,7 @@ import org.zeroturnaround.zip.ZipUtil
 import wooga.gradle.github.base.GithubRepositoryValidator
 
 class GithubPublish extends Copy implements GithubPublishSpec {
-    static Logger logger = Logging.getLogger(GithubPublish)
+    private static final Logger logger = Logging.getLogger(GithubPublish)
 
     private File assetCollectDirectory
     private File assetUploadDirectory
