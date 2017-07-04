@@ -118,4 +118,37 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         methodName = useSetter ? "set${method.capitalize()}" : method
     }
+    
+    @Unroll
+    def "fails when setting #methodName with invalid repository name #repoName"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "0.1.0"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                tagName = "v0.1.0"
+                $methodName("$repoName")
+                token = "$testUserToken"
+            }            
+        """.stripIndent()
+
+        expect:
+        def result = runTasksWithFailure("testPublish")
+        result.standardError.contains("Repository value '$repoName' is not a valid github repository name")
+
+        where:
+        repoName                               | useSetter
+        "invalid"                              | true
+        "invalid"                              | false
+        null                                   | true
+        null                                   | false
+        "https://github.com/owner/invalid.git" | true
+        "https://github.com/owner/invalid.git" | false
+
+        methodName = useSetter ? "setRepository" : "repository"
+    }
 }
