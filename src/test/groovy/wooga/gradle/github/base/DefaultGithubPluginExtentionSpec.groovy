@@ -83,7 +83,6 @@ class DefaultGithubPluginExtentionSpec extends Specification {
 
         where:
         valueToTest  | propertyKey                                           | propertyValue
-        "repository" | DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION | null
         "repository" | DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION | "invalid-repo-name"
         "repository" | DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION | "https://github.com/some/repo"
     }

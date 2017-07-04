@@ -93,7 +93,7 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
             value = properties[GITHUB_REPOSITORY_OPTION]
         }
 
-        if (!GithubRepositoryValidator.validateRepositoryName(value)) {
+        if (value && !GithubRepositoryValidator.validateRepositoryName(value)) {
             throw new IllegalArgumentException("Repository value '$value' is not a valid github repository name. Expecting `owner/repo`.")
         }
 
