@@ -316,7 +316,7 @@ class GithubPublish extends Copy implements GithubPublishSpec {
 
     @Override
     GithubPublish releaseName(String name) {
-        return this.setGetReleaseName(name)
+        return this.setReleaseName(name)
     }
 
     @Optional

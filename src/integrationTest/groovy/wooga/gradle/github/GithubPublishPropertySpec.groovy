@@ -17,6 +17,8 @@
 
 package wooga.gradle.github
 
+import spock.lang.Unroll
+
 class GithubPublishPropertySpec extends GithubPublishIntegration {
 
     def "task skips if repository is not set"() {
@@ -29,12 +31,91 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
                 from "releaseAssets"
                 tagName = "v0.1.0"
             }
-        """
+        """.stripIndent()
 
         when:
         def result = runTasksSuccessfully("testPublish")
 
         then:
         result.wasSkipped("testPublish")
+    }
+
+    @Unroll
+    def "can set #method with #methodName"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "0.1.0"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                tagName = "v0.1.0"
+                repository = "$testRepositoryName"
+                token = "$testUserToken"
+            }            
+        """.stripIndent()
+
+        if (isDraftValue) {
+            buildFile << """
+            testPublish.$methodName($isDraftValue)
+            """.stripIndent()
+        }
+
+        if (isPrereleaseValue) {
+            buildFile << """
+            testPublish.$methodName($isPrereleaseValue)
+            """.stripIndent()
+        }
+
+        if (bodyValue) {
+            buildFile << """
+            testPublish.$methodName("$bodyValue")
+            """.stripIndent()
+        }
+
+        if (releaseNameValue) {
+            buildFile << """
+            testPublish.$methodName("$releaseNameValue")
+            """.stripIndent()
+        }
+
+        if (targetCommitishValue) {
+            buildFile << """
+            testPublish.$methodName("$targetCommitishValue")
+            """.stripIndent()
+        }
+
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        def releaseValueCheck = releaseNameValue ? releaseNameValue : "0.1.0"
+        def targetCommitishValueCheck = targetCommitishValue ? targetCommitishValue : "master"
+
+        hasReleaseByName(releaseValueCheck)
+        def release = getReleaseByName(releaseValueCheck)
+
+        release.isDraft() == isDraftValue
+        release.isPrerelease() == isPrereleaseValue
+        release.getBody() == bodyValue
+        release.getName() == releaseValueCheck
+        release.getTargetCommitish() == targetCommitishValueCheck
+
+        where:
+        method            | isDraftValue | isPrereleaseValue | bodyValue  | releaseNameValue      | targetCommitishValue               | useSetter
+        "draft"           | true         | false             | null       | null                  | null                               | true
+        "draft"           | true         | false             | null       | null                  | null                               | false
+        "prerelease"      | false        | true              | null       | null                  | null                               | true
+        "prerelease"      | false        | true              | null       | null                  | null                               | false
+        "body"            | false        | false             | "testBody" | null                  | null                               | true
+        "body"            | false        | false             | "testBody" | null                  | null                               | false
+        "releaseName"     | false        | false             | null       | "testPropertyRelease" | null                               | true
+        "releaseName"     | false        | false             | null       | "testPropertyRelease" | null                               | false
+        "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | true
+        "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | false
+
+        methodName = useSetter ? "set${method.capitalize()}" : method
     }
 }
