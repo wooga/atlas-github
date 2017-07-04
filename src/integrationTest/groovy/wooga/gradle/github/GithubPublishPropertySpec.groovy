@@ -118,7 +118,40 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         methodName = useSetter ? "set${method.capitalize()}" : method
     }
-    
+
+    @Unroll
+    def "can set tagName with #methodName"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "0.1.0"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                $methodName("$tagNameValue")
+                draft = false
+                repository = "$testRepositoryName"
+                token = "$testUserToken"
+            }            
+        """.stripIndent()
+
+        then:
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        hasRelease(tagNameValue)
+
+        where:
+        tagNameValue        | useSetter
+        "testReleaseTagOne" | true
+        "testReleaseTagTwo" | false
+
+        methodName = useSetter ? "setTagName" : "tagName"
+    }
+
     @Unroll
     def "fails when setting #methodName with invalid repository name #repoName"() {
         given: "files to publish"
@@ -131,24 +164,58 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
                 tagName = "v0.1.0"
-                $methodName("$repoName")
+                $methodName($repoName)
                 token = "$testUserToken"
             }            
         """.stripIndent()
 
         expect:
         def result = runTasksWithFailure("testPublish")
-        result.standardError.contains("Repository value '$repoName' is not a valid github repository name")
+        result.standardError.contains(expectedError)
 
         where:
-        repoName                               | useSetter
-        "invalid"                              | true
-        "invalid"                              | false
-        null                                   | true
-        null                                   | false
-        "https://github.com/owner/invalid.git" | true
-        "https://github.com/owner/invalid.git" | false
+        repoName                                 | useSetter | expectedError
+        "'invalid'"                              | true      | "Repository value $repoName is not a valid github repository name"
+        "'invalid'"                              | false     | "Repository value $repoName is not a valid github repository name"
+        null                                     | true      | "java.lang.IllegalArgumentException: repository"
+        null                                     | false     | "java.lang.IllegalArgumentException: repository"
+        "''"                                     | false     | "java.lang.IllegalArgumentException: repository"
+        "''"                                     | false     | "java.lang.IllegalArgumentException: repository"
+        "'https://github.com/owner/invalid.git'" | true      | "Repository value $repoName is not a valid github repository name"
+        "'https://github.com/owner/invalid.git'" | false     | "Repository value $repoName is not a valid github repository name"
 
         methodName = useSetter ? "setRepository" : "repository"
+    }
+
+    @Unroll
+    def "fails when setting #methodName with invalid token #token"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "0.1.0"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                tagName = "v0.1.0"
+                $methodName($token)
+                repository = "$testRepositoryName"
+                
+            }            
+        """.stripIndent()
+
+        expect:
+        def result = runTasksWithFailure("testPublish")
+        result.standardError.contains("java.lang.IllegalArgumentException: token")
+
+        where:
+        token | useSetter
+        "''"  | true
+        "''"  | false
+        null  | true
+        null  | false
+
+        methodName = useSetter ? "setToken" : "token"
     }
 }
