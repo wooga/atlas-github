@@ -238,6 +238,9 @@ class GithubPublish extends Copy implements GithubPublishSpec {
 
     @Override
     GithubPublish setBaseUrl(String baseUrl) {
+        if (baseUrl == null || baseUrl.isEmpty()) {
+            throw new IllegalArgumentException("baseUrl")
+        }
         this.baseUrl = baseUrl
         return this
     }

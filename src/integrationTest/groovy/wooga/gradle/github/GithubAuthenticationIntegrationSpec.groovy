@@ -141,13 +141,20 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
             environmentVariables.set("GITHUB_OAUTH", token)
         }
 
+        if (baseUrl) {
+            environmentVariables.set("GITHUB_ENDPOINT", baseUrl)
+        }
+
         then:
         runTasksSuccessfully("testPublish")
 
         where:
-        username     | password      | token         | authMethod
-        testUserName | testUserToken | null          | "username/password"
-        testUserName | null          | testUserToken | "username/token"
-        null         | null          | testUserToken | "token"
+        username     | password      | token         | baseUrl                  | authMethod
+        testUserName | testUserToken | null          | null                     | "username/password"
+        testUserName | null          | testUserToken | null                     | "username/token"
+        null         | null          | testUserToken | null                     | "token"
+        testUserName | testUserToken | null          | "https://api.github.com" | "username/password/baseUrl"
+        testUserName | null          | testUserToken | "https://api.github.com" | "username/token/baseUrl"
+        null         | null          | testUserToken | "https://api.github.com" | "token/baseUrl"
     }
 }

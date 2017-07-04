@@ -120,6 +120,40 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
     }
 
     @Unroll
+    def "can set baseUrl with #methodName"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "0.1.0"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                $methodName("$baseUrl")
+                tagName = "customBaseUrlRelease"
+                draft = false
+                repository = "$testRepositoryName"
+                token = "$testUserToken"
+            }            
+        """.stripIndent()
+
+        then:
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        hasRelease("customBaseUrlRelease")
+
+        where:
+        baseUrl                  | useSetter
+        "https://api.github.com" | true
+        "https://api.github.com" | false
+
+        methodName = useSetter ? "setBaseUrl" : "baseUrl"
+    }
+
+    @Unroll
     def "can set tagName with #methodName"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
@@ -217,5 +251,37 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         null  | false
 
         methodName = useSetter ? "setToken" : "token"
+    }
+
+    @Unroll
+    def "fails when setting #methodName with invalid url #url"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "0.1.0"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                tagName = "v0.1.0"
+                $methodName($url)
+                repository = "$testRepositoryName"
+                
+            }            
+        """.stripIndent()
+
+        expect:
+        def result = runTasksWithFailure("testPublish")
+        result.standardError.contains("java.lang.IllegalArgumentException: baseUrl")
+
+        where:
+        url | useSetter
+        "''"  | true
+        "''"  | false
+        null  | true
+        null  | false
+
+        methodName = useSetter ? "setBaseUrl" : "baseUrl"
     }
 }
