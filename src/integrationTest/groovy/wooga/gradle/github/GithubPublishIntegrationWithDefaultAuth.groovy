@@ -21,8 +21,6 @@ abstract class GithubPublishIntegrationWithDefaultAuth extends GithubPublishInte
 
     def setup() {
         buildFile << """
-            ${applyPlugin(GithubPlugin)}
-
             github {
                 userName = "$testUserName"
                 repository = "$testRepositoryName"

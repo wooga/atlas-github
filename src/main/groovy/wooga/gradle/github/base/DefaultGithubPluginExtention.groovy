@@ -40,7 +40,7 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     String getUserName() {
-        if (!this.repository && properties[GITHUB_USER_NAME_OPTION]) {
+        if (!this.userName && properties[GITHUB_USER_NAME_OPTION]) {
             return properties[GITHUB_USER_NAME_OPTION]
         }
 
@@ -64,7 +64,7 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     @Override
     String getPassword() {
-        if (!this.repository && properties[GITHUB_USER_PASSWORD_OPTION]) {
+        if (!this.password && properties[GITHUB_USER_PASSWORD_OPTION]) {
             return properties[GITHUB_USER_PASSWORD_OPTION]
         }
 

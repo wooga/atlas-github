@@ -78,6 +78,12 @@ class GithubPublishIntegration extends IntegrationSpec {
         createTestRepo()
     }
 
+    def setup() {
+        buildFile << """
+            ${applyPlugin(GithubPlugin)}
+        """.stripIndent()
+    }
+
     def cleanup() {
         cleanupReleases()
     }

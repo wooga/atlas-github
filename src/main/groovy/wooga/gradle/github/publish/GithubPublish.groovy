@@ -247,6 +247,7 @@ class GithubPublish extends Copy implements GithubPublishSpec {
         return this.setBaseUrl(baseUrl)
     }
 
+    @Optional
     @Input
     @Override
     String getToken() {
