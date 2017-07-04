@@ -137,6 +137,30 @@ class DefaultGithubPluginExtentionSpec extends Specification {
     }
 
     @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
+    def "repository setter throws IllegalArgumentException when passing invalid repo"() {
+        when:
+        if (useSetter) {
+            extension.setRepository(propertyValue)
+        } else {
+            extension.repository(propertyValue)
+        }
+
+        then:
+        IllegalArgumentException e = thrown()
+        e.message.contains("Repository value '$propertyValue' is not a valid github repository")
+
+        where:
+        propertyValue                              | useSetter
+        "invalid-repo"                             | true
+        "invalid-repo"                             | false
+        "https://github.com/user/invalid-repo.git" | true
+        "https://github.com/user/invalid-repo.git" | false
+
+        propertyMessage = propertyValue
+        methodName = useSetter ? "setRepository" : "repository"
+    }
+
+    @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
     def "userName setter throws IllegalArgumentException"() {
         when:
         if (useSetter) {
@@ -231,7 +255,7 @@ class DefaultGithubPluginExtentionSpec extends Specification {
         }
 
         then:
-        with(extension){
+        with(extension) {
             baseUrl == "baseURL"
             userName == "userName"
             password == "password"
