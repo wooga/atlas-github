@@ -17,7 +17,7 @@
 
 package wooga.gradle.github
 
-class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegration {
+class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
 
     def "publish directories as zip archives"() {
         given: "a directory with files"

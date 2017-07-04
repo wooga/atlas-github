@@ -23,8 +23,7 @@ import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
 import spock.lang.Shared
 
-abstract class GithubPublishIntegration extends IntegrationSpec {
-
+class GithubPublishIntegration extends IntegrationSpec {
     String uniquePostfix() {
         String key = "TRAVIS_JOB_NUMBER"
         def env = System.getenv()
@@ -77,18 +76,6 @@ abstract class GithubPublishIntegration extends IntegrationSpec {
     def setupSpec() {
         client = GitHub.connectUsingOAuth(testUserToken)
         createTestRepo()
-    }
-
-    def setup() {
-        buildFile << """
-            ${applyPlugin(GithubPlugin)}
-
-            github {
-                userName = "$testUserName"
-                repository = "$testRepositoryName"
-                token = "$testUserToken"
-            }
-        """.stripIndent()
     }
 
     def cleanup() {

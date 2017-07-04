@@ -19,7 +19,7 @@ package wooga.gradle.github
 
 import spock.lang.Unroll
 
-class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
+class GithubAuthenticationIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
 
     @Unroll
     def "can override authentication parameters in GithubPublish task with #accessParams"() {

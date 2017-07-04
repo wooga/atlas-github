@@ -19,7 +19,7 @@ package wooga.gradle.github
 
 import spock.lang.Unroll
 
-class GithubPublishIntegrationSpec extends GithubPublishIntegration {
+class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
 
     def "task gets skipped when source is empty"() {
         given: "a buildfile with publish task"
