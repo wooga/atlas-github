@@ -22,6 +22,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskContainer
 import wooga.gradle.github.base.GithubBasePlugin
@@ -40,7 +41,7 @@ class GithubPublishPlugin implements Plugin<Project> {
         this.tasks = project.tasks
 
         project.pluginManager.apply(GithubBasePlugin)
-
+        project.pluginManager.apply(PublishingPlugin)
         GithubPluginExtention extension = (GithubPluginExtention) project.extensions.getByName(GithubBasePlugin.EXTENSION_NAME)
 
         createDefaultPublishTask()
@@ -48,7 +49,9 @@ class GithubPublishPlugin implements Plugin<Project> {
     }
 
     private void createDefaultPublishTask() {
-        tasks.create(name: PUBLISH_TASK_NAME, type: GithubPublish, group: GithubBasePlugin.GROUP)
+        def githubPublish = tasks.create(name: PUBLISH_TASK_NAME, type: GithubPublish, group: GithubBasePlugin.GROUP)
+        githubPublish.description = "Publish artifacts to github releases"
+        tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).dependsOn githubPublish
     }
 
     private void configurePublishTaskDefaults(GithubPluginExtention extention) {

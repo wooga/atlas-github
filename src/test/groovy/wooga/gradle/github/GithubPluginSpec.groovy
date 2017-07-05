@@ -18,6 +18,7 @@
 package wooga.gradle.github
 
 import nebula.test.ProjectSpec
+import org.gradle.api.publish.plugins.PublishingPlugin
 import spock.lang.Unroll
 import wooga.gradle.github.base.GithubBasePlugin
 import wooga.gradle.github.base.GithubPluginExtention
@@ -63,5 +64,36 @@ class GithubPluginSpec extends ProjectSpec {
         taskName                              | taskType
         GithubPublishPlugin.PUBLISH_TASK_NAME | GithubPublish
 
+    }
+
+    @Unroll("applies plugin #pluginName")
+    def 'Applies other plugins'(String pluginName, Class pluginType) {
+        given:
+        assert !project.plugins.hasPlugin(PLUGIN_NAME)
+        assert !project.plugins.hasPlugin(pluginType)
+
+        when:
+        project.plugins.apply(PLUGIN_NAME)
+
+        then:
+        project.plugins.hasPlugin(pluginType)
+
+        where:
+        pluginName   | pluginType
+        "githubBase" | GithubBasePlugin
+        "publish"    | PublishingPlugin
+    }
+
+    def "Sets publish lifecycle"() {
+        given:
+        assert !project.plugins.hasPlugin(PLUGIN_NAME)
+
+        when:
+        project.plugins.apply(PLUGIN_NAME)
+
+        then:
+        def publishTasks = project.tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME)
+        def githubPublishTask = project.tasks.getByName(GithubPublishPlugin.PUBLISH_TASK_NAME)
+        publishTasks.dependsOn.contains(githubPublishTask)
     }
 }
