@@ -41,7 +41,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
     }
 
     @Unroll
-    def "can set #method with #methodName"() {
+    def "can set #method with #methodValue and #methodName"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
 
@@ -59,31 +59,31 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         if (isDraftValue) {
             buildFile << """
-            testPublish.$methodName($isDraftValue)
+            testPublish.$methodName($preValue $isDraftValue $postValue)
             """.stripIndent()
         }
 
         if (isPrereleaseValue) {
             buildFile << """
-            testPublish.$methodName($isPrereleaseValue)
+            testPublish.$methodName($preValue $isPrereleaseValue $postValue)
             """.stripIndent()
         }
 
         if (bodyValue) {
             buildFile << """
-            testPublish.$methodName("$bodyValue")
+            testPublish.$methodName($preValue "$bodyValue" $postValue)
             """.stripIndent()
         }
 
         if (releaseNameValue) {
             buildFile << """
-            testPublish.$methodName("$releaseNameValue")
+            testPublish.$methodName($preValue "$releaseNameValue" $postValue)
             """.stripIndent()
         }
 
         if (targetCommitishValue) {
             buildFile << """
-            testPublish.$methodName("$targetCommitishValue")
+            testPublish.$methodName($preValue "$targetCommitishValue" $postValue)
             """.stripIndent()
         }
 
@@ -104,19 +104,35 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         release.getTargetCommitish() == targetCommitishValueCheck
 
         where:
-        method            | isDraftValue | isPrereleaseValue | bodyValue  | releaseNameValue       | targetCommitishValue               | useSetter
-        "draft"           | true         | false             | null       | null                   | null                               | true
-        "draft"           | true         | false             | null       | null                   | null                               | false
-        "prerelease"      | false        | true              | null       | null                   | null                               | true
-        "prerelease"      | false        | true              | null       | null                   | null                               | false
-        "body"            | false        | false             | "testBody" | null                   | null                               | true
-        "body"            | false        | false             | "testBody" | null                   | null                               | false
-        "releaseName"     | false        | false             | null       | "testPropertyRelease1" | null                               | true
-        "releaseName"     | false        | false             | null       | "testPropertyRelease2" | null                               | false
-        "targetCommitish" | false        | false             | null       | null                   | testRepo.listCommits().last().SHA1 | true
-        "targetCommitish" | false        | false             | null       | null                   | testRepo.listCommits().last().SHA1 | false
+
+
+        method            | isDraftValue | isPrereleaseValue | bodyValue  | releaseNameValue      | targetCommitishValue               | useSetter | isLazy
+        "draft"           | true         | false             | null       | null                  | null                               | true      | false
+        "draft"           | true         | false             | null       | null                  | null                               | true      | true
+        "draft"           | true         | false             | null       | null                  | null                               | false     | false
+        "draft"           | true         | false             | null       | null                  | null                               | false     | true
+        "prerelease"      | false        | true              | null       | null                  | null                               | true      | false
+        "prerelease"      | false        | true              | null       | null                  | null                               | true      | true
+        "prerelease"      | false        | true              | null       | null                  | null                               | false     | false
+        "prerelease"      | false        | true              | null       | null                  | null                               | false     | true
+        "body"            | false        | false             | "testBody" | null                  | null                               | true      | false
+        "body"            | false        | false             | "testBody" | null                  | null                               | true      | true
+        "body"            | false        | false             | "testBody" | null                  | null                               | false     | false
+        "body"            | false        | false             | "testBody" | null                  | null                               | false     | true
+        "releaseName"     | false        | false             | null       | "testPropertyRelease" | null                               | true      | false
+        "releaseName"     | false        | false             | null       | "testPropertyRelease" | null                               | true      | true
+        "releaseName"     | false        | false             | null       | "testPropertyRelease" | null                               | false     | false
+        "releaseName"     | false        | false             | null       | "testPropertyRelease" | null                               | false     | true
+        "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | true      | false
+        "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | true      | true
+        "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | false     | false
+        "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | false     | true
+
 
         methodName = useSetter ? "set${method.capitalize()}" : method
+        methodValue = isLazy ? "closure" : "value"
+        preValue = isLazy ? "{" : ""
+        postValue = isLazy ? "}" : ""
         tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
         versionName = tagName.replaceFirst('v', '')
     }
@@ -158,7 +174,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
     }
 
     @Unroll
-    def "can set tagName with #methodName"() {
+    def "can set tagName with #methodValue and #methodName"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
 
@@ -168,7 +184,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
-                $methodName("$tagNameValue")
+                $methodName($preValue "$tagNameValue" $postValue)
                 draft = false
                 repository = "$testRepositoryName"
                 token = "$testUserToken"
@@ -183,11 +199,16 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         hasRelease(tagNameValue)
 
         where:
-        tagNameValue        | useSetter
-        "testReleaseTagOne" | true
-        "testReleaseTagTwo" | false
+        tagNameValue          | useSetter | isLazy
+        "testReleaseTagOne"   | true      | false
+        "testReleaseTagTwo"   | true      | true
+        "testReleaseTagThree" | false     | false
+        "testReleaseTagFour"  | false     | true
 
         methodName = useSetter ? "setTagName" : "tagName"
+        methodValue = isLazy ? "closure" : "value"
+        preValue = isLazy ? "{" : ""
+        postValue = isLazy ? "}" : ""
         tagName = "v0.3.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
         versionName = tagName.replaceFirst('v', '')
     }

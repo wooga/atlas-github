@@ -25,35 +25,59 @@ interface GithubPublishSpec extends GithubSpec {
 
     GithubPublishSpec setTagName(String tagTame)
 
+    GithubPublishSpec setTagName(Object tagTame)
+
     GithubPublishSpec tagName(String tagTame)
+
+    GithubPublishSpec tagName(Object tagTame)
 
     String getTargetCommitish()
 
     GithubPublishSpec setTargetCommitish(String targetCommitish)
 
+    GithubPublishSpec setTargetCommitish(Object targetCommitish)
+
     GithubPublishSpec targetCommitish(String targetCommitish)
+
+    GithubPublishSpec targetCommitish(Object targetCommitish)
 
     String getReleaseName()
 
     GithubPublishSpec setReleaseName(String name)
 
+    GithubPublishSpec setReleaseName(Object name)
+
     GithubPublishSpec releaseName(String name)
+
+    GithubPublishSpec releaseName(Object name)
 
     String getBody()
 
     GithubPublishSpec setBody(String body)
 
+    GithubPublishSpec setBody(Object body)
+
     GithubPublishSpec body(String body)
+
+    GithubPublishSpec body(Object body)
 
     boolean isPrerelease()
 
     GithubPublishSpec setPrerelease(boolean prerelease)
 
+    GithubPublishSpec setPrerelease(Object prerelease)
+
     GithubPublishSpec prerelease(boolean prerelease)
+
+    GithubPublishSpec prerelease(Object prerelease)
 
     boolean isDraft()
 
     GithubPublishSpec setDraft(boolean draft)
 
+    GithubPublishSpec setDraft(Object draft)
+
     GithubPublishSpec draft(boolean draft)
+
+    GithubPublishSpec draft(Object draft)
 }
