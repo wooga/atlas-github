@@ -35,6 +35,7 @@ import org.gradle.api.tasks.Optional
 import org.kohsuke.github.*
 import org.zeroturnaround.zip.ZipUtil
 import wooga.gradle.github.base.GithubRepositoryValidator
+import java.util.concurrent.Callable
 
 class GithubPublish extends Copy implements GithubPublishSpec {
     private static final Logger logger = Logging.getLogger(GithubPublish)
@@ -197,13 +198,13 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     private String password
     private String token
 
-    private String tagName
-    private String targetCommitish
-    private String releaseName
-    private String body
+    private Object tagName
+    private Object targetCommitish
+    private Object releaseName
+    private Object body
 
-    private boolean prerelease
-    private boolean draft
+    private Object prerelease
+    private Object draft
 
     @Override
     String getRepository() {
@@ -274,7 +275,15 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     @Input
     @Override
     String getTagName() {
-        return this.tagName
+        if(this.tagName == null) {
+            return null
+        }
+
+        if (this.tagName instanceof Callable) {
+            return ((Callable) this.tagName).call().toString()
+        }
+
+        return this.tagName.toString()
     }
 
     @Override
@@ -284,14 +293,33 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     }
 
     @Override
+    GithubPublishSpec setTagName(Object tagName) {
+        this.tagName = tagName
+        return this
+    }
+
+    @Override
     GithubPublish tagName(String tagName) {
+        return this.setTagName(tagName)
+    }
+
+    @Override
+    GithubPublishSpec tagName(Object tagName) {
         return this.setTagName(tagName)
     }
 
     @Input
     @Override
     String getTargetCommitish() {
-        return this.targetCommitish
+        if(this.targetCommitish == null) {
+            return null
+        }
+
+        if (this.targetCommitish instanceof Callable) {
+            return ((Callable) this.targetCommitish).call().toString()
+        }
+
+        return this.targetCommitish.toString()
     }
 
     @Override
@@ -301,20 +329,50 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     }
 
     @Override
+    GithubPublishSpec setTargetCommitish(Object targetCommitish) {
+        this.targetCommitish = targetCommitish
+        return this
+    }
+
+    @Override
     GithubPublish targetCommitish(String targetCommitish) {
+        return this.setTargetCommitish(targetCommitish)
+    }
+
+    @Override
+    GithubPublishSpec targetCommitish(Object targetCommitish) {
         return this.setTargetCommitish(targetCommitish)
     }
 
     @Optional
     @Input
     String getReleaseName() {
-        return this.releaseName
+        if(this.releaseName == null) {
+            return null
+        }
+
+        if (this.releaseName instanceof Callable) {
+            return ((Callable) this.releaseName).call().toString()
+        }
+
+        return this.releaseName.toString()
     }
 
     @Override
     GithubPublish setReleaseName(String name) {
         this.releaseName = name
         return this
+    }
+
+    @Override
+    GithubPublishSpec setReleaseName(Object name) {
+        this.releaseName = name
+        return this
+    }
+
+    @Override
+    GithubPublishSpec releaseName(Object name) {
+        return this.setReleaseName(name)
     }
 
     @Override
@@ -326,7 +384,15 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     @Input
     @Override
     String getBody() {
-        return this.body
+        if(this.body == null) {
+            return null
+        }
+
+        if (this.body instanceof Callable) {
+            return ((Callable) this.body).call().toString()
+        }
+
+        return this.body.toString()
     }
 
     @Override
@@ -336,14 +402,29 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     }
 
     @Override
+    GithubPublishSpec setBody(Object body) {
+        this.body = body
+        return this
+    }
+
+    @Override
     GithubPublish body(String body) {
+        return this.setBody(body)
+    }
+
+    @Override
+    GithubPublishSpec body(Object body) {
         return this.setBody(body)
     }
 
     @Input
     @Override
     boolean isPrerelease() {
-        return this.prerelease
+        if (this.prerelease instanceof Callable) {
+            return ((Callable) this.prerelease).call().asBoolean()
+        }
+
+        return this.prerelease.asBoolean()
     }
 
     @Override
@@ -353,14 +434,29 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     }
 
     @Override
+    GithubPublishSpec setPrerelease(Object prerelease) {
+        this.prerelease = prerelease
+        return this
+    }
+
+    @Override
     GithubPublish prerelease(boolean prerelease) {
+        return this.setPrerelease(prerelease)
+    }
+
+    @Override
+    GithubPublishSpec prerelease(Object prerelease) {
         return this.setPrerelease(prerelease)
     }
 
     @Input
     @Override
     boolean isDraft() {
-        return this.draft
+        if (this.draft instanceof Callable) {
+            return ((Callable) this.draft).call().asBoolean()
+        }
+
+        return this.draft.asBoolean()
     }
 
     @Override
@@ -370,7 +466,18 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     }
 
     @Override
+    GithubPublishSpec setDraft(Object draft) {
+        this.draft = draft
+        return this
+    }
+
+    @Override
     GithubPublish draft(boolean draft) {
+        return this.setDraft(draft)
+    }
+
+    @Override
+    GithubPublishSpec draft(Object draft) {
         return this.setDraft(draft)
     }
 
