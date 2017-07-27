@@ -30,7 +30,7 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
 
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
-                tagName = "v0.1.0"
+                tagName = "v0.${Math.abs(new Random().nextInt() % 1000) + 1}.0-GithubAuthenticationIntegrationSpec"
             }
         """.stripIndent()
     }
@@ -126,6 +126,9 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
 
         and: "task with errors"
         assert runTasksWithFailure("testPublish")
+
+        and: "changing home variable"
+        System.setProperty("user.home", projectDir.path)
 
         when: "setting auth properties in environment"
 

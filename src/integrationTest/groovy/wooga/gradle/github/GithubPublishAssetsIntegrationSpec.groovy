@@ -36,7 +36,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
                 from("releaseAssets") {
                     into "package"
                 }
-                tagName = "v0.1.0"
+                tagName = "$tagName"
             }
         """
 
@@ -44,10 +44,13 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         runTasksSuccessfully("testPublish")
 
         then:
-        def release = getRelease("v0.1.0")
+        def release = getRelease(tagName)
         def assets = release.assets
         assets.size() == 1
         assets.any { it.name == "package.zip" }
+
+        where:
+        tagName = "v0.1.0-GithubPublishAssetsIntegrationSpec"
     }
 
     def "publish directories in directories as zip archives"() {
@@ -68,7 +71,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         buildFile << """
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
-                tagName = "v0.1.0"
+                tagName = "$tagName"
             }
         """
 
@@ -76,10 +79,13 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         runTasksSuccessfully("testPublish")
 
         then:
-        def release = getRelease("v0.1.0")
+        def release = getRelease(tagName)
         def assets = release.assets
         assets.size() == 1
         assets.any { it.name == "package.zip" }
+
+        where:
+        tagName = "v0.2.0-GithubPublishAssetsIntegrationSpec"
     }
 
     def "publish files from configurations"() {
@@ -105,7 +111,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from configurations.githubAssets
-                tagName = "v0.1.0"
+                tagName = "$tagName"
             }
         """
 
@@ -113,10 +119,13 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         runTasksSuccessfully("testPublish")
 
         then:
-        def release = getRelease("v0.1.0")
+        def release = getRelease(tagName)
         def assets = release.assets
         assets.size() == 4
         assets.every() { it.name =~ /fileToPublish\d\.json/ }
+
+        where:
+        tagName = "v0.3.0-GithubPublishAssetsIntegrationSpec"
     }
 
     def "publish files and directories"() {
@@ -144,7 +153,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         buildFile << """
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
-                tagName = "v0.1.0"
+                tagName = "$tagName"
             }
         """
 
@@ -152,10 +161,13 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         runTasksSuccessfully("testPublish")
 
         then:
-        def release = getRelease("v0.1.0")
+        def release = getRelease(tagName)
         def assets = release.assets
         assets.size() == 2
         assets.any { it.name == "package.zip" }
         assets.any { it.name == "fileToPublish.json" }
+
+        where:
+        tagName = "v0.4.0-GithubPublishAssetsIntegrationSpec"
     }
 }

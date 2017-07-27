@@ -47,11 +47,11 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         and: "a buildfile with publish task"
         buildFile << """
-            version "0.1.0"
+            version "$versionName"
 
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
-                tagName = "v0.1.0"
+                tagName = "$tagName"
                 repository = "$testRepositoryName"
                 token = "$testUserToken"
             }            
@@ -91,7 +91,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         runTasksSuccessfully("testPublish")
 
         then:
-        def releaseValueCheck = releaseNameValue ? releaseNameValue : "0.1.0"
+        def releaseValueCheck = releaseNameValue ? releaseNameValue : versionName
         def targetCommitishValueCheck = targetCommitishValue ? targetCommitishValue : "master"
 
         hasReleaseByName(releaseValueCheck)
@@ -104,19 +104,21 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         release.getTargetCommitish() == targetCommitishValueCheck
 
         where:
-        method            | isDraftValue | isPrereleaseValue | bodyValue  | releaseNameValue      | targetCommitishValue               | useSetter
-        "draft"           | true         | false             | null       | null                  | null                               | true
-        "draft"           | true         | false             | null       | null                  | null                               | false
-        "prerelease"      | false        | true              | null       | null                  | null                               | true
-        "prerelease"      | false        | true              | null       | null                  | null                               | false
-        "body"            | false        | false             | "testBody" | null                  | null                               | true
-        "body"            | false        | false             | "testBody" | null                  | null                               | false
-        "releaseName"     | false        | false             | null       | "testPropertyRelease" | null                               | true
-        "releaseName"     | false        | false             | null       | "testPropertyRelease" | null                               | false
-        "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | true
-        "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | false
+        method            | isDraftValue | isPrereleaseValue | bodyValue  | releaseNameValue       | targetCommitishValue               | useSetter
+        "draft"           | true         | false             | null       | null                   | null                               | true
+        "draft"           | true         | false             | null       | null                   | null                               | false
+        "prerelease"      | false        | true              | null       | null                   | null                               | true
+        "prerelease"      | false        | true              | null       | null                   | null                               | false
+        "body"            | false        | false             | "testBody" | null                   | null                               | true
+        "body"            | false        | false             | "testBody" | null                   | null                               | false
+        "releaseName"     | false        | false             | null       | "testPropertyRelease1" | null                               | true
+        "releaseName"     | false        | false             | null       | "testPropertyRelease2" | null                               | false
+        "targetCommitish" | false        | false             | null       | null                   | testRepo.listCommits().last().SHA1 | true
+        "targetCommitish" | false        | false             | null       | null                   | testRepo.listCommits().last().SHA1 | false
 
         methodName = useSetter ? "set${method.capitalize()}" : method
+        tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
     }
 
     @Unroll
@@ -126,12 +128,12 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         and: "a buildfile with publish task"
         buildFile << """
-            version "0.1.0"
+            version "$versionName"
 
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
                 $methodName("$baseUrl")
-                tagName = "customBaseUrlRelease"
+                tagName = "$tagName"
                 draft = false
                 repository = "$testRepositoryName"
                 token = "$testUserToken"
@@ -143,7 +145,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         runTasksSuccessfully("testPublish")
 
         then:
-        hasRelease("customBaseUrlRelease")
+        hasRelease(tagName)
 
         where:
         baseUrl                  | useSetter
@@ -151,6 +153,8 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         "https://api.github.com" | false
 
         methodName = useSetter ? "setBaseUrl" : "baseUrl"
+        tagName = "v0.2.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
     }
 
     @Unroll
@@ -160,7 +164,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         and: "a buildfile with publish task"
         buildFile << """
-            version "0.1.0"
+            version "$versionName"
 
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
@@ -184,6 +188,8 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         "testReleaseTagTwo" | false
 
         methodName = useSetter ? "setTagName" : "tagName"
+        tagName = "v0.3.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
     }
 
     @Unroll
@@ -276,11 +282,11 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         result.standardError.contains("java.lang.IllegalArgumentException: baseUrl")
 
         where:
-        url | useSetter
-        "''"  | true
-        "''"  | false
-        null  | true
-        null  | false
+        url  | useSetter
+        "''" | true
+        "''" | false
+        null | true
+        null | false
 
         methodName = useSetter ? "setBaseUrl" : "baseUrl"
     }

@@ -48,7 +48,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         buildFile << """
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "sources"
-                tagName = "test"
+                tagName = "$tagName"
             }
         """
 
@@ -56,11 +56,14 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         runTasksSuccessfully("testPublish")
 
         then:
-        def release = getRelease("test")
+        def release = getRelease(tagName)
         def assets = release.assets
         assets.size() == 2
         assets.any { it.name == "fileOne" }
         assets.any { it.name == "fileTwo" }
+
+        where:
+        tagName = "v0.1.0-GithubPublishIntegrationSpec"
     }
 
     def "can nest export directory"() {
@@ -82,7 +85,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
                 from(project.file("sources2")) {
                     into "two"
                 }
-                tagName = "test"
+                tagName = "$tagName"
             }
         """
 
@@ -90,11 +93,14 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         runTasksSuccessfully("testPublish")
 
         then:
-        def release = getRelease("test")
+        def release = getRelease(tagName)
         def assets = release.assets
         assets.size() == 2
         assets.any { it.name == "one.zip" }
         assets.any { it.name == "two.zip" }
+
+        where:
+        tagName = "v0.2.0-GithubPublishIntegrationSpec"
     }
 
     @Unroll("fails when calling unsurported Copy API #api")
@@ -183,7 +189,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         buildFile << """
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
-                tagName = "v0.1.0"
+                tagName = "$tagName"
             }
         """
 
@@ -191,10 +197,13 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         runTasksSuccessfully("testPublish")
 
         then:
-        def release = getRelease("v0.1.0")
+        def release = getRelease(tagName)
         def assets = release.assets
         assets.size() == 1
         assets.any { it.name == "fileToPublish.json" }
+
+        where:
+        tagName = "v0.3.0-GithubPublishIntegrationSpec"
     }
 
 
