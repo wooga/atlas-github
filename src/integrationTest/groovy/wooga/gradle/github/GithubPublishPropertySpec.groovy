@@ -290,4 +290,24 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         methodName = useSetter ? "setBaseUrl" : "baseUrl"
     }
+
+    def "fails when release can't be created with generic exception"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                tagName = "v0.1    .0"
+                repository = "$testRepositoryName"
+                token = "$testUserToken"
+                
+            }            
+        """.stripIndent()
+
+        expect:
+        def result = runTasksWithFailure("testPublish")
+        result.standardError.contains("error while uploading assets. Rollback release")
+    }
 }
