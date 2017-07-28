@@ -118,11 +118,6 @@ class GithubPublish extends Copy implements GithubPublishSpec {
         try {
             repository = client.getRepository(getRepository())
         }
-        catch (HttpException httpException) {
-            logger.info("error retrieving repository ${getRepository()} ${httpException.responseMessage}")
-            throw httpException
-        }
-
         catch (Exception e) {
             throw new GradleException("can't find repository ${getRepository()}")
         }
