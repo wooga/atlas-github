@@ -354,6 +354,25 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         methodName = useSetter ? "setBaseUrl" : "baseUrl"
     }
 
+    def "fails when tagName is not set"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "0.1.0"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                repository = "$testRepositoryName"
+                
+            }            
+        """.stripIndent()
+
+        expect:
+        runTasksWithFailure("testPublish")
+    }
+
     def "fails when release can't be created with generic exception"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
