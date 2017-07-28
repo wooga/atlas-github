@@ -87,6 +87,12 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
             """.stripIndent()
         }
 
+        if (method == "tagName") {
+            buildFile << """
+            testPublish.$methodName($preValue "$tagName" $postValue)
+            """.stripIndent()
+        }
+
         when:
         runTasksSuccessfully("testPublish")
 
@@ -127,6 +133,10 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | true      | true
         "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | false     | false
         "targetCommitish" | false        | false             | null       | null                  | testRepo.listCommits().last().SHA1 | false     | true
+        "tagName"         | false        | false             | null       | null                  | null                               | true      | false
+        "tagName"         | false        | false             | null       | null                  | null                               | true      | true
+        "tagName"         | false        | false             | null       | null                  | null                               | false     | false
+        "tagName"         | false        | false             | null       | null                  | null                               | false     | true
 
 
         methodName = useSetter ? "set${method.capitalize()}" : method
@@ -169,6 +179,38 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         "https://api.github.com" | false
 
         methodName = useSetter ? "setBaseUrl" : "baseUrl"
+        tagName = "v0.2.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
+    }
+
+    @Unroll
+    def "can set repository with #methodName"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "$versionName"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                $methodName("$testRepositoryName")
+                tagName = "$tagName"
+                draft = false
+                token = "$testUserToken"
+            }            
+        """.stripIndent()
+
+        then:
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        hasRelease(tagName)
+
+        where:
+        useSetter << [true, false]
+        methodName = useSetter ? "setRepository" : "repository"
         tagName = "v0.2.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
         versionName = tagName.replaceFirst('v', '')
     }
