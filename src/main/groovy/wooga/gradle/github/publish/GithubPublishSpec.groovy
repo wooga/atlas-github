@@ -57,9 +57,17 @@ interface GithubPublishSpec extends GithubSpec {
 
     GithubPublishSpec setBody(Object body)
 
+    GithubPublishSpec setBody(Closure closure)
+
+    GithubPublishSpec setBody(PublishBodyStrategy bodyStrategy)
+
     GithubPublishSpec body(String body)
 
     GithubPublishSpec body(Object body)
+
+    GithubPublishSpec body(Closure bodyStrategy)
+
+    GithubPublishSpec body(PublishBodyStrategy bodyStrategy)
 
     boolean isPrerelease()
 

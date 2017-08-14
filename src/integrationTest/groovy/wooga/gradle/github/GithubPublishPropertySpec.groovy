@@ -17,7 +17,9 @@
 
 package wooga.gradle.github
 
+import org.kohsuke.github.GHRepository
 import spock.lang.Unroll
+import wooga.gradle.github.publish.PublishBodyStrategy
 
 class GithubPublishPropertySpec extends GithubPublishIntegration {
 
@@ -145,6 +147,192 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         postValue = isLazy ? "}" : ""
         tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
         versionName = tagName.replaceFirst('v', '')
+    }
+
+    @Unroll
+    def "can set body with closure and #methodName and closure parameter"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "$versionName"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                tagName = "$tagName"
+                repository = "$testRepositoryName"
+                token = "$testUserToken"
+            }            
+        """.stripIndent()
+
+
+        buildFile << """
+            testPublish.$methodName({ repo -> repo.name })
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        hasReleaseByName(versionName)
+        def release = getReleaseByName(versionName)
+
+        release.getBody() == bodyValue
+
+        where:
+        method | bodyValue     | useSetter | isLazy
+        "body" | testRepo.name | false     | false
+        "body" | testRepo.name | false     | true
+        "body" | testRepo.name | true      | false
+        "body" | testRepo.name | true      | true
+
+        tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
+        methodName = useSetter ? "set${method.capitalize()}" : method
+    }
+
+    @Unroll
+    def "Set body with closure and #methodName with to many parameters fails"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "$versionName"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                tagName = "$tagName"
+                repository = "$testRepositoryName"
+                token = "$testUserToken"
+            }            
+        """.stripIndent()
+
+
+        buildFile << """
+            testPublish.$methodName({ repo, second -> repo.name })
+        """.stripIndent()
+
+        when:
+        def result = runTasksWithFailure("testPublish")
+
+        then:
+        !hasReleaseByName(versionName)
+        result.standardError.contains("Too many parameters for body clojure")
+
+        where:
+        method | bodyValue     | useSetter | isLazy
+        "body" | testRepo.name | false     | false
+        "body" | testRepo.name | false     | true
+        "body" | testRepo.name | true      | false
+        "body" | testRepo.name | true      | true
+
+        tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
+        methodName = useSetter ? "set${method.capitalize()}" : method
+
+    }
+
+    @Unroll
+    def "can set body with object and #methodName"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "$versionName"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                tagName = "$tagName"
+                repository = "$testRepositoryName"
+                token = "$testUserToken"
+            }            
+        """.stripIndent()
+
+
+        buildFile << """
+            def publishBodyStrategy = [key: "value"]
+
+            testPublish.$methodName(publishBodyStrategy)
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        hasReleaseByName(versionName)
+        def release = getReleaseByName(versionName)
+
+        release.getBody() == bodyValue.toString()
+
+        where:
+        method | bodyValue     | useSetter | isLazy
+        "body" | "[key:value]" | false     | false
+        "body" | "[key:value]" | false     | true
+        "body" | "[key:value]" | true      | false
+        "body" | "[key:value]" | true      | true
+
+        tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
+        methodName = useSetter ? "set${method.capitalize()}" : method
+    }
+
+    @Unroll
+    def "can set body with PublishBodyStrategy and #methodName"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "$versionName"
+
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "releaseAssets"
+                tagName = "$tagName"
+                repository = "$testRepositoryName"
+                token = "$testUserToken"
+            }            
+        """.stripIndent()
+
+
+        buildFile << """
+            def publishBodyStrategy = new wooga.gradle.github.publish.PublishBodyStrategy() {
+                @Override
+                String getBody(org.kohsuke.github.GHRepository ghRepository) {
+                    return ghRepository.name
+                }
+            }
+
+            testPublish.$methodName(publishBodyStrategy)
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        hasReleaseByName(versionName)
+        def release = getReleaseByName(versionName)
+
+        release.getBody() == bodyValue
+
+        where:
+        method | bodyValue     | useSetter | isLazy
+        "body" | testRepo.name | false     | false
+        "body" | testRepo.name | false     | true
+        "body" | testRepo.name | true      | false
+        "body" | testRepo.name | true      | true
+
+        publishBodyStrategy = new PublishBodyStrategy() {
+            @Override
+            String getBody(GHRepository ghRepository) {
+                return ghRepository.name
+            }
+        }
+        tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
+        methodName = useSetter ? "set${method.capitalize()}" : method
     }
 
     @Unroll

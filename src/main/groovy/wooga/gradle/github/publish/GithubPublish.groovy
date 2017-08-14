@@ -25,6 +25,7 @@ import org.apache.tika.mime.MediaType
 import org.apache.tika.parser.AutoDetectParser
 import org.gradle.api.Action
 import org.gradle.api.GradleException
+import org.gradle.api.GradleScriptException
 import org.gradle.api.file.CopySpec
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -114,13 +115,7 @@ class GithubPublish extends Copy implements GithubPublishSpec {
 
     protected GHRelease createGithubRelease() {
         GitHub client = getClient()
-        GHRepository repository
-        try {
-            repository = client.getRepository(getRepository())
-        }
-        catch (Exception e) {
-            throw new GradleException("can't find repository ${getRepository()}")
-        }
+        GHRepository repository = getRepository(client)
 
         PagedIterable<GHRelease> releases = repository.listReleases()
         if (releases.find { it.tagName == getTagName() }) {
@@ -141,6 +136,17 @@ class GithubPublish extends Copy implements GithubPublishSpec {
         }
 
         return builder.create()
+    }
+
+    GHRepository getRepository(GitHub client) {
+        GHRepository repository
+        try {
+            repository = client.getRepository(getRepository())
+        }
+        catch (Exception e) {
+            throw new GradleException("can't find repository ${getRepository()}")
+        }
+        repository
     }
 
     String getAssetContentType(File assetFile) {
@@ -383,8 +389,12 @@ class GithubPublish extends Copy implements GithubPublishSpec {
             return null
         }
 
-        if (this.body instanceof Callable) {
-            return ((Callable) this.body).call().toString()
+        if (this.body instanceof Closure) {
+            return ((Closure) this.body).call(getRepository(getClient())).toString()
+        }
+
+        if (this.body instanceof PublishBodyStrategy) {
+            return ((PublishBodyStrategy) this.body).getBody(getRepository(getClient()))
         }
 
         return this.body.toString()
@@ -403,6 +413,22 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     }
 
     @Override
+    GithubPublishSpec setBody(Closure closure) {
+        if(closure.maximumNumberOfParameters > 1) {
+            throw new GradleException("Too many parameters for body clojure")
+        }
+
+        this.body = closure
+        return this
+    }
+
+    GithubPublishSpec setBody(PublishBodyStrategy bodyStrategy) {
+        this.body = bodyStrategy
+        return this
+    }
+
+
+    @Override
     GithubPublish body(String body) {
         return this.setBody(body)
     }
@@ -410,6 +436,16 @@ class GithubPublish extends Copy implements GithubPublishSpec {
     @Override
     GithubPublishSpec body(Object body) {
         return this.setBody(body)
+    }
+
+    @Override
+    GithubPublishSpec body(Closure bodyStrategy) {
+        return this.setBody(bodyStrategy)
+    }
+
+    @Override
+    GithubPublishSpec body(PublishBodyStrategy bodyStrategy) {
+        return this.setBody(bodyStrategy)
     }
 
     @Input
