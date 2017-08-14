@@ -73,6 +73,9 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
         given: "files to publish"
         createTestAssetsToPublish(1)
 
+        and: "changing home variable"
+        System.setProperty("user.home", projectDir.path)
+
         and: "task with errors"
         assert runTasksWithFailure("testPublish")
 
@@ -96,6 +99,9 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
     def "can set authentication in ~/.github with #authMethod"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
+
+        and: "changing home variable"
+        System.setProperty("user.home", projectDir.path)
 
         and: "task with errors"
         assert runTasksWithFailure("testPublish")
@@ -124,11 +130,11 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
         given: "files to publish"
         createTestAssetsToPublish(1)
 
-        and: "task with errors"
-        assert runTasksWithFailure("testPublish")
-
         and: "changing home variable"
         System.setProperty("user.home", projectDir.path)
+
+        and: "task with errors"
+        assert runTasksWithFailure("testPublish")
 
         when: "setting auth properties in environment"
 
