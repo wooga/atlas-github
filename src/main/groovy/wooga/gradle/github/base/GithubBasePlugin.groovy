@@ -17,16 +17,51 @@
 
 package wooga.gradle.github.base
 
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.specs.Spec
+import org.gradle.api.tasks.TaskContainer
 
 class GithubBasePlugin implements Plugin<Project> {
 
     static final String EXTENSION_NAME = "github"
     static final String GROUP = "github"
 
+    private Project project
+    private TaskContainer tasks
+
     @Override
     void apply(Project project) {
-        project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtention.class, project.rootProject.properties)
+        this.project = project
+        this.tasks = project.tasks
+
+        GithubPluginExtention extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtention.class, project.rootProject.properties)
+        configureAbstractGithubTaskDefaults(extension)
+    }
+
+    private void configureAbstractGithubTaskDefaults(GithubPluginExtention extention) {
+        tasks.withType(AbstractGithubTask, new Action<AbstractGithubTask>() {
+            @Override
+            void execute(AbstractGithubTask task) {
+                ConventionMapping taskConventionMapping = task.getConventionMapping()
+
+                taskConventionMapping.map("baseUrl", { extention.getBaseUrl() })
+                taskConventionMapping.map("repository", { extention.getRepository() })
+                taskConventionMapping.map("userName", { extention.getUserName() })
+                taskConventionMapping.map("password", { extention.getPassword() })
+                taskConventionMapping.map("token", { extention.getToken() })
+
+                task.onlyIf(new Spec<Task>() {
+                    @Override
+                    boolean isSatisfiedBy(Task t) {
+                        AbstractGithubTask publishTask = (AbstractGithubTask) t
+                        return publishTask.repository != null
+                    }
+                })
+            }
+        })
     }
 }
