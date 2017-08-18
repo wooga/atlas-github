@@ -17,6 +17,8 @@
 
 package wooga.gradle.github
 
+import spock.lang.Unroll
+
 class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
 
     def "task creates just the release when asset source is empty"() {
@@ -39,7 +41,73 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         tagName = "v0.1.0-GithubPublishIntegrationSpec"
     }
 
-    def "use copy spec for GithubPlublish task configuration"() {
+    @Unroll
+    def "can use PatternFilterable API to configure task #method #filter"() {
+        given: "some test files to publish"
+        File sources = new File(projectDir, "sources")
+        sources.mkdirs()
+
+        def file1 = createFile("fileOne", sources)
+        file1 << """test"""
+
+        def file2 = createFile("fileTwo", sources)
+        file2 << """YO"""
+
+        def file3 = createFile("fileThree", sources)
+        file3 << """YO"""
+
+        def file4 = createFile("fileFour", sources)
+        file4 << """YO"""
+
+        def file5 = createFile("fileFive", sources)
+        file5 << """YO"""
+
+        def file6 = createFile("fileSix", sources)
+        file6 << """YO"""
+
+        def file7 = createFile("fileSeven", sources)
+        file7 << """YO"""
+
+        def file8 = createFile("fileEight", sources)
+        file8 << """YO"""
+
+        def file9 = createFile("fileNine", sources)
+        file9 << """YO"""
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+                from "sources"
+                ${method}($filter)             
+                tagName = "$tagName"
+
+                println(getExcludes())
+                println(getIncludes())
+            }
+        """
+
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        def release = getRelease(tagName)
+        def assets = release.assets
+        assets.size() == 1
+        assets.any { it.name == "fileNine" }
+
+        where:
+        method    | filter
+        "exclude" | "'*One', '*T*', '*S*', '*F*', '*E*'"
+        "exclude" | "{it.file in fileTree(dir:'sources', excludes:['*Nine']).files}"
+        "exclude" | "['*One', '*T*', '*S*', '*F*', '*E*']"
+        "include" | "'*Nine'"
+        "include" | "{it.file in fileTree(dir:'sources', excludes:['*One', '*T*', '*S*', '*F*', '*E*']).files}"
+        "include" | "['*Nine']"
+
+        tagName = "v0.1.1-GithubPublishIntegrationSpec"
+    }
+
+    def "can use CopySourceSpec API to configure task"() {
         given: "some test files to publish"
         File sources = new File(projectDir, "sources")
         sources.mkdirs()

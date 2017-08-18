@@ -30,10 +30,12 @@ import org.gradle.api.file.FileTreeElement
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.specs.Spec
+import org.gradle.api.specs.Specs
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.WorkResult
+import org.gradle.util.ConfigureUtil
 import org.kohsuke.github.*
 import org.zeroturnaround.zip.ZipUtil
 import wooga.gradle.github.base.AbstractGithubTask
@@ -175,8 +177,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     @Override
     GithubPublish from(Object sourcePath, Closure configureClosure) {
-        assetsCopySpec.from(sourcePath, configureClosure)
-        processAssets = true
+        this.from(sourcePath, ConfigureUtil.configureUsing(configureClosure))
         return this
     }
 
@@ -217,8 +218,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     @Override
     GithubPublish include(Iterable<String> includes) {
-        assetsCopySpec.include(includes)
-        return this
+        return this.setIncludes(includes)
     }
 
     @Override
@@ -229,8 +229,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     @Override
     GithubPublish include(Closure includeSpec) {
-        assetsCopySpec.include(includeSpec)
-        return this
+        return this.include(Specs.<FileTreeElement>convertClosureToSpec(includeSpec))
     }
 
     @Override
@@ -241,8 +240,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     @Override
     GithubPublish exclude(Iterable<String> excludes) {
-        assetsCopySpec.exclude(excludes)
-        return this
+        return this.setExcludes(excludes)
     }
 
     @Override
@@ -253,8 +251,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     @Override
     GithubPublish exclude(Closure excludeSpec) {
-        assetsCopySpec.exclude(excludeSpec)
-        return this
+        return this.exclude(Specs.<FileTreeElement>convertClosureToSpec(excludeSpec))
     }
 
     private Object tagName
