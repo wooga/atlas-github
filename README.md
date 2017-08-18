@@ -143,6 +143,39 @@ githubPublish {
 }
 ```
 
+## Generic Github Task
+
+The type `wooga.gradle.github.base.Github` can be used to build generic tasks who can access the github API through [github-api.kohsuke.org][github-api]. It implements the `wooga.gradle.github.base.GithubSpec` interface and handles the basic github client creation and authentication.
+The task type is usable for scripted tasks or can be extended. You should then use `wooga.gradle.github.base.AbstractGithubTask` instead.
+Along with the properties from `wooga.gradle.github.base.GithubSpec` the task gives access to [`client`](http://github-api.kohsuke.org/apidocs/org/kohsuke/github/GitHub.html) and, if `repositoryName` is set, to [`repository`](http://github-api.kohsuke.org/apidocs/org/kohsuke/github/GHRepository.html) property.
+
+**create repos**
+```
+task customGithubTask(type:wooga.gradle.github.base.Github) {
+    doLast {
+        def builder = client.createRepository("Repo")
+        builder.description("description")
+        builder.autoInit(false)
+        builder.licenseTemplate('MIT')
+        builder.private_(false)
+        builder.issues(false)
+        builder.wiki(false)
+        builder.create()
+    }
+}
+```
+
+**update files**
+```
+task customGithubTask(type:wooga.gradle.github.base.Github) {
+    doLast {
+        def content = repository.getFileContent("$file")
+        content.update("$updatedContent", "update release notes")
+    }
+}
+```
+
+
 Gradle and Java Compatibility
 =============================
 
