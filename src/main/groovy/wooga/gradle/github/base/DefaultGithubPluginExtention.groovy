@@ -17,15 +17,13 @@
 
 package wooga.gradle.github.base
 
-import org.gradle.api.Project
-
 class DefaultGithubPluginExtention implements GithubPluginExtention {
     static final String GITHUB_USER_NAME_OPTION = "github.userName"
     static final String GITHUB_USER_PASSWORD_OPTION = "github.password"
     static final String GITHUB_TOKEN_OPTION = "github.token"
     static final String GITHUB_REPOSITORY_OPTION = "github.repository"
 
-    private String repository
+    private String repositoryName
     private String baseUrl
 
     private String userName
@@ -87,9 +85,9 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     }
 
     @Override
-    String getRepository() {
-        String value = this.repository
-        if (!this.repository && properties[GITHUB_REPOSITORY_OPTION]) {
+    String getRepositoryName() {
+        String value = this.repositoryName
+        if (!this.repositoryName && properties[GITHUB_REPOSITORY_OPTION]) {
             value = properties[GITHUB_REPOSITORY_OPTION]
         }
 
@@ -101,22 +99,22 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     }
 
     @Override
-    DefaultGithubPluginExtention setRepository(String repository) {
-        if (repository == null || repository.isEmpty()) {
+    DefaultGithubPluginExtention setRepositoryName(String name) {
+        if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("repository")
         }
 
-        if (!GithubRepositoryValidator.validateRepositoryName(repository)) {
-            throw new IllegalArgumentException("Repository value '$repository' is not a valid github repository name. Expecting `owner/repo`.")
+        if (!GithubRepositoryValidator.validateRepositoryName(name)) {
+            throw new IllegalArgumentException("Repository value '$name' is not a valid github repository name. Expecting `owner/repo`.")
         }
 
-        this.repository = repository
+        this.repositoryName = name
         return this
     }
 
     @Override
-    DefaultGithubPluginExtention repository(String repo) {
-        return setRepository(repo)
+    DefaultGithubPluginExtention repositoryName(String name) {
+        return setRepositoryName(name)
     }
 
     @Override

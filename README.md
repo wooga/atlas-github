@@ -32,7 +32,7 @@ github {
     userName = "wooga"
     password = "a password."
     token "a github access token"
-    repository "wooga/atlas-github"
+    repositoryName "wooga/atlas-github"
     baseUrl = null
 }
 
@@ -40,7 +40,7 @@ githubPublish {
     userName = "wooga"
     password = "a password."
     token "a github access token"
-    repository "wooga/atlas-github"
+    repositoryName "wooga/atlas-github"
     baseUrl = null
     targetCommitish = "master"
     tagName = project.version

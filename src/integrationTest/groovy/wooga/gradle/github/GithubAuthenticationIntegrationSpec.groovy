@@ -26,7 +26,7 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
 
     def setup() {
         buildFile << """
-            github.repository = "$testRepositoryName"
+            github.repositoryName = "$testRepositoryName"
 
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"

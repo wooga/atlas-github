@@ -10,7 +10,7 @@ import org.kohsuke.github.GitHubBuilder
 
 abstract class AbstractGithubTask<T extends AbstractGithubTask> extends ConventionTask implements GithubSpec {
 
-    private String repository
+    private String repositoryName
     private String baseUrl
     private String userName
     private String password
@@ -53,36 +53,36 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
     GHRepository getRepository(GitHub client) {
         GHRepository repository
         try {
-            repository = client.getRepository(getRepository())
+            repository = client.getRepository(getRepositoryName())
         }
         catch (Exception e) {
-            throw new GradleException("can't find repository ${getRepository()}")
+            throw new GradleException("can't find repository ${getRepositoryName()}")
         }
         repository
     }
 
     @Override
-    String getRepository() {
-        return repository
+    String getRepositoryName() {
+        return repositoryName
     }
 
     @Override
-    T setRepository(String repository) {
-        if (repository == null || repository.isEmpty()) {
+    T setRepositoryName(String name) {
+        if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("repository")
         }
 
-        if (!GithubRepositoryValidator.validateRepositoryName(repository)) {
-            throw new IllegalArgumentException("Repository value '$repository' is not a valid github repository name. Expecting `owner/repo`.")
+        if (!GithubRepositoryValidator.validateRepositoryName(name)) {
+            throw new IllegalArgumentException("Repository value '$name' is not a valid github repository name. Expecting `owner/repo`.")
         }
 
-        this.repository = repository
+        this.repositoryName = name
         return taskType.cast(this)
     }
 
     @Override
-    T repository(String repo) {
-        return taskType.cast(this.setRepository(repo))
+    T repositoryName(String name) {
+        return taskType.cast(this.setRepositoryName(name))
     }
 
     @Optional

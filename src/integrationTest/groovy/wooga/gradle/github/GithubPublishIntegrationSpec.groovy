@@ -116,7 +116,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         buildFile << """
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "fileToPublish"
-                repository = "${testUserName}/customRepo"
+                repositoryName = "${testUserName}/customRepo"
                 tagName = "test"
             }
         """

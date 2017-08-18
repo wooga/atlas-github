@@ -54,7 +54,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
             }            
         """.stripIndent()
@@ -161,7 +161,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
             }            
         """.stripIndent()
@@ -204,7 +204,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
             }            
         """.stripIndent()
@@ -246,7 +246,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
             }            
         """.stripIndent()
@@ -291,7 +291,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
             }            
         """.stripIndent()
@@ -349,7 +349,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
                 $methodName("$baseUrl")
                 tagName = "$tagName"
                 draft = false
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
             }            
         """.stripIndent()
@@ -372,7 +372,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
     }
 
     @Unroll
-    def "can set repository with #methodName"() {
+    def "can set repositoryName with #methodName"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
 
@@ -398,7 +398,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         where:
         useSetter << [true, false]
-        methodName = useSetter ? "setRepository" : "repository"
+        methodName = useSetter ? "setRepositoryName" : "repositoryName"
         tagName = "v0.2.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
         versionName = tagName.replaceFirst('v', '')
     }
@@ -416,7 +416,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
                 from "releaseAssets"
                 $methodName($preValue "$tagNameValue" $postValue)
                 draft = false
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
             }            
         """.stripIndent()
@@ -475,7 +475,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         "'https://github.com/owner/invalid.git'" | true      | "Repository value $repoName is not a valid github repository name"
         "'https://github.com/owner/invalid.git'" | false     | "Repository value $repoName is not a valid github repository name"
 
-        methodName = useSetter ? "setRepository" : "repository"
+        methodName = useSetter ? "setRepositoryName" : "repositoryName"
     }
 
     @Unroll
@@ -491,7 +491,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
                 from "releaseAssets"
                 tagName = "v0.1.0"
                 $methodName($token)
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 
             }            
         """.stripIndent()
@@ -523,7 +523,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
                 from "releaseAssets"
                 tagName = "v0.1.0"
                 $methodName($url)
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 
             }            
         """.stripIndent()
@@ -551,7 +551,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
             task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
                 from "releaseAssets"
                 tagName = "v0.1    .0"
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
                 
             }            

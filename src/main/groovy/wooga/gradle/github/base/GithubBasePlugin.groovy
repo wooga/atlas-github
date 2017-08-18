@@ -49,7 +49,7 @@ class GithubBasePlugin implements Plugin<Project> {
                 ConventionMapping taskConventionMapping = task.getConventionMapping()
 
                 taskConventionMapping.map("baseUrl", { extention.getBaseUrl() })
-                taskConventionMapping.map("repository", { extention.getRepository() })
+                taskConventionMapping.map("repositoryName", { extention.getRepositoryName() })
                 taskConventionMapping.map("userName", { extention.getUserName() })
                 taskConventionMapping.map("password", { extention.getPassword() })
                 taskConventionMapping.map("token", { extention.getToken() })
@@ -58,7 +58,7 @@ class GithubBasePlugin implements Plugin<Project> {
                     @Override
                     boolean isSatisfiedBy(Task t) {
                         AbstractGithubTask publishTask = (AbstractGithubTask) t
-                        return publishTask.repository != null
+                        return publishTask.repositoryName != null
                     }
                 })
             }

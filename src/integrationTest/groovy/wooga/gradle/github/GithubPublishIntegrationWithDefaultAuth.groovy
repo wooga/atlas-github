@@ -23,7 +23,7 @@ abstract class GithubPublishIntegrationWithDefaultAuth extends GithubPublishInte
         buildFile << """
             github {
                 userName = "$testUserName"
-                repository = "$testRepositoryName"
+                repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
             }
         """.stripIndent()
