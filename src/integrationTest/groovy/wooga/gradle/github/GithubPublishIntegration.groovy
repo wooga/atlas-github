@@ -21,6 +21,7 @@ import nebula.test.IntegrationSpec
 import org.kohsuke.github.GHRelease
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
+import org.kohsuke.github.PagedIterable
 import spock.lang.Shared
 
 class GithubPublishIntegration extends IntegrationSpec {
@@ -48,15 +49,17 @@ class GithubPublishIntegration extends IntegrationSpec {
     @Shared
     GHRepository testRepo
 
-    def createTestRepo() {
-
+    def maybeDelete(String repoName) {
         try {
-            def repository = client.getRepository("$testRepositoryName")
+            def repository = client.getRepository(repoName)
             repository.delete()
         }
         catch (Exception e) {
-
         }
+    }
+
+    def createTestRepo() {
+        maybeDelete(testRepositoryName)
 
         def builder = client.createRepository(testRepositoryName.split('/')[1])
         builder.description("Integration test repo for wooga/atlas-github")
@@ -89,14 +92,20 @@ class GithubPublishIntegration extends IntegrationSpec {
     }
 
     void cleanupReleases() {
-        def releases = testRepo.listReleases()
-        releases.each {
-            it.delete()
+        try {
+            PagedIterable<GHRelease> releases = testRepo.listReleases()
+            releases.each {
+                it.delete()
+            }
         }
+        catch(Error e) {
+
+        }
+
     }
 
     def cleanupSpec() {
-        testRepo.delete()
+        maybeDelete(testRepositoryName)
     }
 
     File createTestAssetsToPublish(int numberOfFiles) {

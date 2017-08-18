@@ -61,6 +61,17 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         repository
     }
 
+    GHRepository getRepository() {
+        GHRepository repository
+        try {
+            repository = getClient().getRepository(getRepositoryName())
+        }
+        catch (Exception e) {
+            throw new GradleException("can't find repository ${getRepositoryName()}")
+        }
+        repository
+    }
+
     @Override
     String getRepositoryName() {
         return repositoryName

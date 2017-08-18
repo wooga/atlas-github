@@ -53,14 +53,6 @@ class GithubBasePlugin implements Plugin<Project> {
                 taskConventionMapping.map("userName", { extention.getUserName() })
                 taskConventionMapping.map("password", { extention.getPassword() })
                 taskConventionMapping.map("token", { extention.getToken() })
-
-                task.onlyIf(new Spec<Task>() {
-                    @Override
-                    boolean isSatisfiedBy(Task t) {
-                        AbstractGithubTask publishTask = (AbstractGithubTask) t
-                        return publishTask.repositoryName != null
-                    }
-                })
             }
         })
     }

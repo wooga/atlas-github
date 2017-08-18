@@ -20,8 +20,10 @@ package wooga.gradle.github.publish
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.publish.plugins.PublishingPlugin
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskContainer
 import wooga.gradle.github.base.GithubBasePlugin
 import wooga.gradle.github.base.GithubPluginExtention
@@ -63,6 +65,14 @@ class GithubPublishPlugin implements Plugin<Project> {
                 taskConventionMapping.map("draft", { false })
                 taskConventionMapping.map("tagName", { project.version.toString() })
                 taskConventionMapping.map("releaseName", { project.version.toString() })
+
+                task.onlyIf(new Spec<Task>() {
+                    @Override
+                    boolean isSatisfiedBy(Task t) {
+                        GithubPublish publishTask = (GithubPublish) t
+                        return publishTask.repositoryName != null
+                    }
+                })
             }
         })
     }
