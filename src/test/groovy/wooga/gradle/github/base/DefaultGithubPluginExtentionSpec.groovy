@@ -57,8 +57,8 @@ class DefaultGithubPluginExtentionSpec extends Specification {
             token == tokenValue
             getToken() == tokenValue
 
-            repository == repositoryValue
-            getRepository() == repositoryValue
+            repositoryName == repositoryValue
+            getRepositoryName() == repositoryValue
         }
 
         where:
@@ -75,16 +75,16 @@ class DefaultGithubPluginExtentionSpec extends Specification {
         }
 
         when:
-        extension.repository
+        extension.repositoryName
 
         then:
         IllegalArgumentException e = thrown()
         e.message.contains("Repository value '$propertyValue' is not a valid github repository name")
 
         where:
-        valueToTest  | propertyKey                                           | propertyValue
-        "repository" | DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION | "invalid-repo-name"
-        "repository" | DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION | "https://github.com/some/repo"
+        valueToTest      | propertyKey                                           | propertyValue
+        "repositoryName" | DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION | "invalid-repo-name"
+        "repositoryName" | DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION | "https://github.com/some/repo"
     }
 
     @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
@@ -112,12 +112,12 @@ class DefaultGithubPluginExtentionSpec extends Specification {
     }
 
     @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
-    def "repository setter throws IllegalArgumentException"() {
+    def "repositoryName setter throws IllegalArgumentException"() {
         when:
         if (useSetter) {
-            extension.setRepository(propertyValue)
+            extension.setRepositoryName(propertyValue)
         } else {
-            extension.repository(propertyValue)
+            extension.repositoryName(propertyValue)
         }
 
         then:
@@ -136,12 +136,12 @@ class DefaultGithubPluginExtentionSpec extends Specification {
     }
 
     @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
-    def "repository setter throws IllegalArgumentException when passing invalid repo"() {
+    def "repositoryName setter throws IllegalArgumentException when passing invalid repo"() {
         when:
         if (useSetter) {
-            extension.setRepository(propertyValue)
+            extension.setRepositoryName(propertyValue)
         } else {
-            extension.repository(propertyValue)
+            extension.repositoryName(propertyValue)
         }
 
         then:
@@ -240,7 +240,7 @@ class DefaultGithubPluginExtentionSpec extends Specification {
                 setUserName("userName")
                 setPassword("password")
                 setToken("token")
-                setRepository("test/repository")
+                setRepositoryName("test/repository")
             }
 
         } else {
@@ -249,7 +249,7 @@ class DefaultGithubPluginExtentionSpec extends Specification {
                 userName("userName")
                 password("password")
                 token("token")
-                repository("test/repository")
+                repositoryName("test/repository")
             }
         }
 
@@ -259,7 +259,7 @@ class DefaultGithubPluginExtentionSpec extends Specification {
             userName == "userName"
             password == "password"
             token == "token"
-            repository == "test/repository"
+            repositoryName == "test/repository"
         }
 
 

@@ -23,12 +23,12 @@ import spock.lang.Unroll
 class GithubRepositoryValidatorSpec extends Specification {
 
     @Unroll
-    def "validates repository value #repository correctly"() {
+    def "validates repositoryName value #repository correctly"() {
         expect:
-        isValid == GithubRepositoryValidator.validateRepositoryName(repository)
+        isValid == GithubRepositoryValidator.validateRepositoryName(repositoryName)
 
         where:
-        repository                     | isValid
+        repositoryName                 | isValid
         "user/repo"                    | true
         null                           | false
         "https://github.com/user/repo" | false

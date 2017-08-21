@@ -17,9 +17,11 @@
 
 package wooga.gradle.github.publish
 
+import org.gradle.api.file.CopySourceSpec
+import org.gradle.api.tasks.util.PatternFilterable
 import wooga.gradle.github.base.GithubSpec
 
-interface GithubPublishSpec extends GithubSpec {
+interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterable {
 
     String getTagName()
 

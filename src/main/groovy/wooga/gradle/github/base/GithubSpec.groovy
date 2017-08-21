@@ -38,11 +38,11 @@ interface GithubSpec {
 
     GithubSpec token(String token)
 
-    String getRepository()
+    String getRepositoryName()
 
-    GithubSpec setRepository(String repo)
+    GithubSpec setRepositoryName(String name)
 
-    GithubSpec repository(String repo)
+    GithubSpec repositoryName(String name)
 
     String getBaseUrl()
 
