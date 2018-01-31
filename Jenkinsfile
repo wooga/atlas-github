@@ -23,7 +23,7 @@ pipeline {
                     environment {
                         COVERALLS_REPO_TOKEN                = credentials('atlas_github_coveralls_token')
                         TRAVIS_JOB_NUMBER                   = "${BUILD_NUMBER}.WIN"
-                        GITHUB                              = credentials('github_integration')
+                        GITHUB                              = credentials('github_integration_2')
                         ATLAS_GITHUB_INTEGRATION_USER       = "${GITHUB_USR}"
                         ATLAS_GITHUB_INTEGRATION_PASSWORD   = "${GITHUB_PSW}"
                     }
