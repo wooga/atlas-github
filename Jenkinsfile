@@ -21,11 +21,11 @@ pipeline {
                     }
 
                     environment {
-                        artifactoryCredentials  = credentials('artifactory_publish')
-                        nugetkey                = credentials('artifactory_deploy')
-                        COVERALLS_REPO_TOKEN    = credentials('atlas_github_coveralls_token')
-                        TRAVIS_JOB_NUMBER       = "${BUILD_NUMBER}.WIN"
-                        UNITY_PATH              = "${UNITY_2017_1_0_P_5_PATH}"
+                        COVERALLS_REPO_TOKEN                = credentials('atlas_github_coveralls_token')
+                        TRAVIS_JOB_NUMBER                   = "${BUILD_NUMBER}.WIN"
+                        GITHUB                              = credentials('github_integration')
+                        ATLAS_GITHUB_INTEGRATION_USER       = "${GITHUB_USR}"
+                        ATLAS_GITHUB_INTEGRATION_PASSWORD   = "${GITHUB_PSW}"
                     }
 
                     steps {
@@ -59,11 +59,11 @@ pipeline {
                     }
 
                     environment {
-                        artifactoryCredentials  = credentials('artifactory_publish')
-                        nugetkey                = credentials('artifactory_deploy')
-                        COVERALLS_REPO_TOKEN    = credentials('atlas_github_coveralls_token')
-                        TRAVIS_JOB_NUMBER       = "${BUILD_NUMBER}.MACOS"
-                        UNITY_PATH              = "${UNITY_2017_1_0_P_5_PATH}"
+                        COVERALLS_REPO_TOKEN                = credentials('atlas_github_coveralls_token')
+                        TRAVIS_JOB_NUMBER                   = "${BUILD_NUMBER}.MACOS"
+                        GITHUB                              = credentials('github_integration')
+                        ATLAS_GITHUB_INTEGRATION_USER       = "${GITHUB_USR}"
+                        ATLAS_GITHUB_INTEGRATION_PASSWORD   = "${GITHUB_PSW}"
                     }
 
                     steps {
