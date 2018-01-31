@@ -66,10 +66,11 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @TaskAction
     protected void publish() {
         setDidWork(false)
-        GHRelease release = createGithubRelease()
+        GHRelease release = createGithubRelease(this.processAssets)
 
-        if(this.processAssets) {
-            WorkResult assetCopyResult = project.copy(new Action<CopySpec>() {
+        if (this.processAssets) {
+            WorkResult assetCopyResult = project.copy(new Action<CopySpec>()
+            {
                 @Override
                 void execute(CopySpec copySpec) {
                     copySpec.into(getDestinationDir())
@@ -81,17 +82,17 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
                 try {
                     prepareAssets()
                     publishAssets(release)
-                    release.setDraft(isDraft())
+                    release.update().draft(isDraft()).update()
                 }
                 catch (Exception e) {
                     failRelease(release, "error while uploading assets. Rollback release ${release.name}")
                 }
                 setDidWork(true)
-            }
-            else
-            {
+            } else {
                 failRelease(release, "error while preparing assets for upload. Rollback release ${release.name}")
             }
+        } else {
+            setDidWork(true)
         }
     }
 
@@ -120,7 +121,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         }
     }
 
-    protected GHRelease createGithubRelease() {
+    protected GHRelease createGithubRelease(Boolean createDraft) {
         GitHub client = getClient()
         GHRepository repository = getRepository(client)
 
@@ -130,7 +131,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         }
 
         GHReleaseBuilder builder = repository.createRelease(getTagName())
-        builder.draft(true)
+        builder.draft(createDraft as boolean)
         builder.prerelease(isPrerelease())
         builder.commitish(getTargetCommitish())
 
