@@ -45,6 +45,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
         then:
         def release = getRelease(tagName)
+        !release.isDraft()
         def assets = release.assets
         assets.size() == 1
         assets.any { it.name == "package.zip" }
@@ -80,6 +81,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
         then:
         def release = getRelease(tagName)
+        !release.isDraft()
         def assets = release.assets
         assets.size() == 1
         assets.any { it.name == "package.zip" }
@@ -120,6 +122,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
         then:
         def release = getRelease(tagName)
+        !release.isDraft()
         def assets = release.assets
         assets.size() == 4
         assets.every() { it.name =~ /fileToPublish\d\.json/ }
@@ -162,6 +165,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
         then:
         def release = getRelease(tagName)
+        !release.isDraft()
         def assets = release.assets
         assets.size() == 2
         assets.any { it.name == "package.zip" }

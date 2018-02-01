@@ -34,6 +34,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         then:
         def release = getRelease(tagName)
+        !release.isDraft()
         def assets = release.assets
         assets.size() == 0
 
@@ -91,6 +92,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         then:
         def release = getRelease(tagName)
+        !release.isDraft()
         def assets = release.assets
         assets.size() == 1
         assets.any { it.name == "fileNine" }
@@ -129,6 +131,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         then:
         def release = getRelease(tagName)
+        !release.isDraft()
         def assets = release.assets
         assets.size() == 2
         assets.any { it.name == "fileOne" }
@@ -166,6 +169,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         then:
         def release = getRelease(tagName)
+        !release.isDraft()
         def assets = release.assets
         assets.size() == 2
         assets.any { it.name == "one.zip" }
@@ -239,6 +243,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         then:
         def release = getRelease(tagName)
+        !release.isDraft()
         def assets = release.assets
         assets.size() == 1
         assets.any { it.name == "fileToPublish.json" }
