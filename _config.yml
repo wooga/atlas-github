@@ -1,4 +1,4 @@
 theme: jekyll-theme-midnight
-title: Atlas Unity
-description: a Unity 3D gradle plugin
+title: Atlas Github
+description: Gradle plugin to publish artifacts to github
 show_downloads: true
