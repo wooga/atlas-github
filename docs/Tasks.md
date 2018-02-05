@@ -1,4 +1,5 @@
 # Tasks
+
 | Task name          | Depends on            | Type                                           | Description |
 | ------------------ | --------------------- | ---------------------------------------------- | ----------- |
 | githubPublish      |                       | `wooga.gradle.github.publish.GithubPublish`    | Copies files and folder configured to temp directory and uploads them to github release |
