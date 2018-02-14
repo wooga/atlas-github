@@ -6,7 +6,7 @@ class GithubIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
 
     def setup() {
         buildFile << """
-            import wooga.gradle.github.base.Github
+            import wooga.gradle.github.base.tasks.Github
             github.repositoryName = "$testRepositoryName"
 
             task customGithubTask(type:Github)

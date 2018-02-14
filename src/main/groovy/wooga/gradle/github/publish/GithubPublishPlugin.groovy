@@ -27,6 +27,7 @@ import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskContainer
 import wooga.gradle.github.base.GithubBasePlugin
 import wooga.gradle.github.base.GithubPluginExtention
+import wooga.gradle.github.publish.tasks.GithubPublish
 
 class GithubPublishPlugin implements Plugin<Project> {
 

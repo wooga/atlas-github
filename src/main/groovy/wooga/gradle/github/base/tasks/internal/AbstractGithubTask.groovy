@@ -1,4 +1,4 @@
-package wooga.gradle.github.base
+package wooga.gradle.github.base.tasks.internal
 
 import org.gradle.api.GradleException
 import org.gradle.api.internal.ConventionTask
@@ -7,6 +7,8 @@ import org.gradle.api.tasks.Optional
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
 import org.kohsuke.github.GitHubBuilder
+import wooga.gradle.github.base.internal.GithubRepositoryValidator
+import wooga.gradle.github.base.GithubSpec
 
 abstract class AbstractGithubTask<T extends AbstractGithubTask> extends ConventionTask implements GithubSpec {
 

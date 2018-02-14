@@ -29,7 +29,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         and: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "v0.1.0"
             }
@@ -51,7 +51,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "$versionName"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
                 repositoryName = "$testRepositoryName"
@@ -158,7 +158,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "$versionName"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
                 repositoryName = "$testRepositoryName"
@@ -201,7 +201,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "$versionName"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
                 repositoryName = "$testRepositoryName"
@@ -243,7 +243,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "$versionName"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
                 repositoryName = "$testRepositoryName"
@@ -288,7 +288,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "$versionName"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
                 repositoryName = "$testRepositoryName"
@@ -344,7 +344,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "$versionName"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 $methodName("$baseUrl")
                 tagName = "$tagName"
@@ -380,7 +380,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "$versionName"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 $methodName("$testRepositoryName")
                 tagName = "$tagName"
@@ -412,7 +412,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "$versionName"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 $methodName($preValue "$tagNameValue" $postValue)
                 draft = false
@@ -452,7 +452,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "0.1.0"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "v0.1.0"
                 $methodName($repoName)
@@ -487,7 +487,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "0.1.0"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "v0.1.0"
                 $methodName($token)
@@ -519,7 +519,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         buildFile << """
             version "0.1.0"
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "v0.1.0"
                 $methodName($url)
@@ -548,7 +548,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         and: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "v0.1    .0"
                 repositoryName = "$testRepositoryName"

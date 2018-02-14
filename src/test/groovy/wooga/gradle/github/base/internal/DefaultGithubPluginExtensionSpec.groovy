@@ -15,35 +15,37 @@
  *
  */
 
-package wooga.gradle.github.base
+package wooga.gradle.github.base.internal
 
 import spock.lang.Specification
+import spock.lang.Subject
 import spock.lang.Unroll
 
-class DefaultGithubPluginExtentionSpec extends Specification {
+@Subject(DefaultGithubPluginExtension)
+class DefaultGithubPluginExtensionSpec extends Specification {
 
     Map<String, String> properties = [:]
 
-    def extension = new DefaultGithubPluginExtention(properties)
+    def extension = new DefaultGithubPluginExtension(properties)
 
     @Unroll
     def "retrieve default values from properties when set #userNameValue:#passwordValue:#tokenValue:#repositoryValue"() {
         given: "project properties with values"
 
         if (userNameValue) {
-            properties[DefaultGithubPluginExtention.GITHUB_USER_NAME_OPTION] = userNameValue
+            properties[DefaultGithubPluginExtension.GITHUB_USER_NAME_OPTION] = userNameValue
         }
 
         if (passwordValue) {
-            properties[DefaultGithubPluginExtention.GITHUB_USER_PASSWORD_OPTION] = passwordValue
+            properties[DefaultGithubPluginExtension.GITHUB_USER_PASSWORD_OPTION] = passwordValue
         }
 
         if (tokenValue) {
-            properties[DefaultGithubPluginExtention.GITHUB_TOKEN_OPTION] = tokenValue
+            properties[DefaultGithubPluginExtension.GITHUB_TOKEN_OPTION] = tokenValue
         }
 
         if (repositoryValue) {
-            properties[DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION] = repositoryValue
+            properties[DefaultGithubPluginExtension.GITHUB_REPOSITORY_OPTION] = repositoryValue
         }
 
         expect:
@@ -83,8 +85,8 @@ class DefaultGithubPluginExtentionSpec extends Specification {
 
         where:
         valueToTest      | propertyKey                                           | propertyValue
-        "repositoryName" | DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION | "invalid-repo-name"
-        "repositoryName" | DefaultGithubPluginExtention.GITHUB_REPOSITORY_OPTION | "https://github.com/some/repo"
+        "repositoryName" | DefaultGithubPluginExtension.GITHUB_REPOSITORY_OPTION | "invalid-repo-name"
+        "repositoryName" | DefaultGithubPluginExtension.GITHUB_REPOSITORY_OPTION | "https://github.com/some/repo"
     }
 
     @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")

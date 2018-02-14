@@ -15,9 +15,13 @@
  *
  */
 
-package wooga.gradle.github.base
+package wooga.gradle.github.base.internal
 
-class DefaultGithubPluginExtention implements GithubPluginExtention {
+import wooga.gradle.github.base.GithubPluginExtention
+import wooga.gradle.github.base.GithubSpec
+
+class DefaultGithubPluginExtension implements GithubPluginExtention {
+
     static final String GITHUB_USER_NAME_OPTION = "github.userName"
     static final String GITHUB_USER_PASSWORD_OPTION = "github.password"
     static final String GITHUB_TOKEN_OPTION = "github.token"
@@ -32,7 +36,7 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
 
     private Map<String, ?> properties
 
-    DefaultGithubPluginExtention(Map<String, ?> properties) {
+    DefaultGithubPluginExtension(Map<String, ?> properties) {
         this.properties = properties
     }
 
@@ -46,13 +50,13 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     }
 
     @Override
-    GithubSpec setUserName(String userName) {
+    DefaultGithubPluginExtension setUserName(String userName) {
         if (userName == null || userName.isEmpty()) {
             throw new IllegalArgumentException("userName")
         }
 
         this.userName = userName
-        return this
+        this
     }
 
     @Override
@@ -70,13 +74,13 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     }
 
     @Override
-    GithubSpec setPassword(String password) {
+    DefaultGithubPluginExtension setPassword(String password) {
         if (password == null || password.isEmpty()) {
             throw new IllegalArgumentException("password")
         }
 
         this.password = password
-        return this
+        this
     }
 
     @Override
@@ -99,7 +103,7 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     }
 
     @Override
-    DefaultGithubPluginExtention setRepositoryName(String name) {
+    DefaultGithubPluginExtension setRepositoryName(String name) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("repository")
         }
@@ -109,11 +113,11 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
         }
 
         this.repositoryName = name
-        return this
+        this
     }
 
     @Override
-    DefaultGithubPluginExtention repositoryName(String name) {
+    DefaultGithubPluginExtension repositoryName(String name) {
         return setRepositoryName(name)
     }
 
@@ -123,17 +127,17 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     }
 
     @Override
-    DefaultGithubPluginExtention setBaseUrl(String baseUrl) {
+    DefaultGithubPluginExtension setBaseUrl(String baseUrl) {
         if (baseUrl == null || baseUrl.isEmpty()) {
             throw new IllegalArgumentException("baseUrl")
         }
 
         this.baseUrl = baseUrl
-        return this
+        this
     }
 
     @Override
-    DefaultGithubPluginExtention baseUrl(String baseUrl) {
+    DefaultGithubPluginExtension baseUrl(String baseUrl) {
         return setBaseUrl(baseUrl)
     }
 
@@ -146,16 +150,16 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     }
 
     @Override
-    DefaultGithubPluginExtention setToken(String token) {
+    DefaultGithubPluginExtension setToken(String token) {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("token")
         }
         this.token = token
-        return this
+        this
     }
 
     @Override
-    DefaultGithubPluginExtention token(String token) {
+    DefaultGithubPluginExtension token(String token) {
         return setToken(token)
     }
 }

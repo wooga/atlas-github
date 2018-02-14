@@ -24,7 +24,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
     def "task creates just the release when asset source is empty"() {
         given: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 tagName = "$tagName"
             }
         """
@@ -77,7 +77,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         and: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "sources"
                 ${method}($filter)             
                 tagName = "$tagName"
@@ -120,7 +120,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         and: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "sources"
                 tagName = "$tagName"
             }
@@ -152,7 +152,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         and: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from(project.file("sources")) {
                     into "one"
                 }
@@ -186,7 +186,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         and: "a buildfile with publish task and non existing repo"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "fileToPublish"
                 repositoryName = "${testUserName}/customRepo"
                 tagName = "test"
@@ -208,7 +208,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         and: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "fileToPublish"
                 tagName = "$tagName"
             }
@@ -232,7 +232,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         and: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
             }

@@ -22,7 +22,7 @@ import org.gradle.api.publish.plugins.PublishingPlugin
 import spock.lang.Unroll
 import wooga.gradle.github.base.GithubBasePlugin
 import wooga.gradle.github.base.GithubPluginExtention
-import wooga.gradle.github.publish.GithubPublish
+import wooga.gradle.github.publish.tasks.GithubPublish
 import wooga.gradle.github.publish.GithubPublishPlugin
 
 class GithubPluginSpec extends ProjectSpec {

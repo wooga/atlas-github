@@ -15,7 +15,7 @@
  *
  */
 
-package wooga.gradle.github.publish
+package wooga.gradle.github.publish.tasks
 
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
@@ -38,7 +38,9 @@ import org.gradle.api.tasks.WorkResult
 import org.gradle.util.ConfigureUtil
 import org.kohsuke.github.*
 import org.zeroturnaround.zip.ZipUtil
-import wooga.gradle.github.base.AbstractGithubTask
+import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
+import wooga.gradle.github.publish.GithubPublishSpec
+import wooga.gradle.github.publish.PublishBodyStrategy
 
 import java.util.concurrent.Callable
 
