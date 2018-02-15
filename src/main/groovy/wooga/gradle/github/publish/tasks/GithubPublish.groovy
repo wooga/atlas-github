@@ -71,7 +71,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     private File assetCollectDirectory
     private File assetUploadDirectory
-    private CopySpec assetsCopySpec
+    protected CopySpec assetsCopySpec
     private Boolean processAssets
 
     GithubPublish() {
@@ -123,20 +123,20 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         }
     }
 
-    private void failRelease(GHRelease release, String message) {
+    protected void failRelease(GHRelease release, String message) {
         release.delete()
         setDidWork(false)
         throw new GradleException(message)
     }
 
-    private void publishAssets(GHRelease release) {
+    protected void publishAssets(GHRelease release) {
         assetUploadDirectory.eachFile { File assetFile ->
             def contentType = getAssetContentType(assetFile)
             release.uploadAsset(assetFile, contentType)
         }
     }
 
-    private void prepareAssets() {
+    protected void prepareAssets() {
         File uploadDir = this.assetUploadDirectory
         assetCollectDirectory.eachFile(FileType.FILES) {
             FileUtils.copyFileToDirectory(it, uploadDir)
@@ -148,7 +148,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         }
     }
 
-    private GHRelease createGithubRelease(Boolean createDraft) {
+    protected GHRelease createGithubRelease(Boolean createDraft) {
         GitHub client = getClient()
         GHRepository repository = getRepository(client)
 
@@ -170,10 +170,10 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             builder.name(getReleaseName())
         }
 
-        return builder.create()
+        builder.create()
     }
 
-    private static String getAssetContentType(File assetFile) {
+    protected static String getAssetContentType(File assetFile) {
         InputStream is = new FileInputStream(assetFile)
         BufferedInputStream bis = new BufferedInputStream(is)
         String contentType = "text/plain"
@@ -189,7 +189,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
         }
 
-        return contentType
+        contentType
     }
 
     /* CopySpec */
@@ -204,7 +204,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     GithubPublish from(Object... sourcePaths) {
         assetsCopySpec.from(sourcePaths)
         processAssets = true
-        return this
+        this
     }
 
     /**
@@ -217,7 +217,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish from(Object sourcePath, Closure configureClosure) {
         this.from(sourcePath, ConfigureUtil.configureUsing(configureClosure))
-        return this
+        this
     }
 
     /**
@@ -231,7 +231,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     GithubPublish from(Object sourcePath, Action<? super CopySpec> configureAction) {
         assetsCopySpec.from(sourcePath, configureAction)
         processAssets = true
-        return this
+        this
     }
 
     /**
@@ -241,7 +241,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     Set<String> getIncludes() {
-        return assetsCopySpec.getIncludes()
+        assetsCopySpec.getIncludes()
     }
 
     /**
@@ -251,7 +251,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     Set<String> getExcludes() {
-        return assetsCopySpec.getExcludes()
+        assetsCopySpec.getExcludes()
     }
 
     /**
@@ -265,7 +265,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setIncludes(Iterable<String> includes) {
         assetsCopySpec.setIncludes(includes)
-        return this
+        this
     }
 
     /**
@@ -279,7 +279,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setExcludes(Iterable<String> excludes) {
         assetsCopySpec.setExcludes(excludes)
-        return this
+        this
     }
 
     /**
@@ -296,7 +296,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish include(String... includes) {
         assetsCopySpec.include(includes)
-        return this
+        this
     }
 
     /**
@@ -312,7 +312,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish include(Iterable<String> includes) {
-        return this.setIncludes(includes)
+        this.setIncludes(includes)
     }
 
     /**
@@ -328,7 +328,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish include(Spec<FileTreeElement> includeSpec) {
         assetsCopySpec.include(includeSpec)
-        return this
+        this
     }
 
     /**
@@ -344,7 +344,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish include(Closure includeSpec) {
-        return this.include(Specs.<FileTreeElement>convertClosureToSpec(includeSpec))
+        this.include(Specs.<FileTreeElement>convertClosureToSpec(includeSpec))
     }
 
     /**
@@ -361,7 +361,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish exclude(String... excludes) {
         assetsCopySpec.exclude(excludes)
-        return this
+        this
     }
 
     /**
@@ -377,7 +377,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish exclude(Iterable<String> excludes) {
-        return this.setExcludes(excludes)
+        this.setExcludes(excludes)
     }
 
     /**
@@ -393,7 +393,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish exclude(Spec<FileTreeElement> excludeSpec) {
         assetsCopySpec.exclude(excludeSpec)
-        return this
+        this
     }
 
     /**
@@ -418,7 +418,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish exclude(Closure excludeSpec) {
-        return this.exclude(Specs.<FileTreeElement>convertClosureToSpec(excludeSpec))
+        this.exclude(Specs.<FileTreeElement>convertClosureToSpec(excludeSpec))
     }
 
     private Object tagName
@@ -443,7 +443,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             return ((Callable) this.tagName).call().toString()
         }
 
-        return this.tagName.toString()
+        this.tagName.toString()
     }
 
     /**
@@ -452,7 +452,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setTagName(String tagName) {
         this.tagName = tagName
-        return this
+        this
     }
 
     /**
@@ -461,7 +461,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setTagName(Object tagName) {
         this.tagName = tagName
-        return this
+        this
     }
 
     /**
@@ -469,7 +469,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish tagName(String tagName) {
-        return this.setTagName(tagName)
+        this.setTagName(tagName)
     }
 
     /**
@@ -477,7 +477,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish tagName(Object tagName) {
-        return this.setTagName(tagName)
+        this.setTagName(tagName)
     }
 
     /**
@@ -494,7 +494,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             return ((Callable) this.targetCommitish).call().toString()
         }
 
-        return this.targetCommitish.toString()
+        this.targetCommitish.toString()
     }
 
     /**
@@ -503,7 +503,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setTargetCommitish(String targetCommitish) {
         this.targetCommitish = targetCommitish
-        return this
+        this
     }
 
     /**
@@ -512,7 +512,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setTargetCommitish(Object targetCommitish) {
         this.targetCommitish = targetCommitish
-        return this
+        this
     }
 
     /**
@@ -520,7 +520,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish targetCommitish(String targetCommitish) {
-        return this.setTargetCommitish(targetCommitish)
+        this.setTargetCommitish(targetCommitish)
     }
 
     /**
@@ -528,7 +528,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish targetCommitish(Object targetCommitish) {
-        return this.setTargetCommitish(targetCommitish)
+        this.setTargetCommitish(targetCommitish)
     }
 
     /**
@@ -545,7 +545,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             return ((Callable) this.releaseName).call().toString()
         }
 
-        return this.releaseName.toString()
+        this.releaseName.toString()
     }
 
     /**
@@ -554,7 +554,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setReleaseName(String name) {
         this.releaseName = name
-        return this
+        this
     }
 
     /**
@@ -563,7 +563,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setReleaseName(Object name) {
         this.releaseName = name
-        return this
+        this
     }
 
     /**
@@ -571,7 +571,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish releaseName(Object name) {
-        return this.setReleaseName(name)
+        this.setReleaseName(name)
     }
 
     /**
@@ -579,7 +579,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish releaseName(String name) {
-        return this.setReleaseName(name)
+        this.setReleaseName(name)
     }
 
     /**
@@ -605,7 +605,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             return ((Callable) this.body).call().toString()
         }
 
-        return this.body.toString()
+        this.body.toString()
     }
 
     /**
@@ -614,7 +614,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setBody(String body) {
         this.body = body
-        return this
+        this
     }
 
     /**
@@ -623,7 +623,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setBody(Object body) {
         this.body = body
-        return this
+        this
     }
 
     /**
@@ -636,7 +636,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         }
 
         this.body = closure
-        return this
+        this
     }
 
     /**
@@ -644,7 +644,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     GithubPublish setBody(PublishBodyStrategy bodyStrategy) {
         this.body = bodyStrategy
-        return this
+        this
     }
 
     /**
@@ -652,7 +652,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish body(String body) {
-        return this.setBody(body)
+        this.setBody(body)
     }
 
     /**
@@ -660,7 +660,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish body(Object body) {
-        return this.setBody(body)
+        this.setBody(body)
     }
 
     /**
@@ -668,7 +668,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish body(Closure bodyStrategy) {
-        return this.setBody(bodyStrategy)
+        this.setBody(bodyStrategy)
     }
 
     /**
@@ -676,7 +676,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish body(PublishBodyStrategy bodyStrategy) {
-        return this.setBody(bodyStrategy)
+        this.setBody(bodyStrategy)
     }
 
     /**
@@ -689,7 +689,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             return ((Callable) this.prerelease).call().asBoolean()
         }
 
-        return this.prerelease.asBoolean()
+        this.prerelease.asBoolean()
     }
 
     /**
@@ -698,7 +698,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setPrerelease(boolean prerelease) {
         this.prerelease = prerelease
-        return this
+        this
     }
 
     /**
@@ -707,7 +707,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setPrerelease(Object prerelease) {
         this.prerelease = prerelease
-        return this
+        this
     }
 
     /**
@@ -715,7 +715,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish prerelease(boolean prerelease) {
-        return this.setPrerelease(prerelease)
+        this.setPrerelease(prerelease)
     }
 
     /**
@@ -723,7 +723,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish prerelease(Object prerelease) {
-        return this.setPrerelease(prerelease)
+        this.setPrerelease(prerelease)
     }
 
     /**
@@ -736,7 +736,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             return ((Callable) this.draft).call().asBoolean()
         }
 
-        return this.draft.asBoolean()
+        this.draft.asBoolean()
     }
 
     /**
@@ -745,7 +745,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setDraft(boolean draft) {
         this.draft = draft
-        return this
+        this
     }
 
     /**
@@ -754,7 +754,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish setDraft(Object draft) {
         this.draft = draft
-        return this
+        this
     }
 
     /**
@@ -762,7 +762,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish draft(boolean draft) {
-        return this.setDraft(draft)
+        this.setDraft(draft)
     }
 
     /**
@@ -770,6 +770,6 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish draft(Object draft) {
-        return this.setDraft(draft)
+        this.setDraft(draft)
     }
 }

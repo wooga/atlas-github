@@ -76,7 +76,7 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
 
     @Override
     String getRepositoryName() {
-        return repositoryName
+        repositoryName
     }
 
     @Override
@@ -90,19 +90,19 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         }
 
         this.repositoryName = name
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 
     @Override
     T repositoryName(String name) {
-        return taskType.cast(this.setRepositoryName(name))
+        taskType.cast(this.setRepositoryName(name))
     }
 
     @Optional
     @Input
     @Override
     String getBaseUrl() {
-        return baseUrl
+        baseUrl
     }
 
     @Override
@@ -111,19 +111,19 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
             throw new IllegalArgumentException("baseUrl")
         }
         this.baseUrl = baseUrl
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 
     @Override
     T baseUrl(String baseUrl) {
-        return taskType.cast(this.setBaseUrl(baseUrl))
+        taskType.cast(this.setBaseUrl(baseUrl))
     }
 
     @Optional
     @Input
     @Override
     String getToken() {
-        return this.token
+        this.token
     }
 
     @Override
@@ -132,49 +132,49 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
             throw new IllegalArgumentException("token")
         }
         this.token = token
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 
     @Override
     T token(String token) {
-        return taskType.cast(this.setToken(token))
+        taskType.cast(this.setToken(token))
     }
 
     @Optional
     @Input
     @Override
     String getUsername() {
-        return this.username
+        this.username
     }
 
     @Override
     T setUsername(String userName) {
         this.username = userName
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 
     @Override
     T username(String username) {
         this.setUsername(username)
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 
     @Optional
     @Input
     @Override
     String getPassword() {
-        return this.password
+        this.password
     }
 
     @Override
     T setPassword(String password) {
         this.password = password
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 
     @Override
     T password(String password) {
         this.setPassword(password)
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 }

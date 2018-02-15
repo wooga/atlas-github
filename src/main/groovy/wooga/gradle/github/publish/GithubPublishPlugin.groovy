@@ -39,7 +39,7 @@ import wooga.gradle.github.publish.tasks.GithubPublish
  *
  *     github {
  *         username = "wooga"
- *         password = "a password."
+ *         password = "the_password"
  *         token "a github access token"
  *         repositoryName "wooga/atlas-github"
  *         baseUrl = null
@@ -98,7 +98,7 @@ class GithubPublishPlugin implements Plugin<Project> {
                 task.onlyIf(new Spec<GithubPublish>() {
                     @Override
                     boolean isSatisfiedBy(GithubPublish publishTask) {
-                        return publishTask.repositoryName != null
+                        publishTask.repositoryName != null
                     }
                 })
             }

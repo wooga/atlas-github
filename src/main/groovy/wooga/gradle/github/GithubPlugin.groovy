@@ -33,7 +33,7 @@ import wooga.gradle.github.publish.GithubPublishPlugin
  *
  *     github {
  *         username = "wooga"
- *         password = "a password."
+ *         password = "the-password"
  *         token "a github access token"
  *         repositoryName "wooga/atlas-github"
  *         baseUrl = null

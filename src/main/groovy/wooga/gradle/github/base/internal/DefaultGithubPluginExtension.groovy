@@ -30,7 +30,7 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
     private String repositoryName
     private String baseUrl
 
-    private String userName
+    private String username
     private String password
     private String token
 
@@ -42,35 +42,27 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
 
     @Override
     String getUsername() {
-        if (!this.userName && properties[GITHUB_USER_NAME_OPTION]) {
-            return properties[GITHUB_USER_NAME_OPTION]
-        }
-
-        return this.userName
+        this.username ?: properties[GITHUB_USER_NAME_OPTION]
     }
 
     @Override
-    DefaultGithubPluginExtension setUsername(String userName) {
-        if (userName == null || userName.isEmpty()) {
+    DefaultGithubPluginExtension setUsername(String username) {
+        if (username == null || username.isEmpty()) {
             throw new IllegalArgumentException("username")
         }
 
-        this.userName = userName
+        this.username = username
         this
     }
 
     @Override
     GithubSpec username(String username) {
-        return setUsername(username)
+        setUsername(username)
     }
 
     @Override
     String getPassword() {
-        if (!this.password && properties[GITHUB_USER_PASSWORD_OPTION]) {
-            return properties[GITHUB_USER_PASSWORD_OPTION]
-        }
-
-        return this.password
+        this.password ?: properties[GITHUB_USER_PASSWORD_OPTION]
     }
 
     @Override
@@ -85,7 +77,7 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
 
     @Override
     GithubSpec password(String password) {
-        return setPassword(password)
+        setPassword(password)
     }
 
     @Override
@@ -99,7 +91,7 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
             throw new IllegalArgumentException("Repository value '$value' is not a valid github repository name. Expecting `owner/repo`.")
         }
 
-        return value
+        value
     }
 
     @Override
@@ -118,12 +110,12 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
 
     @Override
     DefaultGithubPluginExtension repositoryName(String name) {
-        return setRepositoryName(name)
+        setRepositoryName(name)
     }
 
     @Override
     String getBaseUrl() {
-        return baseUrl
+        baseUrl
     }
 
     @Override
@@ -138,15 +130,12 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
 
     @Override
     DefaultGithubPluginExtension baseUrl(String baseUrl) {
-        return setBaseUrl(baseUrl)
+        setBaseUrl(baseUrl)
     }
 
     @Override
     String getToken() {
-        if (!this.token && properties[GITHUB_TOKEN_OPTION]) {
-            return properties[GITHUB_TOKEN_OPTION]
-        }
-        return this.token
+        this.token ?: properties[GITHUB_TOKEN_OPTION]
     }
 
     @Override
@@ -160,6 +149,6 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
 
     @Override
     DefaultGithubPluginExtension token(String token) {
-        return setToken(token)
+        setToken(token)
     }
 }

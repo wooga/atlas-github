@@ -44,10 +44,8 @@ class GithubBasePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        def tasks = project.tasks
-
         GithubPluginExtention extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project.rootProject.properties)
-        tasks.withType(AbstractGithubTask, new Action<AbstractGithubTask>() {
+        project.tasks.withType(AbstractGithubTask, new Action<AbstractGithubTask>() {
             @Override
             void execute(AbstractGithubTask task) {
                 ConventionMapping taskConventionMapping = task.getConventionMapping()

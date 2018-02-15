@@ -327,7 +327,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         publishBodyStrategy = new PublishBodyStrategy() {
             @Override
             String getBody(GHRepository ghRepository) {
-                return ghRepository.name
+                ghRepository.name
             }
         }
         tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"

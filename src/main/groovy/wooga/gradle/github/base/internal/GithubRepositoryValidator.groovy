@@ -36,6 +36,6 @@ class GithubRepositoryValidator {
             return false
         }
 
-        return true
+        true
     }
 }

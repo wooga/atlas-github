@@ -46,7 +46,7 @@ import wooga.gradle.github.base.GithubSpec
  *         if (this.releaseName instanceof Callable) {
  *             return ((Callable) this.releaseName).call().toString()
  *         }
- *         return this.releaseName.toString()
+ *         this.releaseName.toString()
  *     }
  * }
  */
