@@ -62,10 +62,10 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
 
         where:
         accessParams                                                                         | authMethod
-        "userName = '${testUserName}'; password = '${testUserToken}'"                        | "username/password"
-        "userName = '${testUserName}'; token = '${testUserToken}'"                           | "username/token"
+        "username = '${testUserName}'; password = '${testUserToken}'"                        | "username/password"
+        "username = '${testUserName}'; token = '${testUserToken}'"                           | "username/token"
         "token = '${testUserToken}'"                                                         | "token"
-        "token('${testUserToken}').userName('${testUserName}').password('${testUserToken}')" | "username/password/token set with chained method"
+        "token('${testUserToken}').username('${testUserName}').password('${testUserToken}')" | "username/password/token set with chained method"
     }
 
     @Unroll
@@ -87,8 +87,8 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
 
         where:
         accessParams                                                        | authMethod
-        "github.userName=${testUserName}\ngithub.password=${testUserToken}" | "username/password"
-        "github.userName=${testUserName}\ngithub.token=${testUserToken}"    | "username/token"
+        "github.username=${testUserName}\ngithub.password=${testUserToken}" | "username/password"
+        "github.username=${testUserName}\ngithub.token=${testUserToken}"    | "username/token"
         "github.token=${testUserToken}"                                     | "token"
     }
 

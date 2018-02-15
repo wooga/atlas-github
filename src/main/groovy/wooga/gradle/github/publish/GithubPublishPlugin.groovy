@@ -20,43 +20,71 @@ package wooga.gradle.github.publish
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskContainer
 import wooga.gradle.github.base.GithubBasePlugin
-import wooga.gradle.github.base.GithubPluginExtention
 import wooga.gradle.github.publish.tasks.GithubPublish
 
+/**
+ * A {@link org.gradle.api.Plugin} which provides tasks and conventions to publish artifacts to github.
+ * <p>
+ * Example:
+ * <pre>
+ * {@code
+ *     plugins{
+ *         id "net.wooga.github" version "0.6.1"
+ *     }
+ *
+ *     github {
+ *         username = "wooga"
+ *         password = "a password."
+ *         token "a github access token"
+ *         repositoryName "wooga/atlas-github"
+ *         baseUrl = null
+ *     }
+ *
+ *     githubPublish {
+ *         targetCommitish = "master
+ *         tagName = project.version
+ *         releaseName = project.version
+ *         body = "Release XYZ"
+ *         prerelease = false
+ *         draft = false
+ *
+ *         from(file('build/output'))
+ *     }
+ * }
+ * </pre>
+ */
 class GithubPublishPlugin implements Plugin<Project> {
 
+    /**
+     * Value for github publish task.
+     * @value "githubPublish"
+     */
     static final String PUBLISH_TASK_NAME = "githubPublish"
-
-    private Project project
-    private TaskContainer tasks
 
     @Override
     void apply(Project project) {
-        this.project = project
-        this.tasks = project.tasks
+        def tasks = project.tasks
 
         project.pluginManager.apply(GithubBasePlugin)
         project.pluginManager.apply(PublishingPlugin)
-        GithubPluginExtention extension = (GithubPluginExtention) project.extensions.getByName(GithubBasePlugin.EXTENSION_NAME)
 
-        createDefaultPublishTask()
-        configurePublishTaskDefaults(extension)
+        createDefaultPublishTask(tasks)
+        configurePublishTaskDefaults(project)
     }
 
-    private void createDefaultPublishTask() {
+    private static void createDefaultPublishTask(final TaskContainer tasks) {
         def githubPublish = tasks.create(name: PUBLISH_TASK_NAME, type: GithubPublish, group: GithubBasePlugin.GROUP)
         githubPublish.description = "Publish github release"
         tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).dependsOn githubPublish
     }
 
-    private void configurePublishTaskDefaults(GithubPluginExtention extention) {
-        tasks.withType(GithubPublish, new Action<GithubPublish>() {
+    private static void configurePublishTaskDefaults(final Project project) {
+        project.tasks.withType(GithubPublish, new Action<GithubPublish>() {
             @Override
             void execute(GithubPublish task) {
                 ConventionMapping taskConventionMapping = task.getConventionMapping()
@@ -67,10 +95,9 @@ class GithubPublishPlugin implements Plugin<Project> {
                 taskConventionMapping.map("tagName", { project.version.toString() })
                 taskConventionMapping.map("releaseName", { project.version.toString() })
 
-                task.onlyIf(new Spec<Task>() {
+                task.onlyIf(new Spec<GithubPublish>() {
                     @Override
-                    boolean isSatisfiedBy(Task t) {
-                        GithubPublish publishTask = (GithubPublish) t
+                    boolean isSatisfiedBy(GithubPublish publishTask) {
                         return publishTask.repositoryName != null
                     }
                 })

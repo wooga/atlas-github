@@ -21,6 +21,37 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import wooga.gradle.github.publish.GithubPublishPlugin
 
+/**
+ * A {@link org.gradle.api.Plugin} which provides tasks and conventions to publish artifacts to github.
+ * <p>
+ * Example:
+ * <pre>
+ * {@code
+ *     plugins {
+ *         id "net.wooga.github" version "0.6.1"
+ *     }
+ *
+ *     github {
+ *         username = "wooga"
+ *         password = "a password."
+ *         token "a github access token"
+ *         repositoryName "wooga/atlas-github"
+ *         baseUrl = null
+ *     }
+ *
+ *     githubPublish {
+ *         targetCommitish = "master"
+ *         tagName = project.version
+ *         releaseName = project.version
+ *         body = "Release XYZ"
+ *         prerelease = false
+ *         draft = false
+ *
+ *         from(file('build/output'))
+ *     }
+ * }
+ * </pre>
+ */
 class GithubPlugin implements Plugin<Project> {
 
     @Override

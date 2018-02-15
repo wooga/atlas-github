@@ -14,7 +14,7 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
 
     private String repositoryName
     private String baseUrl
-    private String userName
+    private String username
     private String password
     private String token
 
@@ -30,10 +30,10 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         if(!this.client) {
             def builder = new GitHubBuilder()
 
-            if (getUserName() && getPassword()) {
-                builder = builder.withPassword(getUserName(), getPassword())
-            } else if (getUserName() && getToken()) {
-                builder = builder.withOAuthToken(getToken(), getUserName())
+            if (getUsername() && getPassword()) {
+                builder = builder.withPassword(getUsername(), getPassword())
+            } else if (getUsername() && getToken()) {
+                builder = builder.withOAuthToken(getToken(), getUsername())
 
             } else if (getToken()) {
                 builder = builder.withOAuthToken(getToken())
@@ -143,19 +143,19 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
     @Optional
     @Input
     @Override
-    String getUserName() {
-        return this.userName
+    String getUsername() {
+        return this.username
     }
 
     @Override
-    T setUserName(String userName) {
-        this.userName = userName
+    T setUsername(String userName) {
+        this.username = userName
         return taskType.cast(this)
     }
 
     @Override
-    T userName(String userName) {
-        this.setUserName(userName)
+    T username(String username) {
+        this.setUsername(username)
         return taskType.cast(this)
     }
 

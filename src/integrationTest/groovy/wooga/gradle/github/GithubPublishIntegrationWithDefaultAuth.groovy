@@ -22,7 +22,7 @@ abstract class GithubPublishIntegrationWithDefaultAuth extends GithubPublishInte
     def setup() {
         buildFile << """
             github {
-                userName = "$testUserName"
+                username = "$testUserName"
                 repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
             }

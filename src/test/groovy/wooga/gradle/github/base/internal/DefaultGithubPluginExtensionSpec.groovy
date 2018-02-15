@@ -50,8 +50,8 @@ class DefaultGithubPluginExtensionSpec extends Specification {
 
         expect:
         with(extension) {
-            userName == userNameValue
-            getUserName() == userNameValue
+            username == userNameValue
+            getUsername() == userNameValue
 
             password == passwordValue
             getPassword() == passwordValue
@@ -165,14 +165,14 @@ class DefaultGithubPluginExtensionSpec extends Specification {
     def "userName setter throws IllegalArgumentException"() {
         when:
         if (useSetter) {
-            extension.setUserName(propertyValue)
+            extension.setUsername(propertyValue)
         } else {
-            extension.userName(propertyValue)
+            extension.username(propertyValue)
         }
 
         then:
         IllegalArgumentException e = thrown()
-        e.message == "userName"
+        e.message == "username"
 
         where:
         propertyValue | useSetter
@@ -182,7 +182,7 @@ class DefaultGithubPluginExtensionSpec extends Specification {
         ""            | false
 
         propertyMessage = propertyValue == null ? propertyValue : "empty"
-        methodName = useSetter ? "setUserName" : "userName"
+        methodName = useSetter ? "setUsername" : "username"
     }
 
     @Unroll("#methodName throws IllegalArgumentException when value is #propertyMessage")
@@ -239,7 +239,7 @@ class DefaultGithubPluginExtensionSpec extends Specification {
         if (useSetter) {
             with(extension) {
                 setBaseUrl("baseURL")
-                setUserName("userName")
+                setUsername("username")
                 setPassword("password")
                 setToken("token")
                 setRepositoryName("test/repository")
@@ -248,7 +248,7 @@ class DefaultGithubPluginExtensionSpec extends Specification {
         } else {
             with(extension) {
                 baseUrl("baseURL")
-                userName("userName")
+                username("username")
                 password("password")
                 token("token")
                 repositoryName("test/repository")
@@ -258,7 +258,7 @@ class DefaultGithubPluginExtensionSpec extends Specification {
         then:
         with(extension) {
             baseUrl == "baseURL"
-            userName == "userName"
+            username == "username"
             password == "password"
             token == "token"
             repositoryName == "test/repository"

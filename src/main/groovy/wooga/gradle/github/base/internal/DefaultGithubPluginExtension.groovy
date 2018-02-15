@@ -22,7 +22,7 @@ import wooga.gradle.github.base.GithubSpec
 
 class DefaultGithubPluginExtension implements GithubPluginExtention {
 
-    static final String GITHUB_USER_NAME_OPTION = "github.userName"
+    static final String GITHUB_USER_NAME_OPTION = "github.username"
     static final String GITHUB_USER_PASSWORD_OPTION = "github.password"
     static final String GITHUB_TOKEN_OPTION = "github.token"
     static final String GITHUB_REPOSITORY_OPTION = "github.repository"
@@ -41,7 +41,7 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
     }
 
     @Override
-    String getUserName() {
+    String getUsername() {
         if (!this.userName && properties[GITHUB_USER_NAME_OPTION]) {
             return properties[GITHUB_USER_NAME_OPTION]
         }
@@ -50,9 +50,9 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
     }
 
     @Override
-    DefaultGithubPluginExtension setUserName(String userName) {
+    DefaultGithubPluginExtension setUsername(String userName) {
         if (userName == null || userName.isEmpty()) {
-            throw new IllegalArgumentException("userName")
+            throw new IllegalArgumentException("username")
         }
 
         this.userName = userName
@@ -60,8 +60,8 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
     }
 
     @Override
-    GithubSpec userName(String userName) {
-        return setUserName(userName)
+    GithubSpec username(String username) {
+        return setUsername(username)
     }
 
     @Override
