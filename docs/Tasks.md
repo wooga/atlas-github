@@ -2,13 +2,13 @@
 
 | Task name          | Depends on            | Type                                           | Description |
 | ------------------ | --------------------- | ---------------------------------------------- | ----------- |
-| githubPublish      |                       | `wooga.gradle.github.publish.GithubPublish`    | Copies files and folder configured to temp directory and uploads them to github release |
+| githubPublish      |                       | `wooga.gradle.github.publish.tasks.GithubPublish`    | Copies files and folder configured to temp directory and uploads them to github release |
 
 The plugin will only add one task `githubPublish` which needs further configuration before it executes.
 
 ## Authentication
 To authenticate with [github] you need to set either the `userName` and `token` parameter in the `github` plugin extension or in the `GithubPublish` task configuration.
-If you specify the values in the extension configuration all tasks of type `wooga.gradle.github.publish.GithubPublish` will be configured with these values by default. You can create multiple publish tasks with different credentials or repository values.
+If you specify the values in the extension configuration all tasks of type `wooga.gradle.github.publish.tasks.GithubPublish` will be configured with these values by default. You can create multiple publish tasks with different credentials or repository values.
 You can also use [github-api.kohsuke.org][github-api] authentication fallback logic [fromCredentials][github-cred-auth] or [fromEnvironment][github-env-auth].
 
 **kohsuke api docs fromEnvironment**
@@ -88,13 +88,13 @@ githubPublish {
 
 ## Generic Github Task
 
-The type `wooga.gradle.github.base.Github` can be used to build generic tasks who can access the github API through [github-api.kohsuke.org][github-api]. It implements the `wooga.gradle.github.base.GithubSpec` interface and handles the basic github client creation and authentication.
-The task type is usable for scripted tasks or can be extended. You should then use `wooga.gradle.github.base.AbstractGithubTask` instead.
+The type `wooga.gradle.github.base.tasks.Github` can be used to build generic tasks who can access the github API through [github-api.kohsuke.org][github-api]. It implements the `wooga.gradle.github.base.GithubSpec` interface and handles the basic github client creation and authentication.
+The task type is usable for scripted tasks or can be extended. You should then use `wooga.gradle.github.base.tasks.internal.AbstractGithubTask` instead.
 Along with the properties from `wooga.gradle.github.base.GithubSpec` the task gives access to [`client`](http://github-api.kohsuke.org/apidocs/org/kohsuke/github/GitHub.html) and, if `repositoryName` is set, to [`repository`](http://github-api.kohsuke.org/apidocs/org/kohsuke/github/GHRepository.html) property.
 
 **create repos**
 ```
-task customGithubTask(type:wooga.gradle.github.base.Github) {
+task customGithubTask(type:wooga.gradle.github.base.tasks.Github) {
     doLast {
         def builder = client.createRepository("Repo")
         builder.description("description")
@@ -110,7 +110,7 @@ task customGithubTask(type:wooga.gradle.github.base.Github) {
 
 **update files**
 ```
-task customGithubTask(type:wooga.gradle.github.base.Github) {
+task customGithubTask(type:wooga.gradle.github.base.tasks.Github) {
     doLast {
         def content = repository.getFileContent("$file")
         content.update("$updatedContent", "update release notes")

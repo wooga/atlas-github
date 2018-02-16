@@ -21,5 +21,5 @@ import nebula.test.PluginProjectSpec
 
 class GithubPluginActivationSpec extends PluginProjectSpec {
     @Override
-    String getPluginName() { return 'net.wooga.github' }
+    String getPluginName() { 'net.wooga.github' }
 }

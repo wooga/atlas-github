@@ -1,4 +1,4 @@
-package wooga.gradle.github.base
+package wooga.gradle.github.base.tasks.internal
 
 import org.gradle.api.GradleException
 import org.gradle.api.internal.ConventionTask
@@ -7,12 +7,14 @@ import org.gradle.api.tasks.Optional
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
 import org.kohsuke.github.GitHubBuilder
+import wooga.gradle.github.base.internal.GithubRepositoryValidator
+import wooga.gradle.github.base.GithubSpec
 
 abstract class AbstractGithubTask<T extends AbstractGithubTask> extends ConventionTask implements GithubSpec {
 
     private String repositoryName
     private String baseUrl
-    private String userName
+    private String username
     private String password
     private String token
 
@@ -28,10 +30,10 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         if(!this.client) {
             def builder = new GitHubBuilder()
 
-            if (getUserName() && getPassword()) {
-                builder = builder.withPassword(getUserName(), getPassword())
-            } else if (getUserName() && getToken()) {
-                builder = builder.withOAuthToken(getToken(), getUserName())
+            if (getUsername() && getPassword()) {
+                builder = builder.withPassword(getUsername(), getPassword())
+            } else if (getUsername() && getToken()) {
+                builder = builder.withOAuthToken(getToken(), getUsername())
 
             } else if (getToken()) {
                 builder = builder.withOAuthToken(getToken())
@@ -74,7 +76,7 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
 
     @Override
     String getRepositoryName() {
-        return repositoryName
+        repositoryName
     }
 
     @Override
@@ -88,19 +90,19 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         }
 
         this.repositoryName = name
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 
     @Override
     T repositoryName(String name) {
-        return taskType.cast(this.setRepositoryName(name))
+        taskType.cast(this.setRepositoryName(name))
     }
 
     @Optional
     @Input
     @Override
     String getBaseUrl() {
-        return baseUrl
+        baseUrl
     }
 
     @Override
@@ -109,19 +111,19 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
             throw new IllegalArgumentException("baseUrl")
         }
         this.baseUrl = baseUrl
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 
     @Override
     T baseUrl(String baseUrl) {
-        return taskType.cast(this.setBaseUrl(baseUrl))
+        taskType.cast(this.setBaseUrl(baseUrl))
     }
 
     @Optional
     @Input
     @Override
     String getToken() {
-        return this.token
+        this.token
     }
 
     @Override
@@ -130,49 +132,49 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
             throw new IllegalArgumentException("token")
         }
         this.token = token
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 
     @Override
     T token(String token) {
-        return taskType.cast(this.setToken(token))
+        taskType.cast(this.setToken(token))
     }
 
     @Optional
     @Input
     @Override
-    String getUserName() {
-        return this.userName
+    String getUsername() {
+        this.username
     }
 
     @Override
-    T setUserName(String userName) {
-        this.userName = userName
-        return taskType.cast(this)
+    T setUsername(String userName) {
+        this.username = userName
+        taskType.cast(this)
     }
 
     @Override
-    T userName(String userName) {
-        this.setUserName(userName)
-        return taskType.cast(this)
+    T username(String username) {
+        this.setUsername(username)
+        taskType.cast(this)
     }
 
     @Optional
     @Input
     @Override
     String getPassword() {
-        return this.password
+        this.password
     }
 
     @Override
     T setPassword(String password) {
         this.password = password
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 
     @Override
     T password(String password) {
         this.setPassword(password)
-        return taskType.cast(this)
+        taskType.cast(this)
     }
 }

@@ -19,6 +19,31 @@ package wooga.gradle.github.publish
 
 import org.kohsuke.github.GHRepository
 
+/**
+ * A strategy used to retrieve the github release description.
+ * <p>
+ * Example:
+ * <pre>
+ *     class ReleaseBody implements PublishBodyStrategy {
+ *         @Override
+ *         String getBody(GHRepository repository) {
+ *             repository.listCommits().asList().collect { GHCommit commit ->
+ *                 "[${commit.SHA1}] - ${commit.commitShortInfo.message}"
+ *             }.join("\n")
+ *         }
+ *     }
+ * }
+ * </pre>
+ */
 interface PublishBodyStrategy {
+
+    /**
+     * Returns a release description text.
+     * <p>
+     * The given {@link GHRepository} object can be used to query Git commits etc.
+     *
+     * @param  repository the current github repository object
+     * @return the release description
+     */
     String getBody(GHRepository repository)
 }

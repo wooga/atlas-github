@@ -31,7 +31,7 @@ class GithubPublishIntegration extends IntegrationSpec {
         if (env.containsKey(key)) {
             return env.get(key)
         }
-        return ""
+        ""
     }
 
     @Shared
@@ -109,7 +109,7 @@ class GithubPublishIntegration extends IntegrationSpec {
     }
 
     File createTestAssetsToPublish(int numberOfFiles) {
-        return createTestAssetsToPublish(numberOfFiles, null)
+        createTestAssetsToPublish(numberOfFiles, null)
     }
 
     File createTestAssetsToPublish(int numberOfFiles, String packageName) {
@@ -126,7 +126,7 @@ class GithubPublishIntegration extends IntegrationSpec {
             createFile("file${i}", packageDirectory) << "test content"
         }
 
-        return assets
+        assets
     }
 
     GHRelease getRelease(String tagName) {

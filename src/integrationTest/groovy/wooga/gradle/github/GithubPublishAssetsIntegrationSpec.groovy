@@ -32,7 +32,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
         and: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from("releaseAssets") {
                     into "package"
                 }
@@ -70,7 +70,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
         and: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
             }
@@ -111,7 +111,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
                 githubAssets files("fileToPublish4.json")
             }
 
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from configurations.githubAssets
                 tagName = "$tagName"
             }
@@ -154,7 +154,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
         and: "a buildfile with publish task"
         buildFile << """
-            task testPublish(type:wooga.gradle.github.publish.GithubPublish) {
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "releaseAssets"
                 tagName = "$tagName"
             }

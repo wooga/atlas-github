@@ -15,7 +15,7 @@
  *
  */
 
-package wooga.gradle.github.base
+package wooga.gradle.github.base.internal
 
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -36,6 +36,6 @@ class GithubRepositoryValidator {
             return false
         }
 
-        return true
+        true
     }
 }

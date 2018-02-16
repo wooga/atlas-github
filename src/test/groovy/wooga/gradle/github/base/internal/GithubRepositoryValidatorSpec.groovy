@@ -15,11 +15,14 @@
  *
  */
 
-package wooga.gradle.github.base
+package wooga.gradle.github.base.internal
 
 import spock.lang.Specification
+import spock.lang.Subject
 import spock.lang.Unroll
+import wooga.gradle.github.base.internal.GithubRepositoryValidator
 
+@Subject(GithubRepositoryValidator)
 class GithubRepositoryValidatorSpec extends Specification {
 
     @Unroll

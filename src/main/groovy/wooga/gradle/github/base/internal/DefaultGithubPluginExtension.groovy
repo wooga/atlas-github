@@ -15,10 +15,14 @@
  *
  */
 
-package wooga.gradle.github.base
+package wooga.gradle.github.base.internal
 
-class DefaultGithubPluginExtention implements GithubPluginExtention {
-    static final String GITHUB_USER_NAME_OPTION = "github.userName"
+import wooga.gradle.github.base.GithubPluginExtention
+import wooga.gradle.github.base.GithubSpec
+
+class DefaultGithubPluginExtension implements GithubPluginExtention {
+
+    static final String GITHUB_USER_NAME_OPTION = "github.username"
     static final String GITHUB_USER_PASSWORD_OPTION = "github.password"
     static final String GITHUB_TOKEN_OPTION = "github.token"
     static final String GITHUB_REPOSITORY_OPTION = "github.repository"
@@ -26,62 +30,54 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
     private String repositoryName
     private String baseUrl
 
-    private String userName
+    private String username
     private String password
     private String token
 
     private Map<String, ?> properties
 
-    DefaultGithubPluginExtention(Map<String, ?> properties) {
+    DefaultGithubPluginExtension(Map<String, ?> properties) {
         this.properties = properties
     }
 
     @Override
-    String getUserName() {
-        if (!this.userName && properties[GITHUB_USER_NAME_OPTION]) {
-            return properties[GITHUB_USER_NAME_OPTION]
-        }
-
-        return this.userName
+    String getUsername() {
+        this.username ?: properties[GITHUB_USER_NAME_OPTION]
     }
 
     @Override
-    GithubSpec setUserName(String userName) {
-        if (userName == null || userName.isEmpty()) {
-            throw new IllegalArgumentException("userName")
+    DefaultGithubPluginExtension setUsername(String username) {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("username")
         }
 
-        this.userName = userName
-        return this
+        this.username = username
+        this
     }
 
     @Override
-    GithubSpec userName(String userName) {
-        return setUserName(userName)
+    GithubSpec username(String username) {
+        setUsername(username)
     }
 
     @Override
     String getPassword() {
-        if (!this.password && properties[GITHUB_USER_PASSWORD_OPTION]) {
-            return properties[GITHUB_USER_PASSWORD_OPTION]
-        }
-
-        return this.password
+        this.password ?: properties[GITHUB_USER_PASSWORD_OPTION]
     }
 
     @Override
-    GithubSpec setPassword(String password) {
+    DefaultGithubPluginExtension setPassword(String password) {
         if (password == null || password.isEmpty()) {
             throw new IllegalArgumentException("password")
         }
 
         this.password = password
-        return this
+        this
     }
 
     @Override
     GithubSpec password(String password) {
-        return setPassword(password)
+        setPassword(password)
     }
 
     @Override
@@ -95,11 +91,11 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
             throw new IllegalArgumentException("Repository value '$value' is not a valid github repository name. Expecting `owner/repo`.")
         }
 
-        return value
+        value
     }
 
     @Override
-    DefaultGithubPluginExtention setRepositoryName(String name) {
+    DefaultGithubPluginExtension setRepositoryName(String name) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("repository")
         }
@@ -109,53 +105,50 @@ class DefaultGithubPluginExtention implements GithubPluginExtention {
         }
 
         this.repositoryName = name
-        return this
+        this
     }
 
     @Override
-    DefaultGithubPluginExtention repositoryName(String name) {
-        return setRepositoryName(name)
+    DefaultGithubPluginExtension repositoryName(String name) {
+        setRepositoryName(name)
     }
 
     @Override
     String getBaseUrl() {
-        return baseUrl
+        baseUrl
     }
 
     @Override
-    DefaultGithubPluginExtention setBaseUrl(String baseUrl) {
+    DefaultGithubPluginExtension setBaseUrl(String baseUrl) {
         if (baseUrl == null || baseUrl.isEmpty()) {
             throw new IllegalArgumentException("baseUrl")
         }
 
         this.baseUrl = baseUrl
-        return this
+        this
     }
 
     @Override
-    DefaultGithubPluginExtention baseUrl(String baseUrl) {
-        return setBaseUrl(baseUrl)
+    DefaultGithubPluginExtension baseUrl(String baseUrl) {
+        setBaseUrl(baseUrl)
     }
 
     @Override
     String getToken() {
-        if (!this.token && properties[GITHUB_TOKEN_OPTION]) {
-            return properties[GITHUB_TOKEN_OPTION]
-        }
-        return this.token
+        this.token ?: properties[GITHUB_TOKEN_OPTION]
     }
 
     @Override
-    DefaultGithubPluginExtention setToken(String token) {
+    DefaultGithubPluginExtension setToken(String token) {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("token")
         }
         this.token = token
-        return this
+        this
     }
 
     @Override
-    DefaultGithubPluginExtention token(String token) {
-        return setToken(token)
+    DefaultGithubPluginExtension token(String token) {
+        setToken(token)
     }
 }
