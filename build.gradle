@@ -23,7 +23,7 @@ group 'net.wooga.gradle'
 description = 'a github plugin for Gradle.'
 
 pluginBundle {
-    website = 'https://github.com/wooga/atlas-github'
+    website = 'https://wooga.github.io/atlas-github/'
     vcsUrl = 'https://github.com/wooga/atlas-github'
     tags = ['github', 'publishing']
 
