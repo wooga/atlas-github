@@ -97,6 +97,8 @@ The integration tests will access github with a botUser which credentials needs 
 If the value of `ATLAS_GITHUB_INTEGRATION_PASSWORD` is a access token, it needs the scopes: `delete_repo`, `repo`
 see [github-oauth-scopes] for more information.
 
+[Code of Conduct](docs/CODE_OF_CONDUCT.md)
+
 LICENSE
 =======
 
