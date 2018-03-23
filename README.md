@@ -15,7 +15,7 @@ This plugin provides tasks and conventions to publish artifacts to github with t
 **build.gradle**
 ```groovy
 plugins {
-    id 'net.wooga.github' version '0.1.0'
+    id 'net.wooga.github' version '1.0.0'
 }
 ```
 
@@ -26,7 +26,7 @@ Usage
 
 ```groovy
 plugins {
-    id "net.wooga.github" version "0.1.0"
+    id "net.wooga.github" version "1.0.0"
 }
 
 github {
