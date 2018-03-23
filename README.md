@@ -62,6 +62,7 @@ Documentation
 
 - [API docs](https://wooga.github.io/atlas-github/docs/api/)
 - [Tasks](docs/Tasks.md)
+- [Release Notes](RELEASE_NOTES.md)
 
 
 Gradle and Java Compatibility
