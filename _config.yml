@@ -2,3 +2,5 @@ theme: jekyll-theme-midnight
 title: Atlas Github
 description: Gradle plugin to publish artifacts to github
 show_downloads: true
+plugins:
+  - jekyll-sitemap
