@@ -102,6 +102,34 @@ if (location.href.indexOf('is-external=true') == -1) {
                 <dd><a href='../../../../wooga/gradle/github/base/GithubSpec.html'>GithubSpec</a></dd>
             </dl>
 
+    <p> Task spec definition for a github publish task/action.
+ https://developer.github.com/v3/repos/releases/#create-a-release
+ <p>
+ All <CODE>set</CODE> methods come in two flavors.
+ <ul>
+     <li> a set assignment method <CODE>setTagName(...)</CODE>
+     <li> a mutator method <CODE>tagName(...)</CODE>
+
+ Both return the current object.
+ The provided value can be any object with a valid conversion method available (<CODE>toString</CODE>, <CODE>toBoolean</CODE>, etc).
+ If the value is a <CODE>Closure</CODE> or <CODE>Callable</CODE> and the docs doesn't state otherwise,
+ the result after calling the object and executing the matching conversion method on the return value will be used.
+
+ All values will be evaluated when calling the <CODE>get</CODE> method.
+
+ <pre>
+ <CODE>String getReleaseName() {
+         if(this.releaseName == null) {
+             return null
+         </CODE>
+         if (this.releaseName instanceof Callable) {
+             return ((Callable) this.releaseName).call().toString()
+         }
+         this.releaseName.toString()
+     }
+ }
+ </p>
+
           </li>
     </ul>
 </div>
@@ -143,205 +171,205 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#body(java.lang.String)">body</a></strong>(java.lang.String body)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#body(java.lang.String)">body</a></strong>(java.lang.String body)</code><br>Sets the description text for the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#body(java.lang.Object)">body</a></strong>(java.lang.Object body)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#body(java.lang.Object)">body</a></strong>(java.lang.Object body)</code><br>Sets the description text for the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#body(groovy.lang.Closure)">body</a></strong>(groovy.lang.Closure bodyStrategy)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#body(groovy.lang.Closure)">body</a></strong>(groovy.lang.Closure bodyStrategy)</code><br>Sets the description text for the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#body(wooga.gradle.github.publish.PublishBodyStrategy)">body</a></strong>(<a href='../../../../wooga/gradle/github/publish/PublishBodyStrategy.html'>PublishBodyStrategy</a> bodyStrategy)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#body(wooga.gradle.github.publish.PublishBodyStrategy)">body</a></strong>(<a href='../../../../wooga/gradle/github/publish/PublishBodyStrategy.html'>PublishBodyStrategy</a> bodyStrategy)</code><br>Sets the description text for the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#draft(boolean)">draft</a></strong>(boolean draft)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#draft(boolean)">draft</a></strong>(boolean draft)</code><br>Sets the publication status for the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#draft(java.lang.Object)">draft</a></strong>(java.lang.Object draft)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#draft(java.lang.Object)">draft</a></strong>(java.lang.Object draft)</code><br>Sets the publication status for the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#getBody()">getBody</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getBody()">getBody</a></strong>()</code><br>Returns the description text of the release</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#getReleaseName()">getReleaseName</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getReleaseName()">getReleaseName</a></strong>()</code><br>Returns the name of the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#getTagName()">getTagName</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getTagName()">getTagName</a></strong>()</code><br>Returns the name of the Git tag from which to create the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#getTargetCommitish()">getTargetCommitish</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getTargetCommitish()">getTargetCommitish</a></strong>()</code><br>Returns the commitish value that determines where the Git tag is created from.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isDraft()">isDraft</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#isDraft()">isDraft</a></strong>()</code><br>Returns a <CODE>boolean</CODE> value indicating if the release will be automatically published.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isPrerelease()">isPrerelease</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#isPrerelease()">isPrerelease</a></strong>()</code><br>Returns a <CODE>boolean</CODE> value indicating if the release as a prerelease.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#prerelease(boolean)">prerelease</a></strong>(boolean prerelease)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#prerelease(boolean)">prerelease</a></strong>(boolean prerelease)</code><br>Sets the prerelease status of the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#prerelease(java.lang.Object)">prerelease</a></strong>(java.lang.Object prerelease)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#prerelease(java.lang.Object)">prerelease</a></strong>(java.lang.Object prerelease)</code><br>Sets the prerelease status of the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#releaseName(java.lang.String)">releaseName</a></strong>(java.lang.String name)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#releaseName(java.lang.String)">releaseName</a></strong>(java.lang.String name)</code><br>Sets the name of the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#releaseName(java.lang.Object)">releaseName</a></strong>(java.lang.Object name)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#releaseName(java.lang.Object)">releaseName</a></strong>(java.lang.Object name)</code><br>Sets the name of the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setBody(java.lang.String)">setBody</a></strong>(java.lang.String body)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setBody(java.lang.String)">setBody</a></strong>(java.lang.String body)</code><br>Sets the description text for the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setBody(java.lang.Object)">setBody</a></strong>(java.lang.Object body)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setBody(java.lang.Object)">setBody</a></strong>(java.lang.Object body)</code><br>Sets the description text for the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setBody(groovy.lang.Closure)">setBody</a></strong>(groovy.lang.Closure closure)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setBody(groovy.lang.Closure)">setBody</a></strong>(groovy.lang.Closure closure)</code><br>Sets the description text for the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setBody(wooga.gradle.github.publish.PublishBodyStrategy)">setBody</a></strong>(<a href='../../../../wooga/gradle/github/publish/PublishBodyStrategy.html'>PublishBodyStrategy</a> bodyStrategy)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setBody(wooga.gradle.github.publish.PublishBodyStrategy)">setBody</a></strong>(<a href='../../../../wooga/gradle/github/publish/PublishBodyStrategy.html'>PublishBodyStrategy</a> bodyStrategy)</code><br>Sets the description text for the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setDraft(boolean)">setDraft</a></strong>(boolean draft)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setDraft(boolean)">setDraft</a></strong>(boolean draft)</code><br>Sets the publication status for the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setDraft(java.lang.Object)">setDraft</a></strong>(java.lang.Object draft)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setDraft(java.lang.Object)">setDraft</a></strong>(java.lang.Object draft)</code><br>Sets the publication status for the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setPrerelease(boolean)">setPrerelease</a></strong>(boolean prerelease)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setPrerelease(boolean)">setPrerelease</a></strong>(boolean prerelease)</code><br>Sets the prerelease status of the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setPrerelease(java.lang.Object)">setPrerelease</a></strong>(java.lang.Object prerelease)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setPrerelease(java.lang.Object)">setPrerelease</a></strong>(java.lang.Object prerelease)</code><br>Sets the prerelease status of the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setReleaseName(java.lang.String)">setReleaseName</a></strong>(java.lang.String name)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setReleaseName(java.lang.String)">setReleaseName</a></strong>(java.lang.String name)</code><br>Sets the name of the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setReleaseName(java.lang.Object)">setReleaseName</a></strong>(java.lang.Object name)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setReleaseName(java.lang.Object)">setReleaseName</a></strong>(java.lang.Object name)</code><br>Sets the name of the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setTagName(java.lang.String)">setTagName</a></strong>(java.lang.String tagTame)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setTagName(java.lang.String)">setTagName</a></strong>(java.lang.String tagName)</code><br>Sets the tag name for the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setTagName(java.lang.Object)">setTagName</a></strong>(java.lang.Object tagTame)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setTagName(java.lang.Object)">setTagName</a></strong>(java.lang.Object tagName)</code><br>Sets the tag name for the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setTargetCommitish(java.lang.String)">setTargetCommitish</a></strong>(java.lang.String targetCommitish)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setTargetCommitish(java.lang.String)">setTargetCommitish</a></strong>(java.lang.String targetCommitish)</code><br>Sets the commitish value.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setTargetCommitish(java.lang.Object)">setTargetCommitish</a></strong>(java.lang.Object targetCommitish)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setTargetCommitish(java.lang.Object)">setTargetCommitish</a></strong>(java.lang.Object targetCommitish)</code><br>Sets the commitish value.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#tagName(java.lang.String)">tagName</a></strong>(java.lang.String tagTame)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#tagName(java.lang.String)">tagName</a></strong>(java.lang.String tagName)</code><br>Sets the tag name for the release.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#tagName(java.lang.Object)">tagName</a></strong>(java.lang.Object tagTame)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#tagName(java.lang.Object)">tagName</a></strong>(java.lang.Object tagName)</code><br>Sets the tag name for the release.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#targetCommitish(java.lang.String)">targetCommitish</a></strong>(java.lang.String targetCommitish)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#targetCommitish(java.lang.String)">targetCommitish</a></strong>(java.lang.String targetCommitish)</code><br>Sets the commitish value.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#targetCommitish(java.lang.Object)">targetCommitish</a></strong>(java.lang.Object targetCommitish)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#targetCommitish(java.lang.Object)">targetCommitish</a></strong>(java.lang.Object targetCommitish)</code><br>Sets the commitish value.</td>
                         </tr>
                         
                     </table>
@@ -360,7 +388,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>interface <a href='../../../../wooga/gradle/github/base/GithubSpec.html'>GithubSpec</a></code></td>
-                            <td class="colLast"><code><a href='../../../../wooga/gradle/github/base/GithubSpec.html#baseUrl(java.lang.String)'>baseUrl</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#getBaseUrl()'>getBaseUrl</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#getPassword()'>getPassword</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#getRepositoryName()'>getRepositoryName</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#getToken()'>getToken</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#getUserName()'>getUserName</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#password(java.lang.String)'>password</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#repositoryName(java.lang.String)'>repositoryName</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#setBaseUrl(java.lang.String)'>setBaseUrl</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#setPassword(java.lang.String)'>setPassword</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#setRepositoryName(java.lang.String)'>setRepositoryName</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#setToken(java.lang.String)'>setToken</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#setUserName(java.lang.String)'>setUserName</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#token(java.lang.String)'>token</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#userName(java.lang.String)'>userName</a></code></td>
+                            <td class="colLast"><code><a href='../../../../wooga/gradle/github/base/GithubSpec.html#baseUrl(java.lang.String)'>baseUrl</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#getBaseUrl()'>getBaseUrl</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#getPassword()'>getPassword</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#getRepositoryName()'>getRepositoryName</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#getToken()'>getToken</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#getUsername()'>getUsername</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#password(java.lang.String)'>password</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#repositoryName(java.lang.String)'>repositoryName</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#setBaseUrl(java.lang.String)'>setBaseUrl</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#setPassword(java.lang.String)'>setPassword</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#setRepositoryName(java.lang.String)'>setRepositoryName</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#setToken(java.lang.String)'>setToken</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#setUsername(java.lang.String)'>setUsername</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#token(java.lang.String)'>token</a>, <a href='../../../../wooga/gradle/github/base/GithubSpec.html#username(java.lang.String)'>username</a></code></td>
                         </tr>
                         <tr class="rowColor">
                             <td class="colFirst"><code>interface org.gradle.api.file.CopySourceSpec</code></td>
@@ -406,7 +434,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>body</strong>(java.lang.String body)</h4>
-                                <p></p>
+                                <p> Sets the description text for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>body</code> -  the release description</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -414,7 +443,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>body</strong>(java.lang.Object body)</h4>
-                                <p></p>
+                                <p> Sets the description text for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>body</code> -  the release description</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -422,7 +452,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>body</strong>(groovy.lang.Closure bodyStrategy)</h4>
-                                <p></p>
+                                <p> Sets the description text for the release.
+ <p>
+ The closure will be called with a org.kohsuke.github.GHRepository repository object.
+ The repository object can be used to query the Git commit log or pull requests etc.
+     <DL><DT><B>Parameters:</B></DT><DD><code>closure</code> -  a configuration closure which returns the release description</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -430,7 +464,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>body</strong>(<a href='../../../../wooga/gradle/github/publish/PublishBodyStrategy.html'>PublishBodyStrategy</a> bodyStrategy)</h4>
-                                <p></p>
+                                <p> Sets the description text for the release.
+ <p>
+ The body strategies <CODE>getBody()</CODE> method will be called with a org.kohsuke.github.GHRepository repository object.
+ The repository object can be used to query the Git commit log or pull requests etc.
+     <DL><DT><B>Parameters:</B></DT><DD><code>bodyStrategy</code> -  an object of type <a href='../../../../wooga/gradle/github/publish/PublishBodyStrategy.html' title='PublishBodyStrategy'>PublishBodyStrategy</a> which returns the release description</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD><a href='../../../../wooga/gradle/github/publish/PublishBodyStrategy.html#getBody(org.kohsuke.github.GHRepository)' title='PublishBodyStrategy.getBody'>PublishBodyStrategy.getBody</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -438,7 +476,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>draft</strong>(boolean draft)</h4>
-                                <p></p>
+                                <p> Sets the publication status for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>draft</code> -  the status. Set to <CODE>true</CODE> to create a draft (unpublished) release.</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -446,7 +485,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>draft</strong>(java.lang.Object draft)</h4>
-                                <p></p>
+                                <p> Sets the publication status for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>draft</code> -  the status. Set to <CODE>true</CODE> to create a draft (unpublished) release.</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -454,7 +494,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>getBody</strong>()</h4>
-                                <p></p>
+                                <p> Returns the description text of the release
+     <DL><DT><B>Returns:</B></DT><DD>the release description</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -462,7 +503,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>getReleaseName</strong>()</h4>
-                                <p></p>
+                                <p> Returns the name of the release.
+     <DL><DT><B>Returns:</B></DT><DD>the name of the release</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -470,7 +512,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>getTagName</strong>()</h4>
-                                <p></p>
+                                <p> Returns the name of the Git tag from which to create the release.
+     <DL><DT><B>Returns:</B></DT><DD>the Git tag name</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -478,7 +521,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>getTargetCommitish</strong>()</h4>
-                                <p></p>
+                                <p> Returns the commitish value that determines where the Git tag is created from.
+ <p>
+ Can be any branch or commit SHA. Unused if the Git tag already exists.
+     <DL><DT><B>Default:</B></DT><DD>the repository's default branch (usually master).</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -486,7 +532,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>isDraft</strong>()</h4>
-                                <p></p>
+                                <p> Returns a <CODE>boolean</CODE> value indicating if the release will be automatically published.
+     <DL><DT><B>Returns:</B></DT><DD><CODE>true</CODE> to create a draft (unpublished) release, <CODE>false</CODE> to create a published one.</DD></DL><DL><DT><B>Default:</B></DT><DD><CODE>false</CODE></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -494,7 +541,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>isPrerelease</strong>()</h4>
-                                <p></p>
+                                <p> Returns a <CODE>boolean</CODE> value indicating if the release as a prerelease.
+     <DL><DT><B>Returns:</B></DT><DD><CODE>true</CODE> to identify the release as a prerelease. <CODE>false</CODE> to identify the release as a full release.</DD></DL><DL><DT><B>Default:</B></DT><DD><CODE>false</CODE></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -502,7 +550,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>prerelease</strong>(boolean prerelease)</h4>
-                                <p></p>
+                                <p> Sets the prerelease status of the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>prerelease</code> -  the prerelease status. Set <CODE>true</CODE> to identify the release as a prerelease.</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -510,7 +559,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>prerelease</strong>(java.lang.Object prerelease)</h4>
-                                <p></p>
+                                <p> Sets the prerelease status of the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>prerelease</code> -  the prerelease status. Set <CODE>true</CODE> to identify the release as a prerelease.</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -518,7 +568,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>releaseName</strong>(java.lang.String name)</h4>
-                                <p></p>
+                                <p> Sets the name of the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  the name to use for the release</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -526,7 +577,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>releaseName</strong>(java.lang.Object name)</h4>
-                                <p></p>
+                                <p> Sets the name of the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  the name to use for the release</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -534,7 +586,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setBody</strong>(java.lang.String body)</h4>
-                                <p></p>
+                                <p> Sets the description text for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>body</code> -  the release description</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -542,7 +595,12 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setBody</strong>(java.lang.Object body)</h4>
-                                <p></p>
+                                <p> Sets the description text for the release.
+ <p>
+ The provided value can be any object with a valid <CODE>toString</CODE> method.
+ If the value is a <CODE>Callable</CODE>, the result after calling the object
+ and executing <CODE>toString</CODE> on the return value will be used.
+     <DL><DT><B>Parameters:</B></DT><DD><code>body</code> -  the release description</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -550,7 +608,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setBody</strong>(groovy.lang.Closure closure)</h4>
-                                <p></p>
+                                <p> Sets the description text for the release.
+ <p>
+ The closure will be called with a org.kohsuke.github.GHRepository repository object.
+ The repository object can be used to query the Git commit log or pull requests etc.
+     <DL><DT><B>Parameters:</B></DT><DD><code>closure</code> -  a configuration closure which returns the release description</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -558,7 +620,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setBody</strong>(<a href='../../../../wooga/gradle/github/publish/PublishBodyStrategy.html'>PublishBodyStrategy</a> bodyStrategy)</h4>
-                                <p></p>
+                                <p> Sets the description text for the release.
+ <p>
+ The body strategies <CODE>getBody()</CODE> method will be called with a org.kohsuke.github.GHRepository repository object.
+ The repository object can be used to query the Git commit log or pull requests etc.
+     <DL><DT><B>Parameters:</B></DT><DD><code>bodyStrategy</code> -  an object of type <a href='../../../../wooga/gradle/github/publish/PublishBodyStrategy.html' title='PublishBodyStrategy'>PublishBodyStrategy</a> which returns the release description</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD><a href='../../../../wooga/gradle/github/publish/PublishBodyStrategy.html#getBody(org.kohsuke.github.GHRepository)' title='PublishBodyStrategy.getBody'>PublishBodyStrategy.getBody</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -566,7 +632,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setDraft</strong>(boolean draft)</h4>
-                                <p></p>
+                                <p> Sets the publication status for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>draft</code> -  the status. Set to <CODE>true</CODE> to create a draft (unpublished) release.</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -574,7 +641,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setDraft</strong>(java.lang.Object draft)</h4>
-                                <p></p>
+                                <p> Sets the publication status for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>draft</code> -  the status. Set to <CODE>true</CODE> to create a draft (unpublished) release.</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -582,7 +650,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setPrerelease</strong>(boolean prerelease)</h4>
-                                <p></p>
+                                <p> Sets the prerelease status of the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>prerelease</code> -  the prerelease status. Set <CODE>true</CODE> to identify the release as a prerelease.</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -590,7 +659,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setPrerelease</strong>(java.lang.Object prerelease)</h4>
-                                <p></p>
+                                <p> Sets the prerelease status of the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>prerelease</code> -  the prerelease status. Set <CODE>true</CODE> to identify the release as a prerelease.</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -598,7 +668,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setReleaseName</strong>(java.lang.String name)</h4>
-                                <p></p>
+                                <p> Sets the name of the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  the name to use for the release</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -606,23 +677,26 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setReleaseName</strong>(java.lang.Object name)</h4>
-                                <p></p>
+                                <p> Sets the name of the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  the name to use for the release</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="setTagName(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setTagName</strong>(java.lang.String tagTame)</h4>
-                                <p></p>
+                                <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setTagName</strong>(java.lang.String tagName)</h4>
+                                <p> Sets the tag name for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>the</code> -  <CODE>String</CODE> tagName value</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="setTagName(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setTagName</strong>(java.lang.Object tagTame)</h4>
-                                <p></p>
+                                <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setTagName</strong>(java.lang.Object tagName)</h4>
+                                <p> Sets the tag name for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>the</code> -  <CODE>Object</CODE> tagName value.</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -630,7 +704,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setTargetCommitish</strong>(java.lang.String targetCommitish)</h4>
-                                <p></p>
+                                <p> Sets the commitish value.
+     <DL><DT><B>Parameters:</B></DT><DD><code>targetCommitish</code> -  the commitish value, can be any branch or commit SHA</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -638,23 +713,26 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setTargetCommitish</strong>(java.lang.Object targetCommitish)</h4>
-                                <p></p>
+                                <p> Sets the commitish value.
+     <DL><DT><B>Parameters:</B></DT><DD><code>targetCommitish</code> -  the commitish value, can be any branch or commit SHA</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="tagName(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>tagName</strong>(java.lang.String tagTame)</h4>
-                                <p></p>
+                                <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>tagName</strong>(java.lang.String tagName)</h4>
+                                <p> Sets the tag name for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>the</code> -  <CODE>String</CODE> tagName value</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="tagName(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>tagName</strong>(java.lang.Object tagTame)</h4>
-                                <p></p>
+                                <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>tagName</strong>(java.lang.Object tagName)</h4>
+                                <p> Sets the tag name for the release.
+     <DL><DT><B>Parameters:</B></DT><DD><code>the</code> -  <CODE>Object</CODE> tagName value.</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -662,7 +740,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>targetCommitish</strong>(java.lang.String targetCommitish)</h4>
-                                <p></p>
+                                <p> Sets the commitish value.
+     <DL><DT><B>Parameters:</B></DT><DD><code>targetCommitish</code> -  the commitish value, can be any branch or commit SHA</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -670,7 +749,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>targetCommitish</strong>(java.lang.Object targetCommitish)</h4>
-                                <p></p>
+                                <p> Sets the commitish value.
+     <DL><DT><B>Parameters:</B></DT><DD><code>targetCommitish</code> -  the commitish value, can be any branch or commit SHA</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     

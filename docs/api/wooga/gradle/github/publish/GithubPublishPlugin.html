@@ -111,6 +111,36 @@ extends java.lang.Object
 
 
 
+    <p> A org.gradle.api.Plugin which provides tasks and conventions to publish artifacts to github.
+ <p>
+ Example:
+ <pre>
+ <CODE>plugins{
+         id "net.wooga.github" version "0.6.1"
+     </CODE>
+
+     github {
+         username = "wooga"
+         password = "the_password"
+         token "a github access token"
+         repositoryName "wooga/atlas-github"
+         baseUrl = null
+     }
+
+     githubPublish {
+         targetCommitish = "master
+         tagName = project.version
+         releaseName = project.version
+         body = "Release XYZ"
+         prerelease = false
+         draft = false
+
+         from(file('build/output'))
+     }
+ }
+ </pre>
+ </p>
+
           </li>
     </ul>
 </div>
@@ -141,7 +171,8 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#PUBLISH_TASK_NAME">PUBLISH_TASK_NAME</a></code><br></td>
+                            <td class="colLast"><code><a href="#PUBLISH_TASK_NAME">PUBLISH_TASK_NAME</a></code><br>Value for github publish task.
+ </td>
                         </tr>
                         
                     </table>
@@ -223,7 +254,8 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>static&nbsp;final&nbsp;java.lang.String <strong>PUBLISH_TASK_NAME</strong></h4>
-                                <p></p>
+                                <p> Value for github publish task.<DL><DT><B>value:</B></DT><DD>"githubPublish"</DD></DL>
+     </p>
                             </li>
                         </ul>
                     

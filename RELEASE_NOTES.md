@@ -1,7 +1,37 @@
-### 0.9.0 - June 20 2017
+### 1.0.0 - Mar 23 2018
+
+* ![NEW] stable major release
+
+### 0.6.1 - Feb 05 2018
+
+* ![FIX] draft only releaseses when release has no assets
+
+### 0.6.0 - Oct 06 2017
+
+* ![IMPROVE] refactor internal task API
+
+### 0.5.0 - Oct 06 2017
+
+* ![ADD] new API for release body value
+
+### 0.4.0 - July 28 2017
+
+* ![FIX] bugs during release creation
+* ![ADD] more unit and integration tests
+
+### 0.3.0 - July 28 2017
+
+* ![IMPROVE] hook task `:githubPublish` to `publish` lifecycle task
+
+### 0.2.0 - July 28 2017
+
+* ![ADD] unit and integration tests
+* ![IMPROVE] internal authentication logic
+
+### 0.1.0 - June 30 2017
 
 * ![NEW] initial release
-* ![ADD] `net.wooga.unity` plugin
+* ![ADD] `net.wooga.github` plugin
 
 
 <!-- START icon Id's -->

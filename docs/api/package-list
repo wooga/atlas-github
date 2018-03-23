@@ -1,3 +1,7 @@
 wooga.gradle.github
 wooga.gradle.github.base
+wooga.gradle.github.base.internal
+wooga.gradle.github.base.tasks
+wooga.gradle.github.base.tasks.internal
 wooga.gradle.github.publish
+wooga.gradle.github.publish.tasks
