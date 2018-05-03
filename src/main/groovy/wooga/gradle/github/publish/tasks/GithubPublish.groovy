@@ -93,7 +93,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @TaskAction
     protected void publish() {
         setDidWork(false)
-        GHRelease release = createGithubRelease(this.processAssets)
+        GHRelease release = createGithubRelease(this.processAssets || isDraft())
 
         if (this.processAssets) {
             WorkResult assetCopyResult = project.copy(new Action<CopySpec>()
