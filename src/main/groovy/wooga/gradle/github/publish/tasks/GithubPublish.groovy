@@ -93,7 +93,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @TaskAction
     protected void publish() {
         setDidWork(false)
-        GHRelease release = createGithubRelease(this.processAssets)
+        GHRelease release = createGithubRelease(this.processAssets || isDraft())
 
         if (this.processAssets) {
             WorkResult assetCopyResult = project.copy(new Action<CopySpec>()
@@ -109,7 +109,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
                 try {
                     prepareAssets()
                     publishAssets(release)
-                    release.update().draft(isDraft()).update()
+                    if (release.draft != isDraft()) {
+                        release.update().draft(isDraft()).tag(getTagName()).update()
+                    }
                 }
                 catch (Exception e) {
                     failRelease(release, "error while uploading assets. Rollback release ${release.name}")
