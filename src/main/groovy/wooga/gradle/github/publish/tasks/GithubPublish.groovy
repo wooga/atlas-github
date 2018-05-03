@@ -109,7 +109,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
                 try {
                     prepareAssets()
                     publishAssets(release)
-                    release.update().draft(isDraft()).update()
+                    release.update().draft(isDraft()).tag(getTagName()).update()
                 }
                 catch (Exception e) {
                     failRelease(release, "error while uploading assets. Rollback release ${release.name}")
