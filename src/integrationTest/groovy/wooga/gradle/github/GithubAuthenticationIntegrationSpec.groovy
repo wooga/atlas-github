@@ -86,10 +86,10 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
         runTasksSuccessfully("testPublish")
 
         where:
-        accessParams                                                        | authMethod
-        "github.username=${testUserName}\ngithub.password=${testUserToken}" | "username/password"
-        "github.username=${testUserName}\ngithub.token=${testUserToken}"    | "username/token"
-        "github.token=${testUserToken}"                                     | "token"
+        accessParams                                                          | authMethod
+        "github.username=${testUserName}\ngithub.password=${testUserToken}\n" | "username/password"
+        "github.username=${testUserName}\ngithub.token=${testUserToken}\n"    | "username/token"
+        "github.token=${testUserToken}\n"                                     | "token"
     }
 
     @Rule
