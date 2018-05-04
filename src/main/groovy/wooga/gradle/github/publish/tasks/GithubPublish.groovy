@@ -77,10 +77,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     GithubPublish() {
         super(GithubPublish.class)
         assetsCopySpec = project.copySpec()
-        assetCollectDirectory = File.createTempDir("github-publish-collect", name)
-        assetUploadDirectory = File.createTempDir("github-publish-prepare", name)
-        assetCollectDirectory.deleteOnExit()
-        assetUploadDirectory.deleteOnExit()
+
+        assetCollectDirectory = project.file("${temporaryDir}/collect")
+        assetUploadDirectory = project.file("${temporaryDir}/prepare")
     }
 
     File getDestinationDir() {
@@ -96,7 +95,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         GHRelease release = createGithubRelease(this.processAssets || isDraft())
 
         if (this.processAssets) {
-            WorkResult assetCopyResult = project.copy(new Action<CopySpec>()
+            WorkResult assetCopyResult = project.sync(new Action<CopySpec>()
             {
                 @Override
                 void execute(CopySpec copySpec) {
@@ -140,6 +139,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     protected void prepareAssets() {
         File uploadDir = this.assetUploadDirectory
+        uploadDir.deleteDir()
+        uploadDir.mkdirs()
+
         assetCollectDirectory.eachFile(FileType.FILES) {
             FileUtils.copyFileToDirectory(it, uploadDir)
         }
