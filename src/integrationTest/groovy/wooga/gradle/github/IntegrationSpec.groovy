@@ -1,5 +1,7 @@
 package wooga.gradle.github
 
+import nebula.test.functional.ExecutionResult
+
 class IntegrationSpec extends nebula.test.IntegrationSpec {
 
     def setup() {
@@ -8,5 +10,9 @@ class IntegrationSpec extends nebula.test.IntegrationSpec {
             this.gradleVersion = gradleVersion
             fork = true
         }
+    }
+
+    Boolean outputContains(ExecutionResult result, String message) {
+        result.standardOutput.contains(message) || result.standardError.contains(message)
     }
 }

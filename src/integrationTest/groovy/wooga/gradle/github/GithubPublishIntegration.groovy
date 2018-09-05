@@ -17,7 +17,6 @@
 
 package wooga.gradle.github
 
-import nebula.test.IntegrationSpec
 import org.kohsuke.github.GHRelease
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
