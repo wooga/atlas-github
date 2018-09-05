@@ -195,7 +195,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         expect:
         def result = runTasksWithFailure("testPublish")
-        result.standardError.contains("can't find repository $testUserName/customRepo")
+        outputContains(result, "can't find repository $testUserName/customRepo")
     }
 
     def "fails when release already exists"() {
@@ -216,7 +216,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         expect:
         def result = runTasksWithFailure("testPublish")
-        result.standardError.contains("github release with tag ${tagName} already exist")
+        outputContains(result, "github release with tag ${tagName} already exist")
     }
 
     def "publish release with assets"() {

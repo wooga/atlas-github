@@ -137,6 +137,6 @@ class GithubIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
 
         expect:
         def result = runTasksWithFailure("customGithubTask")
-        result.standardError.contains("can't find repository $testUserName/customRepo")
+        outputContains(result, "can't find repository $testUserName/customRepo")
     }
 }

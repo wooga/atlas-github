@@ -47,7 +47,7 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
 
         and: "task runs without errors"
         def results = runTasksWithFailure("testPublish")
-        assert results.standardError.contains("Bad credentials")
+        assert outputContains(results, "Bad credentials")
 
         when: "overriding github access parameters"
         cleanupReleases()

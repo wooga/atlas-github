@@ -219,7 +219,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         then:
         !hasReleaseByName(versionName)
-        result.standardError.contains("Too many parameters for body clojure")
+        outputContains(result, "Too many parameters for body clojure")
 
         where:
         method | bodyValue     | useSetter | isLazy
@@ -462,7 +462,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         expect:
         def result = runTasksWithFailure("testPublish")
-        result.standardError.contains(expectedError)
+        outputContains(result, expectedError)
 
         where:
         repoName                                 | useSetter | expectedError
@@ -498,7 +498,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         expect:
         def result = runTasksWithFailure("testPublish")
-        result.standardError.contains("java.lang.IllegalArgumentException: token")
+        outputContains(result, "java.lang.IllegalArgumentException: token")
 
         where:
         token | useSetter
@@ -530,7 +530,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         expect:
         def result = runTasksWithFailure("testPublish")
-        result.standardError.contains("java.lang.IllegalArgumentException: baseUrl")
+        outputContains(result, "java.lang.IllegalArgumentException: baseUrl")
 
         where:
         url  | useSetter
@@ -559,6 +559,6 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         expect:
         def result = runTasksWithFailure("testPublish")
-        result.standardError.contains("error while uploading assets. Rollback release")
+        outputContains(result, "error while uploading assets. Rollback release")
     }
 }
