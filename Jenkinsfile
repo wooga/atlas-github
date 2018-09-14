@@ -1,102 +1,21 @@
 #!groovy
-@Library('github.com/wooga/atlas-jenkins-pipeline@0.0.3') _
+@Library('github.com/wooga/atlas-jenkins-pipeline@1.x') _
 
-pipeline {
-    agent none
+withCredentials([usernamePassword(credentialsId: 'github_integration', passwordVariable: 'githubPassword', usernameVariable: 'githubUser'),
+                 usernamePassword(credentialsId: 'github_integration_2', passwordVariable: 'githubPassword2', usernameVariable: 'githubUser2'),
+                 string(credentialsId: 'atlas_github_coveralls_token', variable: 'coveralls_token')]) {
 
-    stages {
-        stage('Preparation') {
-            agent any
+    def testEnvironment = [ 'osx':
+                               [
+                                   "ATLAS_GITHUB_INTEGRATION_USER=${githubUser}",
+                                   "ATLAS_GITHUB_INTEGRATION_PASSWORD=${githubPassword}"
+                               ],
+                             'windows':
+                               [
+                                   "ATLAS_GITHUB_INTEGRATION_USER=${githubUser2}",
+                                   "ATLAS_GITHUB_INTEGRATION_PASSWORD=${githubPassword2}"
+                               ]
+                        ]
 
-            steps {
-                sendSlackNotification "STARTED", true
-            }
-        }
-
-        stage('check') {
-            parallel {
-                stage('Windows') {
-                    agent {
-                        label 'windows&&atlas'
-                    }
-
-                    environment {
-                        COVERALLS_REPO_TOKEN                = credentials('atlas_github_coveralls_token')
-                        TRAVIS_JOB_NUMBER                   = "${BUILD_NUMBER}.WIN"
-                        GITHUB                              = credentials('github_integration_2')
-                        ATLAS_GITHUB_INTEGRATION_USER       = "${GITHUB_USR}"
-                        ATLAS_GITHUB_INTEGRATION_PASSWORD   = "${GITHUB_PSW}"
-                    }
-
-                    steps {
-                        gradleWrapper "check"
-                    }
-
-                    post {
-                        success {
-                            gradleWrapper "jacocoTestReport coveralls"
-                            publishHTML([
-                                allowMissing: true,
-                                alwaysLinkToLastBuild: true,
-                                keepAll: true,
-                                reportDir: 'build/reports/jacoco/test/html',
-                                reportFiles: 'index.html',
-                                reportName: 'Coverage',
-                                reportTitles: ''
-                            ])
-                        }
-
-                        always {
-                            junit allowEmptyResults: true, testResults: 'build/test-results/**/*.xml'
-
-                        }
-                    }
-                }
-
-                stage('macOS') {
-                    agent {
-                        label 'osx&&atlas'
-                    }
-
-                    environment {
-                        COVERALLS_REPO_TOKEN                = credentials('atlas_github_coveralls_token')
-                        TRAVIS_JOB_NUMBER                   = "${BUILD_NUMBER}.MACOS"
-                        GITHUB                              = credentials('github_integration')
-                        ATLAS_GITHUB_INTEGRATION_USER       = "${GITHUB_USR}"
-                        ATLAS_GITHUB_INTEGRATION_PASSWORD   = "${GITHUB_PSW}"
-                    }
-
-                    steps {
-                        gradleWrapper "check"
-                    }
-
-                    post {
-                        success {
-                            gradleWrapper "jacocoTestReport coveralls"
-                            publishHTML([
-                                allowMissing: true,
-                                alwaysLinkToLastBuild: true,
-                                keepAll: true,
-                                reportDir: 'build/reports/jacoco/test/html',
-                                reportFiles: 'index.html',
-                                reportName: 'Coverage',
-                                reportTitles: ''
-                            ])
-                        }
-
-                        always {
-                            junit allowEmptyResults: true, testResults: 'build/test-results/**/*.xml'
-
-                        }
-                    }
-                }
-            }
-
-            post {
-                always {
-                    sendSlackNotification currentBuild.result, true
-                }
-            }
-        }
-    }
+    buildGradlePlugin plaforms: ['osx','windows'], coverallsToken: coveralls_token, testEnvironment: testEnvironment
 }
