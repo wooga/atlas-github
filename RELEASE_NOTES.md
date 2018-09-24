@@ -1,3 +1,8 @@
+### 1.1.0 - Sep 24 2018
+
+* ![UPDATE] `net.wooga.plugins` to `1.2.0`
+* ![FIX] Fix temporary file handling in GithubPublish
+
 ### 1.0.0 - Mar 23 2018
 
 * ![NEW] stable major release
