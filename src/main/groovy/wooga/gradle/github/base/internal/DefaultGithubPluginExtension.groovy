@@ -17,6 +17,7 @@
 
 package wooga.gradle.github.base.internal
 
+import org.gradle.api.Project
 import wooga.gradle.github.base.GithubPluginExtention
 import wooga.gradle.github.base.GithubSpec
 
@@ -34,15 +35,19 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
     private String password
     private String token
 
-    private Map<String, ?> properties
+    private final Closure property
+
+    DefaultGithubPluginExtension(Project project) {
+        this.property = project.&findProperty
+    }
 
     DefaultGithubPluginExtension(Map<String, ?> properties) {
-        this.properties = properties
+        this.property = properties.&get
     }
 
     @Override
     String getUsername() {
-        this.username ?: properties[GITHUB_USER_NAME_OPTION]
+        this.username ?: property(GITHUB_USER_NAME_OPTION)
     }
 
     @Override
@@ -62,7 +67,7 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
 
     @Override
     String getPassword() {
-        this.password ?: properties[GITHUB_USER_PASSWORD_OPTION]
+        this.password ?: property(GITHUB_USER_PASSWORD_OPTION)
     }
 
     @Override
@@ -83,8 +88,8 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
     @Override
     String getRepositoryName() {
         String value = this.repositoryName
-        if (!this.repositoryName && properties[GITHUB_REPOSITORY_OPTION]) {
-            value = properties[GITHUB_REPOSITORY_OPTION]
+        if (!this.repositoryName && property(GITHUB_REPOSITORY_OPTION)) {
+            value = property(GITHUB_REPOSITORY_OPTION)
         }
 
         if (value && !GithubRepositoryValidator.validateRepositoryName(value)) {
@@ -135,7 +140,7 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
 
     @Override
     String getToken() {
-        this.token ?: properties[GITHUB_TOKEN_OPTION]
+        this.token ?: property(GITHUB_TOKEN_OPTION)
     }
 
     @Override
