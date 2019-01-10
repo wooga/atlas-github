@@ -1,3 +1,7 @@
+### 1.2.0 - Jan 10 2019
+
+* ![IMPROVE] lazy property resolution in `DefaultGithubPluginExtension`
+
 ### 1.1.0 - Sep 24 2018
 
 * ![UPDATE] `net.wooga.plugins` to `1.2.0`
