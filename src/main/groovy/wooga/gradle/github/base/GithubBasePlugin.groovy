@@ -44,7 +44,7 @@ class GithubBasePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        GithubPluginExtention extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project.rootProject.properties)
+        GithubPluginExtention extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
         project.tasks.withType(AbstractGithubTask, new Action<AbstractGithubTask>() {
             @Override
             void execute(AbstractGithubTask task) {
