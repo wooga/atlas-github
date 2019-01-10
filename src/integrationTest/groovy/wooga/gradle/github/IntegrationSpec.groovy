@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2019 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,14 @@
 
 package wooga.gradle.github
 
+import org.junit.Rule
 import nebula.test.functional.ExecutionResult
+import org.junit.contrib.java.lang.system.ProvideSystemProperty
 
 class IntegrationSpec extends nebula.test.IntegrationSpec {
+
+    @Rule
+    ProvideSystemProperty properties = new ProvideSystemProperty("ignoreDeprecations", "true")
 
     def setup() {
         def gradleVersion = System.getenv("GRADLE_VERSION")
