@@ -133,7 +133,10 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     protected void publishAssets(GHRelease release) {
         assetUploadDirectory.eachFile { File assetFile ->
             def contentType = getAssetContentType(assetFile)
-            release.uploadAsset(assetFile, contentType)
+            FileInputStream s = new FileInputStream(assetFile)
+            String fileName = URLEncoder.encode(assetFile.name, "UTF-8")
+
+            release.uploadAsset(fileName, s, contentType)
         }
     }
 

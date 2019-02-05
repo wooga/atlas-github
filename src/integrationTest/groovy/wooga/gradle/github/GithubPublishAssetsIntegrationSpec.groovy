@@ -17,6 +17,12 @@
 
 package wooga.gradle.github
 
+import spock.genesis.Gen
+import spock.genesis.transform.Iterations
+import spock.lang.IgnoreIf
+import spock.lang.Shared
+import spock.lang.Unroll
+
 class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
 
     def "publish directories as zip archives"() {
@@ -173,5 +179,78 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
         where:
         tagName = "v0.4.0-GithubPublishAssetsIntegrationSpec"
+    }
+
+    @Unroll
+    def "publish files with special characters [#fileName]"() {
+        given: "a directory with files"
+        def fromDirectory = new File(projectDir, "releaseAssets")
+        fromDirectory.mkdirs()
+        def file = createFile(fileName, fromDirectory)
+        file << """
+        {
+            "body" : "awesome"
+        }
+        """.stripIndent()
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                from("releaseAssets")
+                tagName = "$tagName"
+            }
+        """
+
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        def release = getRelease(tagName)
+        !release.isDraft()
+        def assets = release.assets
+        assets.size() == 1
+        assets.any { it.name == expectedFileName }
+
+        where:
+        fileName                   | expectedFileName           | tag
+        "file to publish.json"     | "file.to.publish.json"     | "0.5.0"
+        "filetoöÖäÄüÜpublish.json" | "filetooOaAuUpublish.json" | "0.6.0"
+
+        tagName = "v${tag}-GithubPublishAssetsIntegrationSpec"
+    }
+
+    @Shared
+    def characterPattern = ':_\\-<>|*\\\\? üäö¨áóéçΩå´´£¢∞§¶'
+
+    @IgnoreIf({ os.windows })
+    @Iterations(20)
+    @Unroll
+    def "publish files with special characters (#fileName)"() {
+        given: "a directory with files"
+        def fromDirectory = new File(projectDir, "releaseAssets")
+        fromDirectory.mkdirs()
+        def file = createFile(fileName, fromDirectory)
+        file << """
+        {
+            "body" : "awesome"
+        }
+        """.stripIndent()
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                from("releaseAssets")
+                tagName = "$tagName"
+            }
+        """
+
+        expect:
+        runTasksSuccessfully("testPublish")
+
+        where:
+        tag << Gen.integer(6, Integer.MAX_VALUE)
+        fileName << Gen.string(~/file([${characterPattern}]{10,20})\.json/)
+        tagName = "v0.${tag}.0-GithubPublishAssetsIntegrationSpec"
+
     }
 }
