@@ -340,4 +340,47 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @return this
      */
     GithubPublishSpec draft(Object draft)
+
+    /**
+     * Returns a {@code boolean} value indicating if the release should be updated.
+     *
+     * If this value is false and a release with the given release name already exists, the task will fail.
+     * If set to true the release will be updated.
+     *
+     * @return  {@code true} to update a release already available.
+     * @default {@code false}
+     */
+    PublishMethod getPublishMethod()
+
+    /**
+     * Specifies if a new release should be created a updated.
+     *
+     * @param  {@code true} to update a release already available.
+     * @return this
+     */
+    GithubPublishSpec setPublishMethod(PublishMethod method)
+
+    /**
+     * Specifies if a new release should be created a updated.
+     *
+     * @param  {@code true} to update a release already available.
+     * @return this
+     */
+    GithubPublishSpec setPublishMethod(Object method)
+
+    /**
+     * Specifies if a new release should be created a updated.
+     *
+     * @param  {@code true} to update a release already available.
+     * @return this
+     */
+    GithubPublishSpec publishMethod(boolean method)
+
+    /**
+     * Specifies if a new release should be created a updated.
+     *
+     * @param  {@code true} to update a release already available.
+     * @return this
+     */
+    GithubPublishSpec publishMethod(Object method)
 }

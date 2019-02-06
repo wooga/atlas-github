@@ -202,7 +202,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         """
 
         when:
-        runTasksSuccessfully("testPublish")
+        def result = runTasksSuccessfully("testPublish")
 
         then:
         def release = getRelease(tagName)
@@ -210,6 +210,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         def assets = release.assets
         assets.size() == 1
         assets.any { it.name == expectedFileName }
+        outputContains(result, "asset ${fileName} renamed by github to ${expectedFileName}")
 
         where:
         fileName                   | expectedFileName           | tag
