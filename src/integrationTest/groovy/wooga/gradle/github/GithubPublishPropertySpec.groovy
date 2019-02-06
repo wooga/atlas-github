@@ -559,6 +559,6 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         expect:
         def result = runTasksWithFailure("testPublish")
-        outputContains(result, "error while uploading assets. Rollback release")
+        outputContains(result, "publish github release failed")
     }
 }

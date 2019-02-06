@@ -202,7 +202,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         """
 
         when:
-        runTasksSuccessfully("testPublish")
+        def result = runTasksSuccessfully("testPublish")
 
         then:
         def release = getRelease(tagName)
@@ -210,6 +210,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         def assets = release.assets
         assets.size() == 1
         assets.any { it.name == expectedFileName }
+        outputContains(result, "asset '${fileName}' renamed by github to '${expectedFileName}'")
 
         where:
         fileName                   | expectedFileName           | tag
@@ -217,6 +218,154 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         "filetoöÖäÄüÜpublish.json" | "filetooOaAuUpublish.json" | "0.6.0"
 
         tagName = "v${tag}-GithubPublishAssetsIntegrationSpec"
+    }
+
+    def "removes added assets when release update fails"() {
+        given: "a release"
+        createRelease(tagName)
+
+        and: "a directory with release assets"
+        def fromDirectory = new File(projectDir, "releaseAssets")
+        fromDirectory.mkdirs()
+
+        and: "a faulty asset"
+        createFile("working3.json", fromDirectory)
+
+        and: "a working asset"
+        def workingAsset0 = createFile("working0.json", fromDirectory) << """{"body" : "awesome"}"""
+
+        and: "a working asset"
+        def workingAsset1 = createFile("working1.json", fromDirectory) << """{"body" : "awesome"}"""
+
+
+        and: "a working asset"
+        def workingAsset2 = createFile("working2.json", fromDirectory) << """{"body" : "awesome"}"""
+
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                from("releaseAssets")
+                tagName = "$tagName"
+                publishMethod = "update"
+            }
+        """
+
+        when:
+        def result = runTasksWithFailure("testPublish")
+
+        then:
+        def release = getRelease(tagName)
+
+        def assets = release.assets
+        assets.size() == 0
+
+        outputContains(result, "delete published asset ${workingAsset0.name}")
+        outputContains(result, "delete published asset ${workingAsset1.name}")
+        outputContains(result, "delete published asset ${workingAsset2.name}")
+
+        where:
+        tagName = "v0.7.0-GithubPublishAssetsIntegrationSpec"
+    }
+
+    def "keeps old assets when release update fails"() {
+        given: "a release"
+        def presentRelease = createRelease(tagName)
+
+        and: "an published asset"
+        def publishedAsset = createFile("published.json") << """{"body" : "awesome"}"""
+        presentRelease.uploadAsset(publishedAsset, "text/plain")
+
+        and: "a directory with release assets"
+        def fromDirectory = new File(projectDir, "releaseAssets")
+        fromDirectory.mkdirs()
+
+        and: "a faulty asset"
+        createFile("working3.json", fromDirectory)
+
+        and: "a working asset"
+        def workingAsset1 = createFile("working1.json", fromDirectory) << """{"body" : "awesome"}"""
+
+
+        and: "a working asset"
+        def workingAsset2 = createFile("working2.json", fromDirectory) << """{"body" : "awesome"}"""
+
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                from("releaseAssets")
+                tagName = "$tagName"
+                publishMethod = "update"
+            }
+        """
+
+        when:
+        def result = runTasksWithFailure("testPublish")
+
+        then:
+        def release = getRelease(tagName)
+
+        def assets = release.assets
+        assets.size() == 1
+        assets.get(0).name == publishedAsset.name
+
+        outputContains(result, "delete published asset ${workingAsset1.name}")
+        outputContains(result, "delete published asset ${workingAsset2.name}")
+
+        where:
+        tagName = "v0.8.0-GithubPublishAssetsIntegrationSpec"
+    }
+
+    def "restores content of updated assets when release update fails"() {
+        given: "a release"
+        def presentRelease = createRelease(tagName)
+
+        and: "an published asset"
+        def publishedAsset = createFile("published.json") << """{"body" : "initial"}"""
+        presentRelease.uploadAsset(publishedAsset, "text/plain")
+
+        and: "a directory with release assets"
+        def fromDirectory = new File(projectDir, "releaseAssets")
+        fromDirectory.mkdirs()
+
+        and: "a faulty asset"
+        createFile("working3.json", fromDirectory)
+
+        and: "a working asset"
+        def updatedAsset1 = createFile("published.json", fromDirectory) << """{"body" : "updated"}"""
+
+
+        and: "a working asset"
+        def workingAsset2 = createFile("working2.json", fromDirectory) << """{"body" : "awesome"}"""
+
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                from("releaseAssets")
+                tagName = "$tagName"
+                publishMethod = "update"
+            }
+        """
+
+        when:
+        def result = runTasksWithFailure("testPublish")
+
+        then:
+        def release = getRelease(tagName)
+
+        def assets = release.assets
+        assets.size() == 1
+        assets.get(0).name == publishedAsset.name
+        new URL(assets.get(0).browserDownloadUrl).text == """{"body" : "initial"}"""
+
+        outputContains(result, "restore updated asset ${updatedAsset1.name}")
+        outputContains(result, "delete published asset ${workingAsset2.name}")
+        outputContains(result, "delete published asset ${updatedAsset1.name}")
+
+        where:
+        tagName = "v0.9.0-GithubPublishAssetsIntegrationSpec"
     }
 
     @Shared
@@ -248,7 +397,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         runTasksSuccessfully("testPublish")
 
         where:
-        tag << Gen.integer(6, Integer.MAX_VALUE)
+        tag << Gen.integer(20, Integer.MAX_VALUE)
         fileName << Gen.string(~/file([${characterPattern}]{10,20})\.json/)
         tagName = "v0.${tag}.0-GithubPublishAssetsIntegrationSpec"
 

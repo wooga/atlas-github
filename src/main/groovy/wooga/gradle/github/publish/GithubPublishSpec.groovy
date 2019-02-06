@@ -340,4 +340,65 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @return this
      */
     GithubPublishSpec draft(Object draft)
+
+    /**
+     * Returns a {@code PublishMethod} value indicating if a release should be created or updated.
+     *
+     * Potential values are
+     * * create
+     * * update
+     * * createOrUpdate
+     *
+     * This method parameter can be used to specify the intention of the publish operation. The {@code GithubPublish}
+     * will use the given @{code tagName} to find a release in the repository.
+     * When set to {@code create}, the {@code GithubPublish} task will fail if a release already exists.
+     * When set to {@code update}, the {@code GithubPublish} task will fail if a release doesn't exists.
+     * When set to {@code createOrUpdate}, the {@code GithubPublish} task will create a release if missing.
+     *
+     * @return  {@code PublishMethod} indicating if a release should be created or updated.
+     * @default {@code PublishMethod.create}
+     * @see wooga.gradle.github.publish.tasks.GithubPublish
+     * @see wooga.gradle.github.publish.PublishMethod
+     */
+    PublishMethod getPublishMethod()
+
+    /**
+     * Sets the publish method.
+     *
+     * @param  {@code PublishMethod} indicating if a release should be created or updated.
+     * @return this
+     *
+     * @see #getPublishMethod()
+     */
+    GithubPublishSpec setPublishMethod(PublishMethod method)
+
+    /**
+     * Sets the publish method.
+     *
+     * @param  {@code Object} which can be converted to a {@code PublishMethod}
+     * @return this
+     *
+     * @see #getPublishMethod()
+     */
+    GithubPublishSpec setPublishMethod(Object method)
+
+    /**
+     * Sets the publish method.
+     *
+     * @param  {@code PublishMethod} indicating if a release should be created or updated.
+     * @return this
+     *
+     * @see #getPublishMethod()
+     */
+    GithubPublishSpec publishMethod(PublishMethod method)
+
+    /**
+     * Sets the publish method.
+     *
+     * @param  {@code Object} which can be converted to a {@code PublishMethod}
+     * @return this
+     *
+     * @see #getPublishMethod()
+     */
+    GithubPublishSpec publishMethod(Object method)
 }
