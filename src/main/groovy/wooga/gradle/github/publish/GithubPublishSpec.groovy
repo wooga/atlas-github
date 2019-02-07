@@ -342,45 +342,63 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
     GithubPublishSpec draft(Object draft)
 
     /**
-     * Returns a {@code boolean} value indicating if the release should be updated.
+     * Returns a {@code PublishMethod} value indicating if a release should be created or updated.
      *
-     * If this value is false and a release with the given release name already exists, the task will fail.
-     * If set to true the release will be updated.
+     * Potential values are
+     * * create
+     * * update
+     * * createOrUpdate
      *
-     * @return  {@code true} to update a release already available.
-     * @default {@code false}
+     * This method parameter can be used to specify the intention of the publish operation. The {@code GithubPublish}
+     * will use the given @{code tagName} to find a release in the repository.
+     * When set to {@code create}, the {@code GithubPublish} task will fail if a release already exists.
+     * When set to {@code update}, the {@code GithubPublish} task will fail if a release doesn't exists.
+     * When set to {@code createOrUpdate}, the {@code GithubPublish} task will create a release if missing.
+     *
+     * @return  {@code PublishMethod} indicating if a release should be created or updated.
+     * @default {@code PublishMethod.create}
+     * @see wooga.gradle.github.publish.tasks.GithubPublish
+     * @see wooga.gradle.github.publish.PublishMethod
      */
     PublishMethod getPublishMethod()
 
     /**
-     * Specifies if a new release should be created a updated.
+     * Sets the publish method.
      *
-     * @param  {@code true} to update a release already available.
+     * @param  {@code PublishMethod} indicating if a release should be created or updated.
      * @return this
+     *
+     * @see #getPublishMethod()
      */
     GithubPublishSpec setPublishMethod(PublishMethod method)
 
     /**
-     * Specifies if a new release should be created a updated.
+     * Sets the publish method.
      *
-     * @param  {@code true} to update a release already available.
+     * @param  {@code Object} which can be converted to a {@code PublishMethod}
      * @return this
+     *
+     * @see #getPublishMethod()
      */
     GithubPublishSpec setPublishMethod(Object method)
 
     /**
-     * Specifies if a new release should be created a updated.
+     * Sets the publish method.
      *
-     * @param  {@code true} to update a release already available.
+     * @param  {@code PublishMethod} indicating if a release should be created or updated.
      * @return this
+     *
+     * @see #getPublishMethod()
      */
-    GithubPublishSpec publishMethod(boolean method)
+    GithubPublishSpec publishMethod(PublishMethod method)
 
     /**
-     * Specifies if a new release should be created a updated.
+     * Sets the publish method.
      *
-     * @param  {@code true} to update a release already available.
+     * @param  {@code Object} which can be converted to a {@code PublishMethod}
      * @return this
+     *
+     * @see #getPublishMethod()
      */
     GithubPublishSpec publishMethod(Object method)
 }

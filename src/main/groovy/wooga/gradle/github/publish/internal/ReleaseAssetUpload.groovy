@@ -21,11 +21,15 @@ import org.apache.tika.detect.Detector
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.mime.MediaType
 import org.apache.tika.parser.AutoDetectParser
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 import org.kohsuke.github.GHAsset
 import org.kohsuke.github.GHRelease
 import org.kohsuke.github.HttpException
 
 class ReleaseAssetUpload {
+
+    private static final Logger logger = Logging.getLogger(ReleaseAssetUpload.class)
 
     static GHAsset uploadAsset(GHRelease release, File assetFile) {
         def contentType = getAssetContentType(assetFile)
@@ -37,7 +41,14 @@ class ReleaseAssetUpload {
 
     static GHAsset uploadAssetRetry(GHRelease release, String fileName, InputStream stream, String contentType, int retryCount = 0) {
         try {
-            release.uploadAsset(fileName, stream, contentType)
+            GHAsset asset = release.uploadAsset(fileName, stream, contentType)
+            String uncodedFileName = URLDecoder.decode(fileName, "UTF-8")
+            if (asset.name != uncodedFileName) {
+                logger.warn("asset '${uncodedFileName}' renamed by github to '${asset.name}'")
+            }
+
+            return asset
+
         } catch(HttpException e) {
             if (e.responseCode == 502 && retryCount < 3) {
                 uploadAssetRetry(release, fileName, stream, contentType, ++retryCount)

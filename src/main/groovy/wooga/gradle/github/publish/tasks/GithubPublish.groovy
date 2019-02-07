@@ -41,6 +41,7 @@ import wooga.gradle.github.publish.PublishBodyStrategy
 import wooga.gradle.github.publish.PublishMethod
 import wooga.gradle.github.publish.internal.GHReleasePropertySet
 import wooga.gradle.github.publish.internal.GithubReleaseCreateException
+import wooga.gradle.github.publish.internal.GithubReleaseException
 import wooga.gradle.github.publish.internal.GithubReleaseUpdateException
 import wooga.gradle.github.publish.internal.GithubReleaseUploadAssetException
 import wooga.gradle.github.publish.internal.GithubReleaseUploadAssetsException
@@ -57,7 +58,8 @@ import java.util.concurrent.Callable
  * Example:
  * <pre>
  * {@code
- *     githubPublish {*         targetCommitish = "master"
+ *     githubPublish {
+ *         targetCommitish = "master"
  *         tagName = project.version
  *         releaseName = project.version
  *         body = "Release XYZ"
@@ -65,7 +67,8 @@ import java.util.concurrent.Callable
  *         draft = false
  *         publishMethod = "create"
  *         from(file('build/output'))
- *}*}
+ *     }
+ *}
  */
 class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
@@ -75,7 +78,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     private File assetUploadDirectory
     protected CopySpec assetsCopySpec
     private Boolean processAssets
-    private Boolean isNewlyCreatedRelease
+    private Boolean isNewlyCreatedRelease = false
 
     GithubPublish() {
         super(GithubPublish.class)
@@ -94,53 +97,59 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @TaskAction
     protected void publish() {
-        setDidWork(false)
         try {
             GHRelease release = createOrUpdateGithubRelease(this.processAssets || isDraft())
             if (this.processAssets) {
-                WorkResult assetCopyResult = project.sync(new Action<CopySpec>()
-                {
-                    @Override
-                    void execute(CopySpec copySpec) {
-                        copySpec.into(getDestinationDir())
-                        copySpec.with(assetsCopySpec)
-                    }
-                })
-
-                if (assetCopyResult.didWork) {
-                    try {
-                        prepareAssets()
-                        publishAssets(release)
-                        if (release.draft != isDraft()) {
-                            release.update().draft(isDraft()).tag(getTagName()).update()
-                        }
-                    }
-                    catch (Exception error) {
-                        throw new GithubReleaseUploadAssetsException(release, "error while uploading assets.", error)
-                    }
-                    setDidWork(true)
-                } else {
-                    throw new GithubReleaseUploadAssetsException(release, "error while preparing assets for restore")
-                }
-            } else {
-                setDidWork(true)
+                processReleaseAssets(release)
             }
-        } catch (GithubReleaseCreateException createError) {
-            failRelease(null, createError.message, false, createError)
-        } catch (GithubReleaseUpdateException updateError) {
-            failRelease(null, updateError.message, false, updateError)
-        } catch (GithubReleaseUploadAssetsException assetError) {
-            failRelease(assetError.getRelease(), assetError.message, isNewlyCreatedRelease, assetError)
+        } catch (GithubReleaseException releaseError) {
+            failRelease(releaseError.getRelease(), releaseError.message, isNewlyCreatedRelease, releaseError)
+        }
+        setDidWork(true)
+    }
+
+    protected void processReleaseAssets(GHRelease release) throws GithubReleaseUploadAssetsException, GithubReleaseUpdateException{
+        WorkResult assetCopyResult = project.sync(new Action<CopySpec>()
+        {
+            @Override
+            void execute(CopySpec copySpec) {
+                copySpec.into(getDestinationDir())
+                copySpec.with(assetsCopySpec)
+            }
+        })
+
+        if (assetCopyResult.didWork) {
+            try {
+                prepareAssets()
+                publishAssets(release)
+            }
+            catch (Exception error) {
+                throw new GithubReleaseUploadAssetsException(release, "error while uploading assets.", error)
+            }
+
+            try {
+                if (release.draft != isDraft()) {
+                    release.update().draft(isDraft()).tag(getTagName()).update()
+                }
+            } catch (Exception error) {
+                throw new GithubReleaseUpdateException(release, "error while publishing draft", error)
+            }
+        } else {
+            throw new GithubReleaseUploadAssetsException(release, "error while preparing assets for restore")
         }
     }
 
     protected void failRelease(GHRelease release, String message, boolean deleteRelease, Throwable cause = null) {
-        if (deleteRelease) {
+        setDidWork(false)
+        logger.error("release failed")
+        logger.error("Attempt rollback")
+        if (deleteRelease && release) {
             logger.info("delete created release")
             try {
                 release.delete()
-            } catch(_) {
+            } catch (Exception error) {
                 logger.error("failed to rollback release")
+                logger.error(error.message)
             }
         }
 
@@ -150,8 +159,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
                 try {
                     logger.info("delete published asset ${it.name}")
                     it.delete()
-                } catch (_) {
+                } catch (Exception error) {
                     logger.error("failed to rollback asset ${it.name}")
+                    logger.error(error.message)
                 }
             }
 
@@ -159,10 +169,10 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
                 try {
                     logger.info("restore updated asset ${it.name}")
                     it.restore(release)
-                } catch (_) {
+                } catch (Exception error) {
                     logger.error("failed to restore asset ${it.name}")
+                    logger.error(error.message)
                 }
-
             }
         }
 
@@ -203,41 +213,50 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         List<GHAsset> publishedAssets = []
         List<UpdatedAsset> updatedAssets = []
 
-        assetUploadDirectory.eachFile { File assetFile ->
+        assetUploadDirectory.listFiles().findAll {it.isFile()}.sort().each { File assetFile ->
             try {
-                GHAsset asset = ReleaseAssetUpload.uploadAsset(release, assetFile)
-                publishedAssets << asset
-                if (asset.name != assetFile.name) {
-                    logger.warn("asset ${assetFile.name} renamed by github to ${asset.name}")
-                }
+                publishedAssets << ReleaseAssetUpload.uploadAsset(release, assetFile)
             } catch (HttpException httpError) {
-                boolean rethrow = true
-                if (httpError.responseCode == 422) {
-                    def json = new JsonSlurper()
-                    Map details = json.parse(httpError.getMessage().chars) as Map
-                    List<Map> errors = details["errors"] as List<Map>
-                    if(errors && errors.first() && errors.first()["code"] == "already_exists") {
-                        def duplicateAsset = release.assets.find {it.name == assetFile.name}
-                        if(duplicateAsset) {
-                            try {
-                                UpdatedAsset updatedAsset = UpdatedAsset.fromAsset(duplicateAsset)
-                                duplicateAsset.delete()
-                                updatedAssets << updatedAsset
-                                GHAsset asset = ReleaseAssetUpload.uploadAsset(release, assetFile)
-                                publishedAssets << asset
-                                rethrow = false
-                            } catch(_) {
-                                rethrow = true
-                            }
+                if( isDuplicateAssetError(httpError)) {
+                    logger.info("asset ${assetFile.name} already published")
+                    logger.info("attempt override")
+                    def duplicateAsset = release.assets.find {it.name == assetFile.name}
+                    if(duplicateAsset) {
+                        try {
+                            UpdatedAsset updatedAsset = UpdatedAsset.fromAsset(duplicateAsset)
+                            duplicateAsset.delete()
+                            updatedAssets << updatedAsset
+                            publishedAssets << ReleaseAssetUpload.uploadAsset(release, assetFile)
+                        } catch(Exception e) {
+                            logger.error("failure during update of duplicate asset ${assetFile.name}")
+                            logger.error(e.message)
+                            logger.info("fail with original error")
+                            throw new GithubReleaseUploadAssetException(publishedAssets, updatedAssets, e)
                         }
+                    } else {
+                        logger.error("unable to find duplicate asset ${assetFile.name} in release assets")
+                        logger.error("this could mean the asset contains special characters!")
+                        throw new GithubReleaseUploadAssetException(publishedAssets, updatedAssets, httpError)
                     }
-                }
-
-                if(rethrow) {
+                } else {
                     throw new GithubReleaseUploadAssetException(publishedAssets, updatedAssets, httpError)
                 }
             }
         }
+    }
+
+    protected static Boolean isDuplicateAssetError(HttpException httpError) {
+        Boolean status = false
+        if (httpError.responseCode == 422) {
+            def json = new JsonSlurper()
+            Map details = json.parse(httpError.getMessage().chars) as Map
+            List<Map> errors = details["errors"] as List<Map>
+            if (errors && errors.first() && errors.first()["code"] == "already_exists") {
+                status = true
+            }
+        }
+
+        return status
     }
 
     protected void prepareAssets() {
@@ -272,8 +291,8 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
             try {
                 result = setReleasePropertiesAndCommit(releasePropertySet)
-            } catch (_) {
-                throw new GithubReleaseUpdateException("failed to update release ${release.tagName}")
+            } catch (Exception error) {
+                throw new GithubReleaseUpdateException("failed to update release ${release.tagName}", error)
             }
         } else {
             if (this.getPublishMethod() == PublishMethod.update) {
@@ -286,8 +305,8 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
             try {
                 result = setReleasePropertiesAndCommit(releasePropertySet)
-            } catch (_) {
-                throw new GithubReleaseCreateException("failed to create release ${release.tagName}")
+            } catch (Exception error) {
+                throw new GithubReleaseCreateException("failed to create release ${release.tagName}", error)
             }
         }
         result
@@ -881,6 +900,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         this.setDraft(draft)
     }
 
+    /**
+     * See: {@link GithubPublishSpec#getPublishMethod()}
+     */
     @Override
     PublishMethod getPublishMethod() {
         if (this.publishMethod instanceof Callable) {
@@ -890,23 +912,35 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         this.publishMethod as PublishMethod
     }
 
+    /**
+     * See: {@link GithubPublishSpec#setPublishMethod(PublishMethod)}
+     */
     @Override
     GithubPublishSpec setPublishMethod(PublishMethod method) {
         this.publishMethod = method
         this
     }
 
+    /**
+     * See: {@link GithubPublishSpec#setPublishMethod(Object)}
+     */
     @Override
     GithubPublishSpec setPublishMethod(Object method) {
         this.publishMethod = method
         this
     }
 
+    /**
+     * See: {@link GithubPublishSpec#setPublishMethod(PublishMethod)}
+     */
     @Override
-    GithubPublishSpec publishMethod(boolean method) {
+    GithubPublishSpec publishMethod(PublishMethod method) {
         this.setPublishMethod(method)
     }
 
+    /**
+     * See: {@link GithubPublishSpec#setPublishMethod(Object)}
+     */
     @Override
     GithubPublishSpec publishMethod(Object method) {
         this.setPublishMethod(method)
