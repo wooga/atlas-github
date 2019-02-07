@@ -109,6 +109,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     }
 
     protected void processReleaseAssets(GHRelease release) throws GithubReleaseUploadAssetsException, GithubReleaseUpdateException{
+        getDestinationDir().mkdirs()
         WorkResult assetCopyResult = project.sync(new Action<CopySpec>()
         {
             @Override

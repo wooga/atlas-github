@@ -17,6 +17,9 @@
 
 package wooga.gradle.github
 
+import spock.lang.Retry
+
+@Retry(count = 3)
 abstract class GithubPublishIntegrationWithDefaultAuth extends GithubPublishIntegration {
 
     def setup() {
