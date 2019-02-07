@@ -41,6 +41,7 @@ import org.zeroturnaround.zip.ZipUtil
 import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
 import wooga.gradle.github.publish.GithubPublishSpec
 import wooga.gradle.github.publish.PublishBodyStrategy
+import wooga.gradle.github.publish.internal.ReleaseAssetUpload
 
 import java.util.concurrent.Callable
 
@@ -132,11 +133,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     protected void publishAssets(GHRelease release) {
         assetUploadDirectory.eachFile { File assetFile ->
-            def contentType = getAssetContentType(assetFile)
-            FileInputStream s = new FileInputStream(assetFile)
-            String fileName = URLEncoder.encode(assetFile.name, "UTF-8")
-
-            release.uploadAsset(fileName, s, contentType)
+            ReleaseAssetUpload.uploadAsset(release, assetFile)
         }
     }
 
@@ -178,25 +175,6 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         }
 
         builder.create()
-    }
-
-    protected static String getAssetContentType(File assetFile) {
-        InputStream is = new FileInputStream(assetFile)
-        BufferedInputStream bis = new BufferedInputStream(is)
-        String contentType = "text/plain"
-        try {
-            AutoDetectParser parser = new AutoDetectParser()
-            Detector detector = parser.getDetector()
-            Metadata md = new Metadata()
-            md.add(Metadata.RESOURCE_NAME_KEY, assetFile.name)
-            MediaType mediaType = detector.detect(bis, md)
-            contentType = mediaType.toString()
-        }
-        finally {
-
-        }
-
-        contentType
     }
 
     /* CopySpec */
