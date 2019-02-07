@@ -29,7 +29,6 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
             github.repositoryName = "$testRepositoryName"
 
             task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
-                from "releaseAssets"
                 tagName = "v0.${Math.abs(new Random().nextInt() % 1000) + 1}.0-GithubAuthenticationIntegrationSpec"
             }
         """.stripIndent()
