@@ -39,9 +39,9 @@ import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
 import wooga.gradle.github.publish.GithubPublishSpec
 import wooga.gradle.github.publish.PublishBodyStrategy
 import wooga.gradle.github.publish.PublishMethod
-import wooga.gradle.github.publish.internal.GHReleasePropertySet
+import wooga.gradle.github.publish.internal.GithubReleasePropertySetter
 import wooga.gradle.github.publish.internal.GithubReleaseCreateException
-import wooga.gradle.github.publish.internal.GithubReleaseException
+import wooga.gradle.github.publish.internal.GithubReleasePublishException
 import wooga.gradle.github.publish.internal.GithubReleaseUpdateException
 import wooga.gradle.github.publish.internal.GithubReleaseUploadAssetException
 import wooga.gradle.github.publish.internal.GithubReleaseUploadAssetsException
@@ -102,7 +102,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             if (this.processAssets) {
                 processReleaseAssets(release)
             }
-        } catch (GithubReleaseException releaseError) {
+        } catch (GithubReleasePublishException releaseError) {
             failRelease(releaseError.getRelease(), releaseError.message, isNewlyCreatedRelease, releaseError)
         }
         setDidWork(true)
@@ -141,8 +141,8 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     protected void failRelease(GHRelease release, String message, boolean deleteRelease, Throwable cause = null) {
         setDidWork(false)
-        logger.error("release failed")
-        logger.error("Attempt rollback")
+        logger.error("publish github release failed")
+        logger.error("attempt rollback")
         if (deleteRelease && release) {
             logger.info("delete created release")
             try {
@@ -279,14 +279,14 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         GHRepository repository = getRepository(client)
 
         GHRelease release = repository.listReleases().find({ it.tagName == getTagName() }) as GHRelease
-        GHReleasePropertySet releasePropertySet
+        GithubReleasePropertySetter releasePropertySet
         GHRelease result
         if (release) {
             if (this.getPublishMethod() == PublishMethod.create) {
                 throw new GithubReleaseCreateException("github release with tag ${getTagName()} already exist")
             }
 
-            releasePropertySet = new GHReleasePropertySet(release.update())
+            releasePropertySet = new GithubReleasePropertySetter(release.update())
             releasePropertySet.draft(isDraft())
 
             try {
@@ -300,7 +300,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             }
 
             isNewlyCreatedRelease = true
-            releasePropertySet = new GHReleasePropertySet(repository.createRelease(getTagName()))
+            releasePropertySet = new GithubReleasePropertySetter(repository.createRelease(getTagName()))
             releasePropertySet.draft(createDraft as boolean)
 
             try {
@@ -312,7 +312,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         result
     }
 
-    protected GHRelease setReleasePropertiesAndCommit(GHReleasePropertySet releasePropertySet) {
+    protected GHRelease setReleasePropertiesAndCommit(GithubReleasePropertySetter releasePropertySet) {
         releasePropertySet.prerelease(isPrerelease())
 
         if (getTargetCommitish()) {

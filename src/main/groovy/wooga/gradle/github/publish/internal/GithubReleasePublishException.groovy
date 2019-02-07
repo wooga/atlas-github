@@ -22,23 +22,19 @@ import org.kohsuke.github.GHAsset
 import org.kohsuke.github.GHRelease
 import wooga.gradle.github.publish.tasks.GithubPublish
 
-class GithubReleaseException extends Exception {
+class GithubReleasePublishException extends Exception {
     final private GHRelease release
 
-    GithubReleaseException(String message) {
-        this(null, message)
-    }
-
-    GithubReleaseException(String message, Throwable cause) {
+    GithubReleasePublishException(String message, Throwable cause) {
         this(null, message, cause)
 
     }
 
-    GithubReleaseException(GHRelease release, String message) {
+    GithubReleasePublishException(GHRelease release, String message) {
         this(release, message, null)
     }
 
-    GithubReleaseException(GHRelease release, String message, Throwable cause) {
+    GithubReleasePublishException(GHRelease release, String message, Throwable cause) {
         super(message, cause)
         this.release = release
     }
@@ -49,15 +45,15 @@ class GithubReleaseException extends Exception {
 }
 
 @InheritConstructors
-class GithubReleaseCreateException extends GithubReleaseException {
+class GithubReleaseCreateException extends GithubReleasePublishException {
 }
 
 @InheritConstructors
-class GithubReleaseUpdateException extends GithubReleaseException {
+class GithubReleaseUpdateException extends GithubReleasePublishException {
 }
 
 @InheritConstructors
-class GithubReleaseUploadAssetsException extends GithubReleaseException {
+class GithubReleaseUploadAssetsException extends GithubReleasePublishException {
 
     GithubReleaseUploadAssetsException(GHRelease release, String message) {
         super(release, message)
@@ -70,7 +66,7 @@ class GithubReleaseUploadAssetsException extends GithubReleaseException {
 }
 
 @InheritConstructors
-class GithubReleaseUploadAssetException extends GithubReleaseException {
+class GithubReleaseUploadAssetException extends GithubReleasePublishException {
 
     List<GHAsset> uploadedAssets
     List<GithubPublish.UpdatedAsset> updatedAssets

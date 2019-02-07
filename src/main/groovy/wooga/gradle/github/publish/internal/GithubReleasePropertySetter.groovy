@@ -22,17 +22,23 @@ import org.kohsuke.github.GHRelease
 import org.kohsuke.github.GHReleaseBuilder
 import org.kohsuke.github.GHReleaseUpdater
 
-class GHReleasePropertySet {
+/**
+ * A utility wrapper type.
+ *
+ * This object is a wrapper around either {@code GHReleaseBuilder} or {@code GHReleaseUpdater} objects.
+ * It allows to pass objects of these types to be handled with a common interface.
+ */
+class GithubReleasePropertySetter {
 
     private final GHReleaseUpdater updater
     private final GHReleaseBuilder builder
 
-    GHReleasePropertySet(GHReleaseUpdater updater) {
+    GithubReleasePropertySetter(GHReleaseUpdater updater) {
         this.updater = updater
         this.builder = null
     }
 
-    GHReleasePropertySet(GHReleaseBuilder builder) {
+    GithubReleasePropertySetter(GHReleaseBuilder builder) {
         this.builder = builder
         this.updater = null
     }
@@ -40,7 +46,7 @@ class GHReleasePropertySet {
     /**
      * @param body The release notes body.
      */
-    GHReleasePropertySet body(String body) {
+    GithubReleasePropertySetter body(String body) {
         if(updater) {
             updater.body(body)
         }
@@ -59,7 +65,7 @@ class GHReleasePropertySet {
      * @param commitish Defaults to the repository’s default branch (usually "master"). Unused if the Git tag
      *                  already exists.
      */
-    GHReleasePropertySet commitish(String commitish) {
+    GithubReleasePropertySetter commitish(String commitish) {
         if(updater) {
             updater.commitish(commitish)
         }
@@ -77,7 +83,7 @@ class GHReleasePropertySet {
      * @param draft {@code true} to create a draft (unpublished) release, {@code false} to create a published one.
      *                          Default is {@code false}.
      */
-    GHReleasePropertySet draft(boolean draft) {
+    GithubReleasePropertySetter draft(boolean draft) {
         if(updater) {
             updater.draft(draft)
         }
@@ -91,7 +97,7 @@ class GHReleasePropertySet {
     /**
      * @param name the name of the release
      */
-    GHReleasePropertySet name(String name) {
+    GithubReleasePropertySetter name(String name) {
         if(updater) {
             updater.name(name)
         }
@@ -108,7 +114,7 @@ class GHReleasePropertySet {
      * @param prerelease {@code true} to identify the release as a prerelease. {@code false} to identify the release
      *                               as a full release. Default is {@code false}.
      */
-    GHReleasePropertySet prerelease(boolean prerelease) {
+    GithubReleasePropertySetter prerelease(boolean prerelease) {
         if(updater) {
             updater.prerelease(prerelease)
         }
@@ -119,6 +125,15 @@ class GHReleasePropertySet {
         this
     }
 
+    /**
+     * Executes the builders native commit method.
+     *
+     * If the wrapped object is a {@code GHReleaseUpdater}, calls {@code update}.
+     * If the wrapped object is a {@code GHReleaseBuilder}, calls {@code create}.
+     *
+     * @return the created or updated {@code GHRelease} object
+     * @throws IOException
+     */
     GHRelease commit() throws IOException {
         if(updater) {
             return updater.update()
