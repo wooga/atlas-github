@@ -21,9 +21,11 @@ import org.kohsuke.github.GHRelease
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
 import org.kohsuke.github.PagedIterable
+import spock.lang.Retry
 import spock.lang.Shared
 
-class GithubPublishIntegration extends IntegrationSpec {
+@Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
+abstract class GithubPublishIntegration extends IntegrationSpec {
     String uniquePostfix() {
         String key = "TRAVIS_JOB_NUMBER"
         def env = System.getenv()

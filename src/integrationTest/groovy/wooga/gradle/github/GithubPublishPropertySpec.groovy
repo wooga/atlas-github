@@ -18,9 +18,12 @@
 package wooga.gradle.github
 
 import org.kohsuke.github.GHRepository
+import spock.lang.Retry
 import spock.lang.Unroll
 import wooga.gradle.github.publish.PublishBodyStrategy
+import wooga.gradle.github.publish.PublishMethod
 
+@Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
 class GithubPublishPropertySpec extends GithubPublishIntegration {
 
     def "task skips if repository is not set"() {
@@ -421,7 +424,6 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
             }            
         """.stripIndent()
 
-        then:
         when:
         runTasksSuccessfully("testPublish")
 
@@ -436,6 +438,59 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         "testReleaseTagFour"  | false     | true
 
         methodName = useSetter ? "setTagName" : "tagName"
+        methodValue = isLazy ? "closure" : "value"
+        preValue = isLazy ? "{" : ""
+        postValue = isLazy ? "}" : ""
+        tagName = "v0.3.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
+    }
+
+    @Unroll
+    def "can set publishMethod with #publishMethod #methodValue and #methodName"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "optional release"
+        if(publishMethod == PublishMethod.update) {
+            createRelease(tagName)
+        }
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "$versionName"
+
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                from "releaseAssets"
+                $methodName($preValue "$publishMethod" $postValue)
+                draft = false
+                tagName = "${tagName}"
+                repositoryName = "$testRepositoryName"
+                token = "$testUserToken"
+            }
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        hasRelease(tagName)
+
+        where:
+        publishMethod                | useSetter | isLazy
+        PublishMethod.create         | true      | false
+        PublishMethod.create         | true      | true
+        PublishMethod.create         | false     | false
+        PublishMethod.create         | false     | true
+        PublishMethod.update         | true      | false
+        PublishMethod.update         | true      | true
+        PublishMethod.update         | false     | false
+        PublishMethod.update         | false     | true
+        PublishMethod.createOrUpdate | true      | false
+        PublishMethod.createOrUpdate | true      | true
+        PublishMethod.createOrUpdate | false     | false
+        PublishMethod.createOrUpdate | false     | true
+
+        methodName = useSetter ? "setPublishMethod" : "publishMethod"
         methodValue = isLazy ? "closure" : "value"
         preValue = isLazy ? "{" : ""
         postValue = isLazy ? "}" : ""
@@ -541,7 +596,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         methodName = useSetter ? "setBaseUrl" : "baseUrl"
     }
-    
+
     def "fails when release can't be created with generic exception"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
@@ -559,6 +614,6 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         expect:
         def result = runTasksWithFailure("testPublish")
-        outputContains(result, "error while uploading assets. Rollback release")
+        outputContains(result, "publish github release failed")
     }
 }

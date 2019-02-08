@@ -198,7 +198,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         outputContains(result, "can't find repository $testUserName/customRepo")
     }
 
-    def "fails when release already exists"() {
+    def "fails when release already exists and publishMethod is create"() {
         given: "a release with tagname"
         def tagName = "testTag"
         createRelease(tagName)
@@ -211,12 +211,65 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
             task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
                 from "fileToPublish"
                 tagName = "$tagName"
+                publishMethod = "create" //that is also the default value
             }
         """
 
         expect:
         def result = runTasksWithFailure("testPublish")
         outputContains(result, "github release with tag ${tagName} already exist")
+    }
+
+    def "fails when release doesn't exists and publishMethod is update"() {
+        given: "a tagname"
+        def tagName = "testTag"
+
+        and: "a file to publish"
+        createFile("fileToPublish")
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                from "fileToPublish"
+                tagName = "$tagName"
+                publishMethod = "update"
+            }
+        """
+
+        expect:
+        def result = runTasksWithFailure("testPublish")
+        outputContains(result, "github release with tag ${tagName} for update not found")
+    }
+
+    @Unroll
+    def "#messages and publishMethod is createOrUpdate"() {
+        given: "an optional release"
+        if (releaseAvailable) {
+            def builder = testRepo.createRelease(tagName)
+            builder.name("Initial Release")
+            builder.create()
+        }
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                tagName = "$tagName"
+                releaseName = "$tagName" 
+                publishMethod = "createOrUpdate"
+            }
+        """
+
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        def release = getRelease(tagName)
+        release.name == tagName
+
+        where:
+        releaseAvailable | tagName                               | messages
+        true             | "v0.5.0-GithubPublishIntegrationSpec" | "updates release when release exists"
+        false            | "v0.6.0-GithubPublishIntegrationSpec" | "creates release when release doesn't exists"
     }
 
     def "publish release with assets"() {
@@ -250,5 +303,113 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         where:
         tagName = "v0.3.0-GithubPublishIntegrationSpec"
+    }
+
+    def "updates a release when publishMethod is update"() {
+        given: "multiple files to publish"
+        def fromDirectory = new File(projectDir, "initialReleaseAssets")
+        fromDirectory.mkdirs()
+        createFile("initial.json", fromDirectory) << """{"body" : "initial"}"""
+
+        fromDirectory = new File(projectDir, "updateReleaseAssets")
+        fromDirectory.mkdirs()
+        createFile("update.json", fromDirectory) << """{"body" : "update"}"""
+        createFile("initial.json", fromDirectory) << """{"body" : "update"}"""
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublishOrUpdate(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                tagName = "$tagName"
+                publishMethod = "update"
+                
+                releaseName = "${expectedName}"
+                body = "${expectedBody}"
+                prerelease = ${expectedPrerelease}
+                draft = ${expectedDraft}
+
+                from "updateReleaseAssets"
+            }
+
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                tagName = "$tagName"
+                
+                releaseName = "${initialName}"
+                body = "${initialBody}"
+                prerelease = ${initialPrerelease}
+                draft = ${initialDraft}
+
+                from "initialReleaseAssets"
+            }
+        """
+
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        def release = getRelease(tagName)
+        release.getName() == initialName
+        release.getBody() == initialBody
+        release.isPrerelease() == initialPrerelease
+        release.isDraft() == initialDraft
+
+        def assets = release.assets
+        assets.size() == 1
+        assets.any { it.name == "initial.json" }
+
+        when:
+        runTasksSuccessfully("testPublishOrUpdate")
+
+        then:
+        def updatedRelease = getRelease(tagName)
+        updatedRelease.getName() == expectedName
+        updatedRelease.getBody() == expectedBody
+        updatedRelease.isPrerelease() == expectedPrerelease
+        updatedRelease.isDraft() == expectedDraft
+        updatedRelease.targetCommitish == expectedTargetCommitish
+
+        def updatedAssets = updatedRelease.assets
+        updatedAssets.size() == 2
+        updatedAssets.any { it.name == "update.json" }
+        updatedAssets.any { it.name == "initial.json" }
+        updatedAssets.any { new URL(it.browserDownloadUrl).text == """{"body" : "update"}""" }
+
+        where:
+        expectedName = "Updated Release Name"
+        expectedBody = "Updated Body"
+        expectedPrerelease = false
+        expectedDraft = false
+        expectedTargetCommitish = "master"
+
+        initialName = expectedName.replace("Update", "Initial")
+        initialBody = expectedBody.replace("Update", "Initial")
+        initialPrerelease = !expectedPrerelease
+        initialDraft = !expectedDraft
+
+        tagName = "v0.4.0-GithubPublishIntegrationSpec"
+    }
+
+    def "cleans up new created releases on failure"() {
+        given: "an empty file to publish (this will fail)"
+        def fromDirectory = new File(projectDir, "initialReleaseAssets")
+        fromDirectory.mkdirs()
+        createFile("initial.json", fromDirectory)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                tagName = "$tagName"
+                from "initialReleaseAssets"
+            }
+        """
+
+        when:
+        runTasksWithFailure("testPublish")
+
+        then:
+        !getRelease(tagName)
+
+        where:
+        tagName = "v0.7.0-GithubPublishIntegrationSpec"
+
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2019 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,10 @@
  *
  */
 
-package wooga.gradle.github
+package wooga.gradle.github.publish
 
-import spock.lang.Retry
-
-@Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
-abstract class GithubPublishIntegrationWithDefaultAuth extends GithubPublishIntegration {
-
-    def setup() {
-        buildFile << """
-            github {
-                username = "$testUserName"
-                repositoryName = "$testRepositoryName"
-                token = "$testUserToken"
-            }
-        """.stripIndent()
-    }
-
+enum PublishMethod {
+    create,
+    update,
+    createOrUpdate
 }
