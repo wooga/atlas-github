@@ -19,7 +19,7 @@ package wooga.gradle.github
 
 import spock.lang.Retry
 
-@Retry(count = 3)
+@Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
 abstract class GithubPublishIntegrationWithDefaultAuth extends GithubPublishIntegration {
 
     def setup() {

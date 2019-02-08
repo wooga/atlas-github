@@ -58,15 +58,6 @@ class GithubReleaseUpdateException extends GithubReleasePublishException {
 
 @InheritConstructors
 class GithubReleaseUploadAssetsException extends GithubReleasePublishException {
-
-    GithubReleaseUploadAssetsException(GHRelease release, String message) {
-        super(release, message)
-
-    }
-
-    GithubReleaseUploadAssetsException(GHRelease release, String message, Throwable cause) {
-        super(release, message, cause)
-    }
 }
 
 @InheritConstructors

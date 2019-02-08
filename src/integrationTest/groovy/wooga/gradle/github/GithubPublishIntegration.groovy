@@ -24,8 +24,8 @@ import org.kohsuke.github.PagedIterable
 import spock.lang.Retry
 import spock.lang.Shared
 
-@Retry(count = 3)
-class GithubPublishIntegration extends IntegrationSpec {
+@Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
+abstract class GithubPublishIntegration extends IntegrationSpec {
     String uniquePostfix() {
         String key = "TRAVIS_JOB_NUMBER"
         def env = System.getenv()

@@ -39,6 +39,7 @@ import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
 import wooga.gradle.github.publish.GithubPublishSpec
 import wooga.gradle.github.publish.PublishBodyStrategy
 import wooga.gradle.github.publish.PublishMethod
+import wooga.gradle.github.publish.internal.GithubPublishRollbackHandler
 import wooga.gradle.github.publish.internal.GithubReleasePropertySetter
 import wooga.gradle.github.publish.internal.GithubReleaseCreateException
 import wooga.gradle.github.publish.internal.GithubReleasePublishException
@@ -142,42 +143,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     protected void failRelease(GHRelease release, String message, boolean deleteRelease, Throwable cause = null) {
         setDidWork(false)
-        logger.error("publish github release failed")
-        logger.error("attempt rollback")
-        if (deleteRelease && release) {
-            logger.info("delete created release")
-            try {
-                release.delete()
-            } catch (Exception error) {
-                logger.error("failed to rollback release")
-                logger.error(error.message)
-            }
-        }
-
-        if(cause && cause.cause && GithubReleaseUploadAssetException.isInstance(cause.cause) && !deleteRelease) {
-            GithubReleaseUploadAssetException rootCause = cause.cause as GithubReleaseUploadAssetException
-            rootCause.uploadedAssets.each {
-                try {
-                    logger.info("delete published asset ${it.name}")
-                    it.delete()
-                } catch (Exception error) {
-                    logger.error("failed to rollback asset ${it.name}")
-                    logger.error(error.message)
-                }
-            }
-
-            rootCause.updatedAssets.each {
-                try {
-                    logger.info("restore updated asset ${it.name}")
-                    it.restore(release)
-                } catch (Exception error) {
-                    logger.error("failed to restore asset ${it.name}")
-                    logger.error(error.message)
-                }
-            }
-        }
-
-        setDidWork(false)
+        GithubPublishRollbackHandler.rollback(release, deleteRelease, cause)
         throw new GradleException(message, cause)
     }
 
