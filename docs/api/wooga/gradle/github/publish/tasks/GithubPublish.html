@@ -70,7 +70,7 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
@@ -114,7 +114,7 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
     <p> Publish a Github release with or without provided assets.
  <p>
  The task implements org.gradle.api.file.CopySourceSpec and org.gradle.api.tasks.util.PatternFilterable.
- Assets to upload can be specified via copy spec syntax.
+ Assets to restore can be specified via copy spec syntax.
  <p>
  Example:
  <pre>
@@ -125,10 +125,10 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
          body = "Release XYZ"
          prerelease = false
          draft = false
-
+         publishMethod = "create"
          from(file('build/output'))
      </CODE>
- }
+}
  </p>
 
           </li>
@@ -139,6 +139,29 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
     <ul class="blockList">
         <li class="blockList">
         <!-- =========== NESTED CLASS SUMMARY =========== -->
+        
+            <ul class="blockList">
+                <li class="blockList"><a name="nested_summary"><!--   --></a>
+                    <h3>Nested Class Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Nested Class Summary table, listing nested classes, and an explanation">
+                        <caption><span>Nested classes</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Modifiers</th>
+                            <th class="colLast" scope="col">Name</th>
+                            <th class="colLast" scope="col">Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.UpdatedAsset.html'>GithubPublish.UpdatedAsset</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+            </ul>
         
 
         <!-- =========== ENUM CONSTANT SUMMARY =========== -->
@@ -259,7 +282,7 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;org.kohsuke.github.GHRelease</code></td>
-                            <td class="colLast"><code><strong><a href="#createGithubRelease(java.lang.Boolean)">createGithubRelease</a></strong>(java.lang.Boolean createDraft)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createOrUpdateGithubRelease(java.lang.Boolean)">createOrUpdateGithubRelease</a></strong>(java.lang.Boolean createDraft)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -301,7 +324,7 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#failRelease(org.kohsuke.github.GHRelease, java.lang.String)">failRelease</a></strong>(org.kohsuke.github.GHRelease release, java.lang.String message)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#failRelease(org.kohsuke.github.GHRelease, java.lang.String, boolean, java.lang.Throwable)">failRelease</a></strong>(org.kohsuke.github.GHRelease release, java.lang.String message, boolean deleteRelease, java.lang.Throwable cause = null)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -324,32 +347,32 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;static&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#getAssetContentType(java.io.File)">getAssetContentType</a></strong>(java.io.File assetFile)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.String</code></td>
                             <td class="colLast"><code><strong><a href="#getBody()">getBody</a></strong>()</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#getBody()' title='GithubPublishSpec.getBody'>GithubPublishSpec.getBody</a></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.io.File</code></td>
                             <td class="colLast"><code><strong><a href="#getDestinationDir()">getDestinationDir</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.Set&lt;java.lang.String&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getExcludes()">getExcludes</a></strong>()</code><br>Returns the set of include patterns.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.Set&lt;java.lang.String&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getIncludes()">getIncludes</a></strong>()</code><br>Returns the set of include patterns.</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/PublishMethod.html'>PublishMethod</a></code></td>
+                            <td class="colLast"><code><strong><a href="#getPublishMethod()">getPublishMethod</a></strong>()</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#getPublishMethod()' title='GithubPublishSpec.getPublishMethod'>GithubPublishSpec.getPublishMethod</a></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -402,38 +425,62 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;static&nbsp;java.lang.Boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isDuplicateAssetError(org.kohsuke.github.HttpException)">isDuplicateAssetError</a></strong>(org.kohsuke.github.HttpException httpError)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isPrerelease()">isPrerelease</a></strong>()</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#isPrerelease()' title='GithubPublishSpec.isPrerelease'>GithubPublishSpec.isPrerelease</a></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#prepareAssets()">prepareAssets</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#prerelease(boolean)">prerelease</a></strong>(boolean prerelease)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#prerelease(boolean)' title='GithubPublishSpec.prerelease'>GithubPublishSpec.prerelease</a></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#prerelease(java.lang.Object)">prerelease</a></strong>(java.lang.Object prerelease)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#prerelease(java.lang.Object)' title='GithubPublishSpec.prerelease'>GithubPublishSpec.prerelease</a></td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#processReleaseAssets(org.kohsuke.github.GHRelease)">processReleaseAssets</a></strong>(org.kohsuke.github.GHRelease release)</code><br></td>
+                        </tr>
+                        
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#publish()">publish</a></strong>()</code><br>executes the plublish process</td>
+                            <td class="colLast"><code><strong><a href="#publish()">publish</a></strong>()</code><br>executes the publish process</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#publishAssets(org.kohsuke.github.GHRelease)">publishAssets</a></strong>(org.kohsuke.github.GHRelease release)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
+                            <td class="colLast"><code><strong><a href="#publishMethod(wooga.gradle.github.publish.PublishMethod)">publishMethod</a></strong>(<a href='../../../../../wooga/gradle/github/publish/PublishMethod.html'>PublishMethod</a> method)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(wooga.gradle.github.publish.PublishMethod)' title='GithubPublishSpec.setPublishMethod'>GithubPublishSpec.setPublishMethod</a></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
+                            <td class="colLast"><code><strong><a href="#publishMethod(java.lang.Object)">publishMethod</a></strong>(java.lang.Object method)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(java.lang.Object)' title='GithubPublishSpec.setPublishMethod'>GithubPublishSpec.setPublishMethod</a></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -510,6 +557,18 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
+                            <td class="colLast"><code><strong><a href="#setPublishMethod(wooga.gradle.github.publish.PublishMethod)">setPublishMethod</a></strong>(<a href='../../../../../wooga/gradle/github/publish/PublishMethod.html'>PublishMethod</a> method)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(wooga.gradle.github.publish.PublishMethod)' title='GithubPublishSpec.setPublishMethod'>GithubPublishSpec.setPublishMethod</a></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a></code></td>
+                            <td class="colLast"><code><strong><a href="#setPublishMethod(java.lang.Object)">setPublishMethod</a></strong>(java.lang.Object method)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(java.lang.Object)' title='GithubPublishSpec.setPublishMethod'>GithubPublishSpec.setPublishMethod</a></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#setReleaseName(java.lang.String)">setReleaseName</a></strong>(java.lang.String name)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setReleaseName(java.lang.String)' title='GithubPublishSpec.setReleaseName'>GithubPublishSpec.setReleaseName</a></td>
                         </tr>
@@ -522,47 +581,53 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;org.kohsuke.github.GHRelease</code></td>
+                            <td class="colLast"><code><strong><a href="#setReleasePropertiesAndCommit(wooga.gradle.github.publish.internal.GithubReleasePropertySetter)">setReleasePropertiesAndCommit</a></strong>(<a href='../../../../../wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html'>GithubReleasePropertySetter</a> releasePropertySet)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#setTagName(java.lang.String)">setTagName</a></strong>(java.lang.String tagName)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setTagName(java.lang.String)' title='GithubPublishSpec.setTagName'>GithubPublishSpec.setTagName</a></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#setTagName(java.lang.Object)">setTagName</a></strong>(java.lang.Object tagName)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setTagName(java.lang.Object)' title='GithubPublishSpec.setTagName'>GithubPublishSpec.setTagName</a></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#setTargetCommitish(java.lang.String)">setTargetCommitish</a></strong>(java.lang.String targetCommitish)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setTargetCommitish(java.lang.String)' title='GithubPublishSpec.setTargetCommitish'>GithubPublishSpec.setTargetCommitish</a></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#setTargetCommitish(java.lang.Object)">setTargetCommitish</a></strong>(java.lang.Object targetCommitish)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setTargetCommitish(java.lang.Object)' title='GithubPublishSpec.setTargetCommitish'>GithubPublishSpec.setTargetCommitish</a></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#tagName(java.lang.String)">tagName</a></strong>(java.lang.String tagName)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#tagName(java.lang.String)' title='GithubPublishSpec.tagName'>GithubPublishSpec.tagName</a></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#tagName(java.lang.Object)">tagName</a></strong>(java.lang.Object tagName)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#tagName(java.lang.Object)' title='GithubPublishSpec.tagName'>GithubPublishSpec.tagName</a></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#targetCommitish(java.lang.String)">targetCommitish</a></strong>(java.lang.String targetCommitish)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#targetCommitish(java.lang.String)' title='GithubPublishSpec.targetCommitish'>GithubPublishSpec.targetCommitish</a></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a></code></td>
                             <td class="colLast"><code><strong><a href="#targetCommitish(java.lang.Object)">targetCommitish</a></strong>(java.lang.Object targetCommitish)</code><br>See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#targetCommitish(java.lang.Object)' title='GithubPublishSpec.targetCommitish'>GithubPublishSpec.targetCommitish</a></td>
@@ -588,7 +653,7 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.gradle.api.internal.ConventionTask</code></td>
-                            <td class="colLast"><code>org.gradle.api.internal.ConventionTask#getConventionMapping(), org.gradle.api.internal.ConventionTask#conventionMapping(java.lang.String, java.util.concurrent.Callable), org.gradle.api.internal.ConventionTask#conventionMapping(java.lang.String, groovy.lang.Closure), org.gradle.api.internal.ConventionTask#setProperty(java.lang.String, java.lang.Object), org.gradle.api.internal.ConventionTask#toString(), org.gradle.api.internal.ConventionTask#compareTo(org.gradle.api.Task), org.gradle.api.internal.ConventionTask#compareTo(java.lang.Object), org.gradle.api.internal.ConventionTask#getName(), org.gradle.api.internal.ConventionTask#execute(), org.gradle.api.internal.ConventionTask#getActions(), org.gradle.api.internal.ConventionTask#getState(), org.gradle.api.internal.ConventionTask#getState(), org.gradle.api.internal.ConventionTask#getPath(), org.gradle.api.internal.ConventionTask#getExtensions(), org.gradle.api.internal.ConventionTask#getTaskActions(), org.gradle.api.internal.ConventionTask#hasTaskActions(), org.gradle.api.internal.ConventionTask#getOnlyIf(), org.gradle.api.internal.ConventionTask#getImpliesSubProjects(), org.gradle.api.internal.ConventionTask#setImpliesSubProjects(boolean), org.gradle.api.internal.ConventionTask#getExecuter(), org.gradle.api.internal.ConventionTask#setExecuter(org.gradle.api.internal.tasks.TaskExecuter), org.gradle.api.internal.ConventionTask#replaceLogger(org.gradle.api.logging.Logger), org.gradle.api.internal.ConventionTask#getTemporaryDirFactory(), org.gradle.api.internal.ConventionTask#addValidator(org.gradle.api.internal.tasks.execution.TaskValidator), org.gradle.api.internal.ConventionTask#getValidators(), org.gradle.api.internal.ConventionTask#appendParallelSafeAction(org.gradle.api.Action), org.gradle.api.internal.ConventionTask#isHasCustomActions(), org.gradle.api.internal.ConventionTask#getAsDynamicObject(), org.gradle.api.internal.ConventionTask#isEnabled(), org.gradle.api.internal.ConventionTask#configure(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#configure(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#property(java.lang.String), org.gradle.api.internal.ConventionTask#setEnabled(boolean), org.gradle.api.internal.ConventionTask#hasProperty(java.lang.String), org.gradle.api.internal.ConventionTask#getGroup(), org.gradle.api.internal.ConventionTask#getInputs(), org.gradle.api.internal.ConventionTask#getInputs(), org.gradle.api.internal.ConventionTask#getIdentityPath(), org.gradle.api.internal.ConventionTask#getDescription(), org.gradle.api.internal.ConventionTask#getProject(), org.gradle.api.internal.ConventionTask#setDescription(java.lang.String), org.gradle.api.internal.ConventionTask#getLogger(), org.gradle.api.internal.ConventionTask#leftShift(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#prependParallelSafeAction(org.gradle.api.Action), org.gradle.api.internal.ConventionTask#injectIntoNewInstance(org.gradle.api.internal.project.ProjectInternal, org.gradle.api.internal.project.taskfactory.TaskIdentity, java.util.concurrent.Callable), org.gradle.api.internal.ConventionTask#setActions(java.util.List), org.gradle.api.internal.ConventionTask#getTaskDependencies(), org.gradle.api.internal.ConventionTask#getTaskDependencies(), org.gradle.api.internal.ConventionTask#getDependsOn(), org.gradle.api.internal.ConventionTask#setDependsOn(java.lang.Iterable), org.gradle.api.internal.ConventionTask#dependsOn([Ljava.lang.Object;), org.gradle.api.internal.ConventionTask#onlyIf(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#onlyIf(org.gradle.api.specs.Spec), org.gradle.api.internal.ConventionTask#setOnlyIf(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#setOnlyIf(org.gradle.api.specs.Spec), org.gradle.api.internal.ConventionTask#setDidWork(boolean), org.gradle.api.internal.ConventionTask#getDidWork(), org.gradle.api.internal.ConventionTask#doFirst(java.lang.String, org.gradle.api.Action), org.gradle.api.internal.ConventionTask#doFirst(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#doFirst(org.gradle.api.Action), org.gradle.api.internal.ConventionTask#doLast(org.gradle.api.Action), org.gradle.api.internal.ConventionTask#doLast(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#doLast(java.lang.String, org.gradle.api.Action), org.gradle.api.internal.ConventionTask#deleteAllActions(), org.gradle.api.internal.ConventionTask#getEnabled(), org.gradle.api.internal.ConventionTask#dependsOnTaskDidWork(), org.gradle.api.internal.ConventionTask#getOutputs(), org.gradle.api.internal.ConventionTask#getOutputs(), org.gradle.api.internal.ConventionTask#getDestroyables(), org.gradle.api.internal.ConventionTask#getLocalState(), org.gradle.api.internal.ConventionTask#getTemporaryDir(), org.gradle.api.internal.ConventionTask#mustRunAfter([Ljava.lang.Object;), org.gradle.api.internal.ConventionTask#setMustRunAfter(java.lang.Iterable), org.gradle.api.internal.ConventionTask#getMustRunAfter(), org.gradle.api.internal.ConventionTask#finalizedBy([Ljava.lang.Object;), org.gradle.api.internal.ConventionTask#setFinalizedBy(java.lang.Iterable), org.gradle.api.internal.ConventionTask#getFinalizedBy(), org.gradle.api.internal.ConventionTask#shouldRunAfter([Ljava.lang.Object;), org.gradle.api.internal.ConventionTask#setShouldRunAfter(java.lang.Iterable), org.gradle.api.internal.ConventionTask#getShouldRunAfter(), org.gradle.api.internal.ConventionTask#getAnt(), org.gradle.api.internal.ConventionTask#getStandardOutputCapture(), org.gradle.api.internal.ConventionTask#setGroup(java.lang.String), org.gradle.api.internal.ConventionTask#getConvention(), org.gradle.api.internal.ConventionTask#getLogging(), org.gradle.api.internal.ConventionTask#getLogging(), org.gradle.api.internal.ConventionTask#getTaskIdentity(), org.gradle.api.internal.ConventionTask#wait(long, int), org.gradle.api.internal.ConventionTask#wait(long), org.gradle.api.internal.ConventionTask#wait(), org.gradle.api.internal.ConventionTask#equals(java.lang.Object), org.gradle.api.internal.ConventionTask#hashCode(), org.gradle.api.internal.ConventionTask#getClass(), org.gradle.api.internal.ConventionTask#notify(), org.gradle.api.internal.ConventionTask#notifyAll()</code></td>
+                            <td class="colLast"><code>org.gradle.api.internal.ConventionTask#getConventionMapping(), org.gradle.api.internal.ConventionTask#conventionMapping(java.lang.String, java.util.concurrent.Callable), org.gradle.api.internal.ConventionTask#conventionMapping(java.lang.String, groovy.lang.Closure), org.gradle.api.internal.ConventionTask#setProperty(java.lang.String, java.lang.Object), org.gradle.api.internal.ConventionTask#toString(), org.gradle.api.internal.ConventionTask#compareTo(org.gradle.api.Task), org.gradle.api.internal.ConventionTask#compareTo(java.lang.Object), org.gradle.api.internal.ConventionTask#getName(), org.gradle.api.internal.ConventionTask#execute(), org.gradle.api.internal.ConventionTask#getActions(), org.gradle.api.internal.ConventionTask#getState(), org.gradle.api.internal.ConventionTask#getState(), org.gradle.api.internal.ConventionTask#getPath(), org.gradle.api.internal.ConventionTask#getExtensions(), org.gradle.api.internal.ConventionTask#getDescription(), org.gradle.api.internal.ConventionTask#setEnabled(boolean), org.gradle.api.internal.ConventionTask#hasProperty(java.lang.String), org.gradle.api.internal.ConventionTask#getProject(), org.gradle.api.internal.ConventionTask#isEnabled(), org.gradle.api.internal.ConventionTask#configure(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#configure(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#setGroup(java.lang.String), org.gradle.api.internal.ConventionTask#getAnt(), org.gradle.api.internal.ConventionTask#getStandardOutputCapture(), org.gradle.api.internal.ConventionTask#getConvention(), org.gradle.api.internal.ConventionTask#getLogging(), org.gradle.api.internal.ConventionTask#getLogging(), org.gradle.api.internal.ConventionTask#onlyIf(org.gradle.api.specs.Spec), org.gradle.api.internal.ConventionTask#onlyIf(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#doFirst(java.lang.String, org.gradle.api.Action), org.gradle.api.internal.ConventionTask#doFirst(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#doFirst(org.gradle.api.Action), org.gradle.api.internal.ConventionTask#setActions(java.util.List), org.gradle.api.internal.ConventionTask#getTaskDependencies(), org.gradle.api.internal.ConventionTask#getTaskDependencies(), org.gradle.api.internal.ConventionTask#getDependsOn(), org.gradle.api.internal.ConventionTask#setDependsOn(java.lang.Iterable), org.gradle.api.internal.ConventionTask#dependsOn([Ljava.lang.Object;), org.gradle.api.internal.ConventionTask#setOnlyIf(org.gradle.api.specs.Spec), org.gradle.api.internal.ConventionTask#setOnlyIf(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#setDidWork(boolean), org.gradle.api.internal.ConventionTask#getDidWork(), org.gradle.api.internal.ConventionTask#doLast(org.gradle.api.Action), org.gradle.api.internal.ConventionTask#doLast(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#doLast(java.lang.String, org.gradle.api.Action), org.gradle.api.internal.ConventionTask#deleteAllActions(), org.gradle.api.internal.ConventionTask#getEnabled(), org.gradle.api.internal.ConventionTask#dependsOnTaskDidWork(), org.gradle.api.internal.ConventionTask#getOutputs(), org.gradle.api.internal.ConventionTask#getOutputs(), org.gradle.api.internal.ConventionTask#getDestroyables(), org.gradle.api.internal.ConventionTask#getLocalState(), org.gradle.api.internal.ConventionTask#getTemporaryDir(), org.gradle.api.internal.ConventionTask#mustRunAfter([Ljava.lang.Object;), org.gradle.api.internal.ConventionTask#setMustRunAfter(java.lang.Iterable), org.gradle.api.internal.ConventionTask#getMustRunAfter(), org.gradle.api.internal.ConventionTask#finalizedBy([Ljava.lang.Object;), org.gradle.api.internal.ConventionTask#setFinalizedBy(java.lang.Iterable), org.gradle.api.internal.ConventionTask#getFinalizedBy(), org.gradle.api.internal.ConventionTask#shouldRunAfter([Ljava.lang.Object;), org.gradle.api.internal.ConventionTask#setShouldRunAfter(java.lang.Iterable), org.gradle.api.internal.ConventionTask#getShouldRunAfter(), org.gradle.api.internal.ConventionTask#getGroup(), org.gradle.api.internal.ConventionTask#getAsDynamicObject(), org.gradle.api.internal.ConventionTask#getTaskIdentity(), org.gradle.api.internal.ConventionTask#prependParallelSafeAction(org.gradle.api.Action), org.gradle.api.internal.ConventionTask#leftShift(groovy.lang.Closure), org.gradle.api.internal.ConventionTask#property(java.lang.String), org.gradle.api.internal.ConventionTask#getInputs(), org.gradle.api.internal.ConventionTask#getInputs(), org.gradle.api.internal.ConventionTask#setDescription(java.lang.String), org.gradle.api.internal.ConventionTask#getIdentityPath(), org.gradle.api.internal.ConventionTask#injectIntoNewInstance(org.gradle.api.internal.project.ProjectInternal, org.gradle.api.internal.project.taskfactory.TaskIdentity, java.util.concurrent.Callable), org.gradle.api.internal.ConventionTask#getTaskActions(), org.gradle.api.internal.ConventionTask#hasTaskActions(), org.gradle.api.internal.ConventionTask#getOnlyIf(), org.gradle.api.internal.ConventionTask#getImpliesSubProjects(), org.gradle.api.internal.ConventionTask#setImpliesSubProjects(boolean), org.gradle.api.internal.ConventionTask#getExecuter(), org.gradle.api.internal.ConventionTask#setExecuter(org.gradle.api.internal.tasks.TaskExecuter), org.gradle.api.internal.ConventionTask#replaceLogger(org.gradle.api.logging.Logger), org.gradle.api.internal.ConventionTask#getTemporaryDirFactory(), org.gradle.api.internal.ConventionTask#addValidator(org.gradle.api.internal.tasks.execution.TaskValidator), org.gradle.api.internal.ConventionTask#getValidators(), org.gradle.api.internal.ConventionTask#appendParallelSafeAction(org.gradle.api.Action), org.gradle.api.internal.ConventionTask#isHasCustomActions(), org.gradle.api.internal.ConventionTask#getLogger(), org.gradle.api.internal.ConventionTask#wait(long, int), org.gradle.api.internal.ConventionTask#wait(long), org.gradle.api.internal.ConventionTask#wait(), org.gradle.api.internal.ConventionTask#equals(java.lang.Object), org.gradle.api.internal.ConventionTask#hashCode(), org.gradle.api.internal.ConventionTask#getClass(), org.gradle.api.internal.ConventionTask#notify(), org.gradle.api.internal.ConventionTask#notifyAll()</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -698,10 +763,10 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
                             </li>
                         </ul>
                     
-                        <a name="createGithubRelease(java.lang.Boolean)"><!-- --></a>
+                        <a name="createOrUpdateGithubRelease(java.lang.Boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.kohsuke.github.GHRelease <strong>createGithubRelease</strong>(java.lang.Boolean createDraft)</h4>
+                                <h4>protected&nbsp;org.kohsuke.github.GHRelease <strong>createOrUpdateGithubRelease</strong>(java.lang.Boolean createDraft)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -736,7 +801,7 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
 
  If excludes are not provided, then no files will be excluded. If excludes are provided, then files must not match
  any exclude pattern to be processed.
-     <DL><DT><B>Parameters:</B></DT><DD><code>excludes</code> -  a vararg list of exclude patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>excludes</code> -  a vararg list of exclude patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this*</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -750,7 +815,7 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
 
  If excludes are not provided, then no files will be excluded. If excludes are provided, then files must not match
  any exclude pattern to be processed.
-     <DL><DT><B>Parameters:</B></DT><DD><code>excludes</code> -  a Iterable providing new exclude patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>excludes</code> -  a Iterable providing new exclude patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this*</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -763,7 +828,7 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
 
  If excludes are not provided, then no files will be excluded. If excludes are provided, then files must not match
  any exclude pattern to be processed.
-     <DL><DT><B>Parameters:</B></DT><DD><code>excludeSpec</code> -  the spec to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>excludeSpec</code> -  the spec to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this*</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -776,24 +841,21 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
  org.gradle.api.file.FileTreeElement as its parameter. The closure should return true or false. Example:
 
  <pre autoTested='true'>
- copySpec {
-   from 'source'
+ copySpec {*   from 'source'
    into 'destination'
    //an example of excluding files from certain configuration:
-   exclude { it.file in configurations.someConf.files }
- }
- </pre>
+   exclude { it.file in configurations.someConf.files }*}* </pre>
 
  If excludes are not provided, then no files will be excluded. If excludes are provided, then files must not match
  any exclude pattern to be processed.
-     <DL><DT><B>Parameters:</B></DT><DD><code>excludeSpec</code> -  the spec to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.file.FileTreeElement</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>excludeSpec</code> -  the spec to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this*</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.file.FileTreeElement</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="failRelease(org.kohsuke.github.GHRelease, java.lang.String)"><!-- --></a>
+                        <a name="failRelease(org.kohsuke.github.GHRelease, java.lang.String, boolean, java.lang.Throwable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>failRelease</strong>(org.kohsuke.github.GHRelease release, java.lang.String message)</h4>
+                                <h4>protected&nbsp;void <strong>failRelease</strong>(org.kohsuke.github.GHRelease release, java.lang.String message, boolean deleteRelease, java.lang.Throwable cause = null)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -814,7 +876,7 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
                                 <h4>@java.lang.Override
 <a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a> <strong>from</strong>(java.lang.Object sourcePath, groovy.lang.Closure configureClosure)</h4>
                                 <p> Specifies the source files or directories for a copy and creates a child <CODE>CopySourceSpec</CODE>. The given source
- path is evaluated as per org.gradle.api.Project#files(Object...) .
+ path is evaluated as per org.gradle.api.Project#files(Object ...) .
      <DL><DT><B>Parameters:</B></DT><DD><code>sourcePath</code> -  Path to source for the copy</DD><DD><code>configureClosure</code> -  closure for configuring the child CopySourceSpec</DD></DL></p>
                             </li>
                         </ul>
@@ -825,16 +887,8 @@ extends <a href='../../../../../wooga/gradle/github/base/tasks/internal/Abstract
                                 <h4>@java.lang.Override
 <a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a> <strong>from</strong>(java.lang.Object sourcePath, org.gradle.api.Action&lt;? super org.gradle.api.file.CopySpec&gt; configureAction)</h4>
                                 <p> Specifies the source files or directories for a copy and creates a child <CODE>CopySpec</CODE>. The given source
- path is evaluated as per org.gradle.api.Project#files(Object...) .
+ path is evaluated as per org.gradle.api.Project#files(Object ...) .
      <DL><DT><B>Parameters:</B></DT><DD><code>sourcePath</code> -  Path to source for the copy</DD><DD><code>configureAction</code> -  action for configuring the child CopySpec</DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getAssetContentType(java.io.File)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>protected&nbsp;static&nbsp;java.lang.String <strong>getAssetContentType</strong>(java.io.File assetFile)</h4>
-                                <p></p>
                             </li>
                         </ul>
                     
@@ -878,6 +932,16 @@ java.util.Set&lt;java.lang.String&gt; <strong>getIncludes</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="getPublishMethod()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../wooga/gradle/github/publish/PublishMethod.html'>PublishMethod</a> <strong>getPublishMethod</strong>()</h4>
+                                <p> See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#getPublishMethod()' title='GithubPublishSpec.getPublishMethod'>GithubPublishSpec.getPublishMethod</a>
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="getReleaseName()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -904,6 +968,7 @@ java.lang.String <strong>getTagName</strong>()</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@org.gradle.api.tasks.Input
+@java.util.Optional
 @java.lang.Override
 java.lang.String <strong>getTargetCommitish</strong>()</h4>
                                 <p> See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#getTargetCommitish()' title='GithubPublishSpec.getTargetCommitish'>GithubPublishSpec.getTargetCommitish</a>
@@ -921,7 +986,7 @@ java.lang.String <strong>getTargetCommitish</strong>()</h4>
 
  If includes are not provided, then all files in this container will be included. If includes are provided, then a
  file must match at least one of the include patterns to be processed.
-     <DL><DT><B>Parameters:</B></DT><DD><code>includes</code> -  a vararg list of include patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>includes</code> -  a vararg list of include patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this*</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -935,7 +1000,7 @@ java.lang.String <strong>getTargetCommitish</strong>()</h4>
 
  If includes are not provided, then all files in this container will be included. If includes are provided, then a
  file must match at least one of the include patterns to be processed.
-     <DL><DT><B>Parameters:</B></DT><DD><code>includes</code> -  a Iterable providing more include patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>includes</code> -  a Iterable providing more include patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this*</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -948,7 +1013,7 @@ java.lang.String <strong>getTargetCommitish</strong>()</h4>
 
  If includes are not provided, then all files in this container will be included. If includes are provided, then a
  file must match at least one of the include patterns or specs to be included.
-     <DL><DT><B>Parameters:</B></DT><DD><code>includeSpec</code> -  the spec to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>includeSpec</code> -  the spec to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this*</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -962,7 +1027,7 @@ java.lang.String <strong>getTargetCommitish</strong>()</h4>
 
  If includes are not provided, then all files in this container will be included. If includes are provided, then a
  file must match at least one of the include patterns or specs to be included.
-     <DL><DT><B>Parameters:</B></DT><DD><code>includeSpec</code> -  the spec to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>includeSpec</code> -  the spec to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this*</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -974,6 +1039,14 @@ java.lang.String <strong>getTargetCommitish</strong>()</h4>
 boolean <strong>isDraft</strong>()</h4>
                                 <p> See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#isDraft()' title='GithubPublishSpec.isDraft'>GithubPublishSpec.isDraft</a>
      </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isDuplicateAssetError(org.kohsuke.github.HttpException)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;static&nbsp;java.lang.Boolean <strong>isDuplicateAssetError</strong>(org.kohsuke.github.HttpException httpError)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -1016,12 +1089,20 @@ boolean <strong>isPrerelease</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="processReleaseAssets(org.kohsuke.github.GHRelease)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;void <strong>processReleaseAssets</strong>(org.kohsuke.github.GHRelease release)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="publish()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@org.gradle.api.tasks.TaskAction
 protected&nbsp;void <strong>publish</strong>()</h4>
-                                <p> executes the plublish process
+                                <p> executes the publish process
      </p>
                             </li>
                         </ul>
@@ -1031,6 +1112,26 @@ protected&nbsp;void <strong>publish</strong>()</h4>
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>publishAssets</strong>(org.kohsuke.github.GHRelease release)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="publishMethod(wooga.gradle.github.publish.PublishMethod)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>publishMethod</strong>(<a href='../../../../../wooga/gradle/github/publish/PublishMethod.html'>PublishMethod</a> method)</h4>
+                                <p> See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(wooga.gradle.github.publish.PublishMethod)' title='GithubPublishSpec.setPublishMethod'>GithubPublishSpec.setPublishMethod</a>
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="publishMethod(java.lang.Object)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>publishMethod</strong>(java.lang.Object method)</h4>
+                                <p> See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(java.lang.Object)' title='GithubPublishSpec.setPublishMethod'>GithubPublishSpec.setPublishMethod</a>
+     </p>
                             </li>
                         </ul>
                     
@@ -1120,7 +1221,7 @@ protected&nbsp;void <strong>publish</strong>()</h4>
 <a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a> <strong>setExcludes</strong>(java.lang.Iterable&lt;java.lang.String&gt; excludes)</h4>
                                 <p> Set the allowable exclude patterns.  Note that unlike <a href='#exclude(java.lang.Iterable)'>exclude(Iterable)</a> this replaces any previously
  defined excludes.
-     <DL><DT><B>Parameters:</B></DT><DD><code>excludes</code> -  an Iterable providing new exclude patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>excludes</code> -  an Iterable providing new exclude patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this*</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1131,7 +1232,7 @@ protected&nbsp;void <strong>publish</strong>()</h4>
 <a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a> <strong>setIncludes</strong>(java.lang.Iterable&lt;java.lang.String&gt; includes)</h4>
                                 <p> Set the allowable include patterns.  Note that unlike <a href='#include(java.lang.Iterable)'>include(Iterable)</a> this replaces any previously
  defined includes.
-     <DL><DT><B>Parameters:</B></DT><DD><code>includes</code> -  an Iterable providing new include patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>includes</code> -  an Iterable providing new include patterns</DD></DL><DL><DT><B>Returns:</B></DT><DD>this*</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.gradle.api.tasks.util.PatternFilterable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1155,6 +1256,26 @@ protected&nbsp;void <strong>publish</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="setPublishMethod(wooga.gradle.github.publish.PublishMethod)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setPublishMethod</strong>(<a href='../../../../../wooga/gradle/github/publish/PublishMethod.html'>PublishMethod</a> method)</h4>
+                                <p> See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(wooga.gradle.github.publish.PublishMethod)' title='GithubPublishSpec.setPublishMethod'>GithubPublishSpec.setPublishMethod</a>
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="setPublishMethod(java.lang.Object)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html'>GithubPublishSpec</a> <strong>setPublishMethod</strong>(java.lang.Object method)</h4>
+                                <p> See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(java.lang.Object)' title='GithubPublishSpec.setPublishMethod'>GithubPublishSpec.setPublishMethod</a>
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="setReleaseName(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -1172,6 +1293,14 @@ protected&nbsp;void <strong>publish</strong>()</h4>
 <a href='../../../../../wooga/gradle/github/publish/tasks/GithubPublish.html'>GithubPublish</a> <strong>setReleaseName</strong>(java.lang.Object name)</h4>
                                 <p> See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setReleaseName(java.lang.Object)' title='GithubPublishSpec.setReleaseName'>GithubPublishSpec.setReleaseName</a>
      </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="setReleasePropertiesAndCommit(wooga.gradle.github.publish.internal.GithubReleasePropertySetter)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;org.kohsuke.github.GHRelease <strong>setReleasePropertiesAndCommit</strong>(<a href='../../../../../wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html'>GithubReleasePropertySetter</a> releasePropertySet)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -1289,7 +1418,7 @@ protected&nbsp;void <strong>publish</strong>()</h4>
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>

@@ -154,6 +154,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#body(wooga.gradle.github.publish.PublishBodyStrategy)' title='GithubPublishSpec.body'>GithubPublishSpec.body</a></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#body(wooga.gradle.github.publish.PublishBodyStrategy)" title="Method in GithubPublishSpec">body(PublishBodyStrategy)</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
 </dt><dd> <div class="block">Sets the description text for the release.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html#body(java.lang.String)" title="Method in GithubReleasePropertySetter">body(String)</a></span> - Method in <a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html">GithubReleasePropertySetter</a>
+</dt><dd> <div class="block">@param body The release notes body.</div></dd>
 </dl>
 
     
@@ -161,7 +163,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 <h2 class="title">C</h2>
 <dl>
 
-<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#createGithubRelease(java.lang.Boolean)" title="Method in GithubPublish">createGithubRelease(Boolean)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html#commit()" title="Method in GithubReleasePropertySetter">commit()</a></span> - Method in <a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html">GithubReleasePropertySetter</a>
+</dt><dd> <div class="block">Executes the builders native commit method.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html#commitish(java.lang.String)" title="Method in GithubReleasePropertySetter">commitish(String)</a></span> - Method in <a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html">GithubReleasePropertySetter</a>
+</dt><dd> <div class="block">Specifies the commitish value that determines where the Git tag is created from. </div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#createOrUpdateGithubRelease(java.lang.Boolean)" title="Method in GithubPublish">createOrUpdateGithubRelease(Boolean)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
 </dt><dd> <div class="block"></div></dd>
 </dl>
 
@@ -178,6 +184,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#draft(java.lang.Object)' title='GithubPublishSpec.draft'>GithubPublishSpec.draft</a></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#draft(java.lang.Object)" title="Method in GithubPublishSpec">draft(Object)</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
 </dt><dd> <div class="block">Sets the publication status for the release.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html#draft(boolean)" title="Method in GithubReleasePropertySetter">draft(boolean)</a></span> - Method in <a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html">GithubReleasePropertySetter</a>
+</dt><dd> <div class="block">Optional.</div></dd>
 </dl>
 
     
@@ -194,10 +202,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 <h2 class="title">F</h2>
 <dl>
 
-<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#failRelease(org.kohsuke.github.GHRelease, java.lang.String)" title="Method in GithubPublish">failRelease(GHRelease, String)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#failRelease(org.kohsuke.github.GHRelease, java.lang.String, boolean, java.lang.Throwable)" title="Method in GithubPublish">failRelease(GHRelease, String, boolean, Throwable)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#from(java.lang.Object, Action<? super CopySpec>)" title="Method in GithubPublish">from(Object, Action&lt;? super CopySpec&gt;)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
 </dt><dd> <div class="block">Specifies the source files or directories for a copy and creates a child <CODE>CopySpec</CODE>. </div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.UpdatedAsset.html#fromAsset(org.kohsuke.github.GHAsset)" title="Method in GithubPublish.UpdatedAsset">fromAsset(GHAsset)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.UpdatedAsset.html">GithubPublish.UpdatedAsset</a>
+</dt><dd> <div class="block"></div></dd>
 </dl>
 
     
@@ -205,8 +215,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <h2 class="title">G</h2>
 <dl>
 
-<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#getAssetContentType(java.io.File)" title="Method in GithubPublish">getAssetContentType(File)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/base/tasks/internal/AbstractGithubTask.html#getBaseUrl()" title="Method in AbstractGithubTask">getBaseUrl()</a></span> - Method in <a href="wooga/gradle/github/base/tasks/internal/AbstractGithubTask.html">AbstractGithubTask</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/base/internal/DefaultGithubPluginExtension.html#getBaseUrl()" title="Method in DefaultGithubPluginExtension">getBaseUrl()</a></span> - Method in <a href="wooga/gradle/github/base/internal/DefaultGithubPluginExtension.html">DefaultGithubPluginExtension</a>
@@ -233,6 +241,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/base/GithubSpec.html#getPassword()" title="Method in GithubSpec">getPassword()</a></span> - Method in <a href="wooga/gradle/github/base/GithubSpec.html">GithubSpec</a>
 </dt><dd> <div class="block">Returns the github user password.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#getPublishMethod()" title="Method in GithubPublish">getPublishMethod()</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
+</dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#getPublishMethod()' title='GithubPublishSpec.getPublishMethod'>GithubPublishSpec.getPublishMethod</a></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#getPublishMethod()" title="Method in GithubPublishSpec">getPublishMethod()</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
+</dt><dd> <div class="block">Returns a <CODE>PublishMethod</CODE> value indicating if a release should be created or updated.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePublishException.html#getRelease()" title="Method in GithubReleasePublishException">getRelease()</a></span> - Method in <a href="wooga/gradle/github/publish/internal/GithubReleasePublishException.html">GithubReleasePublishException</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#getReleaseName()" title="Method in GithubPublish">getReleaseName()</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
 </dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#getReleaseName()' title='GithubPublishSpec.getReleaseName'>GithubPublishSpec.getReleaseName</a></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#getReleaseName()" title="Method in GithubPublishSpec">getReleaseName()</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
@@ -279,13 +293,37 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Extension point for the github plugin.</div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html" title="Class in wooga.gradle.github.publish.tasks">GithubPublish</a></span> - Class in <a href="./wooga/gradle/github/publish/tasks/package-summary.html">wooga.gradle.github.publish.tasks</a>
 </dt><dd><div class="block">Publish a Github release with or without provided assets.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.UpdatedAsset.html" title="Class in wooga.gradle.github.publish.tasks.GithubPublish">GithubPublish.UpdatedAsset</a></span> - Class in <a href="./wooga/gradle/github/publish/tasks/package-summary.html">wooga.gradle.github.publish.tasks</a>
+</dt><dd><div class="block"></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.UpdatedAsset.html#GithubPublish.UpdatedAsset(java.lang.String, java.lang.String, java.io.File)" title="Constructor in GithubPublish.UpdatedAsset">GithubPublish.UpdatedAsset(String, String, File)</a></span> - Constructor in <a href="wooga/gradle/github/publish/tasks/GithubPublish.UpdatedAsset.html">GithubPublish.UpdatedAsset</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#GithubPublish()" title="Constructor in GithubPublish">GithubPublish()</a></span> - Constructor in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishPlugin.html" title="Class in wooga.gradle.github.publish">GithubPublishPlugin</a></span> - Class in <a href="./wooga/gradle/github/publish/package-summary.html">wooga.gradle.github.publish</a>
 </dt><dd><div class="block">A org.gradle.api.Plugin which provides tasks and conventions to publish artifacts to github.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubPublishRollbackHandler.html" title="Class in wooga.gradle.github.publish.internal">GithubPublishRollbackHandler</a></span> - Class in <a href="./wooga/gradle/github/publish/internal/package-summary.html">wooga.gradle.github.publish.internal</a>
+</dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html" title="Interface in wooga.gradle.github.publish">GithubPublishSpec</a></span> - Interface in <a href="./wooga/gradle/github/publish/package-summary.html">wooga.gradle.github.publish</a>
 </dt><dd><div class="block">Task spec definition for a github publish task/action.
  </div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleaseCreateException.html" title="Class in wooga.gradle.github.publish.internal">GithubReleaseCreateException</a></span> - Class in <a href="./wooga/gradle/github/publish/internal/package-summary.html">wooga.gradle.github.publish.internal</a>
+</dt><dd><div class="block"></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html" title="Class in wooga.gradle.github.publish.internal">GithubReleasePropertySetter</a></span> - Class in <a href="./wooga/gradle/github/publish/internal/package-summary.html">wooga.gradle.github.publish.internal</a>
+</dt><dd><div class="block">A utility wrapper type.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html#GithubReleasePropertySetter(org.kohsuke.github.GHReleaseBuilder)" title="Constructor in GithubReleasePropertySetter">GithubReleasePropertySetter(GHReleaseBuilder)</a></span> - Constructor in <a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html">GithubReleasePropertySetter</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePublishException.html" title="Class in wooga.gradle.github.publish.internal">GithubReleasePublishException</a></span> - Class in <a href="./wooga/gradle/github/publish/internal/package-summary.html">wooga.gradle.github.publish.internal</a>
+</dt><dd><div class="block"></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePublishException.html#GithubReleasePublishException(org.kohsuke.github.GHRelease, java.lang.String, java.lang.Throwable)" title="Constructor in GithubReleasePublishException">GithubReleasePublishException(GHRelease, String, Throwable)</a></span> - Constructor in <a href="wooga/gradle/github/publish/internal/GithubReleasePublishException.html">GithubReleasePublishException</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleaseUpdateException.html" title="Class in wooga.gradle.github.publish.internal">GithubReleaseUpdateException</a></span> - Class in <a href="./wooga/gradle/github/publish/internal/package-summary.html">wooga.gradle.github.publish.internal</a>
+</dt><dd><div class="block"></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleaseUploadAssetException.html" title="Class in wooga.gradle.github.publish.internal">GithubReleaseUploadAssetException</a></span> - Class in <a href="./wooga/gradle/github/publish/internal/package-summary.html">wooga.gradle.github.publish.internal</a>
+</dt><dd><div class="block"></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleaseUploadAssetException.html#GithubReleaseUploadAssetException(List<GHAsset>, List<GithubPublish.UpdatedAsset>, java.lang.Throwable)" title="Constructor in GithubReleaseUploadAssetException">GithubReleaseUploadAssetException(List&lt;GHAsset&gt;, UpdatedAsset&gt;, Throwable)</a></span> - Constructor in <a href="wooga/gradle/github/publish/internal/GithubReleaseUploadAssetException.html">GithubReleaseUploadAssetException</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleaseUploadAssetsException.html" title="Class in wooga.gradle.github.publish.internal">GithubReleaseUploadAssetsException</a></span> - Class in <a href="./wooga/gradle/github/publish/internal/package-summary.html">wooga.gradle.github.publish.internal</a>
+</dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/base/internal/GithubRepositoryValidator.html" title="Class in wooga.gradle.github.base.internal">GithubRepositoryValidator</a></span> - Class in <a href="./wooga/gradle/github/base/internal/package-summary.html">wooga.gradle.github.base.internal</a>
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/base/GithubSpec.html" title="Interface in wooga.gradle.github.base">GithubSpec</a></span> - Interface in <a href="./wooga/gradle/github/base/package-summary.html">wooga.gradle.github.base</a>
@@ -310,6 +348,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#isDraft()' title='GithubPublishSpec.isDraft'>GithubPublishSpec.isDraft</a></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#isDraft()" title="Method in GithubPublishSpec">isDraft()</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
 </dt><dd> <div class="block">Returns a <CODE>boolean</CODE> value indicating if the release will be automatically published.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#isDuplicateAssetError(org.kohsuke.github.HttpException)" title="Method in GithubPublish">isDuplicateAssetError(HttpException)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#isPrerelease()" title="Method in GithubPublish">isPrerelease()</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
 </dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#isPrerelease()' title='GithubPublishSpec.isPrerelease'>GithubPublishSpec.isPrerelease</a></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#isPrerelease()" title="Method in GithubPublishSpec">isPrerelease()</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
@@ -349,6 +389,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <h2 class="title">N</h2>
 <dl>
 
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html#name(java.lang.String)" title="Method in GithubReleasePropertySetter">name(String)</a></span> - Method in <a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html">GithubReleasePropertySetter</a>
+</dt><dd> <div class="block">@param name the name of the release</div></dd>
 </dl>
 
     
@@ -375,12 +417,22 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#prerelease(java.lang.Object)' title='GithubPublishSpec.prerelease'>GithubPublishSpec.prerelease</a></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#prerelease(java.lang.Object)" title="Method in GithubPublishSpec">prerelease(Object)</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
 </dt><dd> <div class="block">Sets the prerelease status of the release.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html#prerelease(boolean)" title="Method in GithubReleasePropertySetter">prerelease(boolean)</a></span> - Method in <a href="wooga/gradle/github/publish/internal/GithubReleasePropertySetter.html">GithubReleasePropertySetter</a>
+</dt><dd> <div class="block">Optional</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#processReleaseAssets(org.kohsuke.github.GHRelease)" title="Method in GithubPublish">processReleaseAssets(GHRelease)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#publish()" title="Method in GithubPublish">publish()</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
-</dt><dd> <div class="block">executes the plublish process</div></dd>
+</dt><dd> <div class="block">executes the publish process</div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#publishAssets(org.kohsuke.github.GHRelease)" title="Method in GithubPublish">publishAssets(GHRelease)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/PublishBodyStrategy.html" title="Interface in wooga.gradle.github.publish">PublishBodyStrategy</a></span> - Interface in <a href="./wooga/gradle/github/publish/package-summary.html">wooga.gradle.github.publish</a>
 </dt><dd><div class="block">A strategy used to retrieve the github release description.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/PublishMethod.html" title="Enum in wooga.gradle.github.publish">PublishMethod</a></span> - Enum in <a href="./wooga/gradle/github/publish/package-summary.html">wooga.gradle.github.publish</a>
+</dt><dd><div class="block"></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#publishMethod(java.lang.Object)" title="Method in GithubPublish">publishMethod(Object)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
+</dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(java.lang.Object)' title='GithubPublishSpec.setPublishMethod'>GithubPublishSpec.setPublishMethod</a></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#publishMethod(java.lang.Object)" title="Method in GithubPublishSpec">publishMethod(Object)</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
+</dt><dd> <div class="block">Sets the publish method.</div></dd>
 </dl>
 
     
@@ -395,6 +447,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <h2 class="title">R</h2>
 <dl>
 
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/ReleaseAssetUpload.html" title="Class in wooga.gradle.github.publish.internal">ReleaseAssetUpload</a></span> - Class in <a href="./wooga/gradle/github/publish/internal/package-summary.html">wooga.gradle.github.publish.internal</a>
+</dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#releaseName(java.lang.String)" title="Method in GithubPublish">releaseName(String)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
 </dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#releaseName(java.lang.String)' title='GithubPublishSpec.releaseName'>GithubPublishSpec.releaseName</a></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#releaseName(java.lang.Object)" title="Method in GithubPublishSpec">releaseName(Object)</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
@@ -405,6 +459,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/base/GithubSpec.html#repositoryName(java.lang.String)" title="Method in GithubSpec">repositoryName(String)</a></span> - Method in <a href="wooga/gradle/github/base/GithubSpec.html">GithubSpec</a>
 </dt><dd> <div class="block">Sets the github repository name.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.UpdatedAsset.html#restore(org.kohsuke.github.GHRelease)" title="Method in GithubPublish.UpdatedAsset">restore(GHRelease)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.UpdatedAsset.html">GithubPublish.UpdatedAsset</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/GithubPublishRollbackHandler.html#rollback(org.kohsuke.github.GHRelease, boolean, java.lang.Throwable)" title="Method in GithubPublishRollbackHandler">rollback(GHRelease, boolean, Throwable)</a></span> - Method in <a href="wooga/gradle/github/publish/internal/GithubPublishRollbackHandler.html">GithubPublishRollbackHandler</a>
+</dt><dd> <div class="block"></div></dd>
 </dl>
 
     
@@ -440,10 +498,16 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPrerelease(java.lang.Object)' title='GithubPublishSpec.setPrerelease'>GithubPublishSpec.setPrerelease</a></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#setPrerelease(java.lang.Object)" title="Method in GithubPublishSpec">setPrerelease(Object)</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
 </dt><dd> <div class="block">Sets the prerelease status of the release.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#setPublishMethod(java.lang.Object)" title="Method in GithubPublish">setPublishMethod(Object)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
+</dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(java.lang.Object)' title='GithubPublishSpec.setPublishMethod'>GithubPublishSpec.setPublishMethod</a></div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#setPublishMethod(java.lang.Object)" title="Method in GithubPublishSpec">setPublishMethod(Object)</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
+</dt><dd> <div class="block">Sets the publish method.</div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#setReleaseName(java.lang.Object)" title="Method in GithubPublish">setReleaseName(Object)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
 </dt><dd> <div class="block">See: <a href='../../../../../wooga/gradle/github/publish/GithubPublishSpec.html#setReleaseName(java.lang.Object)' title='GithubPublishSpec.setReleaseName'>GithubPublishSpec.setReleaseName</a></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/publish/GithubPublishSpec.html#setReleaseName(java.lang.Object)" title="Method in GithubPublishSpec">setReleaseName(Object)</a></span> - Method in <a href="wooga/gradle/github/publish/GithubPublishSpec.html">GithubPublishSpec</a>
 </dt><dd> <div class="block">Sets the name of the release.</div></dd>
+<dt><span class="strong"><a href="wooga/gradle/github/publish/tasks/GithubPublish.html#setReleasePropertiesAndCommit(wooga.gradle.github.publish.internal.GithubReleasePropertySetter)" title="Method in GithubPublish">setReleasePropertiesAndCommit(GithubReleasePropertySetter)</a></span> - Method in <a href="wooga/gradle/github/publish/tasks/GithubPublish.html">GithubPublish</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/base/tasks/internal/AbstractGithubTask.html#setRepositoryName(java.lang.String)" title="Method in AbstractGithubTask">setRepositoryName(String)</a></span> - Method in <a href="wooga/gradle/github/base/tasks/internal/AbstractGithubTask.html">AbstractGithubTask</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/base/internal/DefaultGithubPluginExtension.html#setRepositoryName(java.lang.String)" title="Method in DefaultGithubPluginExtension">setRepositoryName(String)</a></span> - Method in <a href="wooga/gradle/github/base/internal/DefaultGithubPluginExtension.html">DefaultGithubPluginExtension</a>
@@ -498,6 +562,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <h2 class="title">U</h2>
 <dl>
 
+<dt><span class="strong"><a href="wooga/gradle/github/publish/internal/ReleaseAssetUpload.html#uploadAsset(org.kohsuke.github.GHRelease, java.lang.String, java.io.InputStream, java.lang.String)" title="Method in ReleaseAssetUpload">uploadAsset(GHRelease, String, InputStream, String)</a></span> - Method in <a href="wooga/gradle/github/publish/internal/ReleaseAssetUpload.html">ReleaseAssetUpload</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/base/tasks/internal/AbstractGithubTask.html#username(java.lang.String)" title="Method in AbstractGithubTask">username(String)</a></span> - Method in <a href="wooga/gradle/github/base/tasks/internal/AbstractGithubTask.html">AbstractGithubTask</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="wooga/gradle/github/base/internal/DefaultGithubPluginExtension.html#username(java.lang.String)" title="Method in DefaultGithubPluginExtension">username(String)</a></span> - Method in <a href="wooga/gradle/github/base/internal/DefaultGithubPluginExtension.html">DefaultGithubPluginExtension</a>
