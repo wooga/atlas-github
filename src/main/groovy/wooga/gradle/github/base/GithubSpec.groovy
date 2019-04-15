@@ -17,6 +17,8 @@
 
 package wooga.gradle.github.base
 
+import org.gradle.api.provider.Property
+
 /**
  * Base Task spec definitions for a github tasks/actions.
  */
@@ -34,7 +36,7 @@ interface GithubSpec {
      * @return the github username. May be {@code Null}
      * @see    GithubBasePluginConsts#GITHUB_USER_NAME_OPTION
      */
-    String getUsername()
+    Property<String> getUsername()
 
     /**
      * Sets the github username.
@@ -66,7 +68,7 @@ interface GithubSpec {
      * @return the github username. May be {@code Null}
      * @see    GithubBasePluginConsts#GITHUB_USER_PASSWORD_OPTION
      */
-    String getPassword()
+    Property<String> getPassword()
 
     /**
      * Sets the github user password.
@@ -98,7 +100,7 @@ interface GithubSpec {
      * @return the github access token. May be {@code Null}
      * @see    GithubBasePluginConsts#GITHUB_TOKEN_OPTION
      */
-    String getToken()
+    Property<String> getToken()
 
     /**
      * Sets the github access token.
@@ -132,7 +134,7 @@ interface GithubSpec {
      * @return the github repository name. May be {@code Null}
      * @see GithubBasePluginConsts#GITHUB_REPOSITORY_OPTION
      */
-    String getRepositoryName()
+    Property<String> getRepositoryName()
 
     /**
      * Sets the github repository name.
@@ -162,7 +164,7 @@ interface GithubSpec {
      * @return the base url
      * @default https://api.github.com
      */
-    String getBaseUrl()
+    Property<String> getBaseUrl()
 
     /**
      * Sets the github api base url.

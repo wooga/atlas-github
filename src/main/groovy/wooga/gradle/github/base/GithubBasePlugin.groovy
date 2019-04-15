@@ -20,7 +20,6 @@ package wooga.gradle.github.base
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.ConventionMapping
 import wooga.gradle.github.base.internal.DefaultGithubPluginExtension
 import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
 
@@ -45,15 +44,47 @@ class GithubBasePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         GithubPluginExtention extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
+
+        extension.username.set(project.provider({
+            def value = project.properties.get(GithubConsts.GITHUB_USER_NAME_OPTION)
+            if (value) {
+                return value.toString()
+            }
+            null
+        }))
+
+        extension.password.set(project.provider({
+            def value = project.properties.get(GithubConsts.GITHUB_USER_PASSWORD_OPTION)
+            if (value) {
+                return value.toString()
+            }
+            null
+        }))
+
+        extension.token.set(project.provider({
+            def value = project.properties.get(GithubConsts.GITHUB_TOKEN_OPTION)
+            if (value) {
+                return value.toString()
+            }
+            null
+        }))
+
+        extension.repositoryName.set(project.provider({
+            def value = project.properties.get(GithubConsts.GITHUB_REPOSITORY_OPTION)
+            if (value) {
+                return value.toString()
+            }
+            null
+        }))
+
         project.tasks.withType(AbstractGithubTask, new Action<AbstractGithubTask>() {
             @Override
             void execute(AbstractGithubTask task) {
-                ConventionMapping taskConventionMapping = task.getConventionMapping()
-                taskConventionMapping.map("baseUrl", { extension.getBaseUrl() })
-                taskConventionMapping.map("repositoryName", { extension.getRepositoryName() })
-                taskConventionMapping.map("username", { extension.getUsername() })
-                taskConventionMapping.map("password", { extension.getPassword() })
-                taskConventionMapping.map("token", { extension.getToken() })
+                task.baseUrl.set(extension.baseUrl)
+                task.repositoryName.set(extension.repositoryName)
+                task.username.set(extension.username)
+                task.password.set(extension.password)
+                task.token.set(extension.token)
             }
         })
     }

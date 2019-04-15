@@ -26,6 +26,7 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTreeElement
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.provider.Property
 import org.gradle.api.specs.Spec
 import org.gradle.api.specs.Specs
 import org.gradle.api.tasks.Input
@@ -39,14 +40,7 @@ import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
 import wooga.gradle.github.publish.GithubPublishSpec
 import wooga.gradle.github.publish.PublishBodyStrategy
 import wooga.gradle.github.publish.PublishMethod
-import wooga.gradle.github.publish.internal.GithubPublishRollbackHandler
-import wooga.gradle.github.publish.internal.GithubReleasePropertySetter
-import wooga.gradle.github.publish.internal.GithubReleaseCreateException
-import wooga.gradle.github.publish.internal.GithubReleasePublishException
-import wooga.gradle.github.publish.internal.GithubReleaseUpdateException
-import wooga.gradle.github.publish.internal.GithubReleaseUploadAssetException
-import wooga.gradle.github.publish.internal.GithubReleaseUploadAssetsException
-import wooga.gradle.github.publish.internal.ReleaseAssetUpload
+import wooga.gradle.github.publish.internal.*
 
 import java.util.concurrent.Callable
 
@@ -59,8 +53,7 @@ import java.util.concurrent.Callable
  * Example:
  * <pre>
  * {@code
- *     githubPublish {
- *         targetCommitish = "master"
+ *     githubPublish {*         targetCommitish = "master"
  *         tagName = project.version
  *         releaseName = project.version
  *         body = "Release XYZ"
@@ -68,8 +61,7 @@ import java.util.concurrent.Callable
  *         draft = false
  *         publishMethod = "create"
  *         from(file('build/output'))
- *     }
- *}
+ *}*}
  */
 class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
@@ -81,12 +73,53 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     private Boolean processAssets
     private Boolean isNewlyCreatedRelease = false
 
+    @Input
+    final Property<String> tagName
+
+    @Input
+    @Optional
+    final Property<String> targetCommitish
+
+    @Input
+    final Property<String> releaseName
+
+    @Input
+    @Optional
+    final Property<String> body
+
+    @Input
+    final Property<Boolean> prerelease
+
+    @Input
+    final Property<Boolean> draft
+
+    final Property<PublishMethod> publishMethod
+
+    @Override
+    Property<Boolean> isPrerelease() {
+        return prerelease
+    }
+
+    @Override
+    Property<Boolean> isDraft() {
+        return draft
+    }
+
     GithubPublish() {
         super(GithubPublish.class)
         assetsCopySpec = project.copySpec()
 
         assetCollectDirectory = project.file("${temporaryDir}/collect")
         assetUploadDirectory = project.file("${temporaryDir}/prepare")
+
+        tagName = project.objects.property(String)
+        targetCommitish = project.objects.property(String)
+        releaseName = project.objects.property(String)
+        body = project.objects.property(String)
+
+        prerelease = project.objects.property(Boolean)
+        draft = project.objects.property(Boolean)
+        publishMethod = project.objects.property(PublishMethod)
     }
 
     File getDestinationDir() {
@@ -99,7 +132,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @TaskAction
     protected void publish() {
         try {
-            GHRelease release = createOrUpdateGithubRelease(this.processAssets || isDraft())
+            GHRelease release = createOrUpdateGithubRelease(this.processAssets || draft.get())
             if (this.processAssets) {
                 processReleaseAssets(release)
             }
@@ -109,7 +142,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         setDidWork(true)
     }
 
-    protected void processReleaseAssets(GHRelease release) throws GithubReleaseUploadAssetsException, GithubReleaseUpdateException{
+    protected void processReleaseAssets(GHRelease release) throws GithubReleaseUploadAssetsException, GithubReleaseUpdateException {
         getDestinationDir().mkdirs()
         WorkResult assetCopyResult = project.sync(new Action<CopySpec>()
         {
@@ -130,8 +163,8 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             }
 
             try {
-                if (release.draft != isDraft()) {
-                    release.update().draft(isDraft()).tag(getTagName()).update()
+                if (release.draft != draft.get()) {
+                    release.update().draft(draft.get()).tag(tagName.get()).update()
                 }
             } catch (Exception error) {
                 throw new GithubReleaseUpdateException(release, "error while publishing draft", error)
@@ -180,21 +213,21 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         List<GHAsset> publishedAssets = []
         List<UpdatedAsset> updatedAssets = []
 
-        assetUploadDirectory.listFiles().findAll {it.isFile()}.sort().each { File assetFile ->
+        assetUploadDirectory.listFiles().findAll { it.isFile() }.sort().each { File assetFile ->
             try {
                 publishedAssets << ReleaseAssetUpload.uploadAsset(release, assetFile)
             } catch (HttpException httpError) {
-                if( isDuplicateAssetError(httpError)) {
+                if (isDuplicateAssetError(httpError)) {
                     logger.info("asset ${assetFile.name} already published")
                     logger.info("attempt override")
-                    def duplicateAsset = release.assets.find {it.name == assetFile.name}
-                    if(duplicateAsset) {
+                    def duplicateAsset = release.assets.find { it.name == assetFile.name }
+                    if (duplicateAsset) {
                         try {
                             UpdatedAsset updatedAsset = UpdatedAsset.fromAsset(duplicateAsset)
                             duplicateAsset.delete()
                             updatedAssets << updatedAsset
                             publishedAssets << ReleaseAssetUpload.uploadAsset(release, assetFile)
-                        } catch(Exception e) {
+                        } catch (Exception e) {
                             logger.error("failure during update of duplicate asset ${assetFile.name}")
                             logger.error(e.message)
                             logger.info("fail with original error")
@@ -242,19 +275,18 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     }
 
     protected GHRelease createOrUpdateGithubRelease(Boolean createDraft) throws GithubReleaseUpdateException, GithubReleaseCreateException {
-        GitHub client = getClient()
-        GHRepository repository = getRepository(client)
-
-        GHRelease release = repository.listReleases().find({ it.tagName == getTagName() }) as GHRelease
+        GHRepository repository = getRepository()
+        String tagName = tagName.get()
+        GHRelease release = repository.listReleases().find({ it.tagName == tagName }) as GHRelease
         GithubReleasePropertySetter releasePropertySet
         GHRelease result
         if (release) {
-            if (this.getPublishMethod() == PublishMethod.create) {
-                throw new GithubReleaseCreateException("github release with tag ${getTagName()} already exist")
+            if (this.publishMethod.get() == PublishMethod.create) {
+                throw new GithubReleaseCreateException("github release with tag ${tagName} already exist")
             }
 
             releasePropertySet = new GithubReleasePropertySetter(release.update())
-            releasePropertySet.draft(isDraft())
+            releasePropertySet.draft(draft.get())
 
             try {
                 result = setReleasePropertiesAndCommit(releasePropertySet)
@@ -262,36 +294,36 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
                 throw new GithubReleaseUpdateException("failed to update release ${release.tagName}", error)
             }
         } else {
-            if (this.getPublishMethod() == PublishMethod.update) {
-                throw new GithubReleaseUpdateException("github release with tag ${getTagName()} for update not found")
+            if (this.publishMethod.get() == PublishMethod.update) {
+                throw new GithubReleaseUpdateException("github release with tag ${tagName} for update not found")
             }
 
             isNewlyCreatedRelease = true
-            releasePropertySet = new GithubReleasePropertySetter(repository.createRelease(getTagName()))
+            releasePropertySet = new GithubReleasePropertySetter(repository.createRelease(tagName))
             releasePropertySet.draft(createDraft as boolean)
 
             try {
                 result = setReleasePropertiesAndCommit(releasePropertySet)
             } catch (Exception error) {
-                throw new GithubReleaseCreateException("failed to create release ${release.tagName}", error)
+                throw new GithubReleaseCreateException("failed to create release ${tagName}", error)
             }
         }
         result
     }
 
     protected GHRelease setReleasePropertiesAndCommit(GithubReleasePropertySetter releasePropertySet) {
-        releasePropertySet.prerelease(isPrerelease())
+        releasePropertySet.prerelease(prerelease.get())
 
-        if (getTargetCommitish()) {
-            releasePropertySet.commitish(getTargetCommitish())
+        if (targetCommitish.present) {
+            releasePropertySet.commitish(targetCommitish.get())
         }
 
-        if (getBody()) {
-            releasePropertySet.body(getBody())
+        if (body.present) {
+            releasePropertySet.body(body.get())
         }
 
-        if (getReleaseName()) {
-            releasePropertySet.name(getReleaseName())
+        if (releaseName.present) {
+            releasePropertySet.name(releaseName.get())
         }
 
         releasePropertySet.commit()
@@ -513,38 +545,12 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         this.exclude(Specs.<FileTreeElement> convertClosureToSpec(excludeSpec))
     }
 
-    private Object tagName
-    private Object targetCommitish
-    private Object releaseName
-    private Object body
-
-    private Object prerelease
-    private Object draft
-    private Object publishMethod = PublishMethod.create
-
-    /**
-     * See: {@link GithubPublishSpec#getTagName()}
-     */
-    @Input
-    @Override
-    String getTagName() {
-        if (this.tagName == null) {
-            return null
-        }
-
-        if (this.tagName instanceof Callable) {
-            return ((Callable) this.tagName).call().toString()
-        }
-
-        this.tagName.toString()
-    }
-
     /**
      * See: {@link GithubPublishSpec#setTagName(String)}
      */
     @Override
     GithubPublish setTagName(String tagName) {
-        this.tagName = tagName
+        this.tagName.set(tagName)
         this
     }
 
@@ -553,7 +559,13 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish setTagName(Object tagName) {
-        this.tagName = tagName
+        this.tagName.set(project.provider({
+            if (tagName instanceof Callable) {
+                return ((Callable) tagName).call().toString()
+            }
+
+            tagName.toString()
+        }))
         this
     }
 
@@ -574,29 +586,11 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     }
 
     /**
-     * See: {@link GithubPublishSpec#getTargetCommitish()}
-     */
-    @Input
-    @Optional
-    @Override
-    String getTargetCommitish() {
-        if (this.targetCommitish == null) {
-            return null
-        }
-
-        if (this.targetCommitish instanceof Callable) {
-            return ((Callable) this.targetCommitish).call().toString()
-        }
-
-        this.targetCommitish.toString()
-    }
-
-    /**
      * See: {@link GithubPublishSpec#setTargetCommitish(String)}
      */
     @Override
     GithubPublish setTargetCommitish(String targetCommitish) {
-        this.targetCommitish = targetCommitish
+        this.targetCommitish.set(targetCommitish)
         this
     }
 
@@ -605,7 +599,13 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish setTargetCommitish(Object targetCommitish) {
-        this.targetCommitish = targetCommitish
+        this.targetCommitish.set(project.provider({
+            if (targetCommitish instanceof Callable) {
+                return ((Callable) targetCommitish).call().toString()
+            }
+
+            targetCommitish.toString()
+        }))
         this
     }
 
@@ -626,28 +626,11 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     }
 
     /**
-     * See: {@link GithubPublishSpec#getReleaseName()}
-     */
-    @Optional
-    @Input
-    String getReleaseName() {
-        if (this.releaseName == null) {
-            return null
-        }
-
-        if (this.releaseName instanceof Callable) {
-            return ((Callable) this.releaseName).call().toString()
-        }
-
-        this.releaseName.toString()
-    }
-
-    /**
      * See: {@link GithubPublishSpec#setReleaseName(String)}
      */
     @Override
     GithubPublish setReleaseName(String name) {
-        this.releaseName = name
+        this.releaseName.set(name)
         this
     }
 
@@ -656,7 +639,13 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish setReleaseName(Object name) {
-        this.releaseName = name
+        this.releaseName.set(project.provider({
+            if (name instanceof Callable) {
+                return ((Callable) name).call().toString()
+            }
+
+            name.toString()
+        }))
         this
     }
 
@@ -676,38 +665,38 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         this.setReleaseName(name)
     }
 
-    /**
-     * See: {@link GithubPublishSpec#getBody()}
-     */
-    @Optional
-    @Input
-    @Override
-    String getBody() {
-        if (this.body == null) {
-            return null
-        }
-
-        if (this.body instanceof Closure) {
-            return ((Closure) this.body).call(getRepository(getClient())).toString()
-        }
-
-        if (this.body instanceof PublishBodyStrategy) {
-            return ((PublishBodyStrategy) this.body).getBody(getRepository(getClient()))
-        }
-
-        if (this.body instanceof Callable) {
-            return ((Callable) this.body).call().toString()
-        }
-
-        this.body.toString()
-    }
+//    /**
+//     * See: {@link GithubPublishSpec#getBody()}
+//     */
+//    @Optional
+//    @Input
+//    @Override
+//    String getBody() {
+//        if (this.body == null) {
+//            return null
+//        }
+//
+//        if (this.body instanceof Closure) {
+//            return ((Closure) this.body).call(getRepository(getClient())).toString()
+//        }
+//
+//        if (this.body instanceof PublishBodyStrategy) {
+//            return ((PublishBodyStrategy) this.body).getBody(getRepository(getClient()))
+//        }
+//
+//        if (this.body instanceof Callable) {
+//            return ((Callable) this.body).call().toString()
+//        }
+//
+//        this.body.toString()
+//    }
 
     /**
      * See: {@link GithubPublishSpec#setBody(String)}
      */
     @Override
     GithubPublish setBody(String body) {
-        this.body = body
+        this.body.set(body)
         this
     }
 
@@ -716,7 +705,13 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish setBody(Object body) {
-        this.body = body
+        this.body.set(project.provider({
+            if (body instanceof Callable) {
+                return ((Callable) body).call().toString()
+            }
+
+            body.toString()
+        }))
         this
     }
 
@@ -729,7 +724,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             throw new GradleException("Too many parameters for body clojure")
         }
 
-        this.body = closure
+        this.body.set(project.provider({
+            closure.call(getRepository()).toString()
+        }))
         this
     }
 
@@ -737,7 +734,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      * See: {@link GithubPublishSpec#setBody(PublishBodyStrategy)}
      */
     GithubPublish setBody(PublishBodyStrategy bodyStrategy) {
-        this.body = bodyStrategy
+        this.body.set(project.provider({
+            bodyStrategy.getBody(getRepository())
+        }))
         this
     }
 
@@ -774,24 +773,11 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     }
 
     /**
-     * See: {@link GithubPublishSpec#isPrerelease()}
-     */
-    @Input
-    @Override
-    boolean isPrerelease() {
-        if (this.prerelease instanceof Callable) {
-            return ((Callable) this.prerelease).call().asBoolean()
-        }
-
-        this.prerelease.asBoolean()
-    }
-
-    /**
      * See: {@link GithubPublishSpec#setPrerelease(boolean)}
      */
     @Override
-    GithubPublish setPrerelease(boolean prerelease) {
-        this.prerelease = prerelease
+    GithubPublish setPrerelease(Boolean prerelease) {
+        this.prerelease.set(prerelease)
         this
     }
 
@@ -800,7 +786,14 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish setPrerelease(Object prerelease) {
-        this.prerelease = prerelease
+
+        this.prerelease.set(project.provider({
+            if (prerelease instanceof Callable) {
+                return Boolean.parseBoolean(((Callable) prerelease).call().toString())
+            }
+
+            Boolean.parseBoolean(prerelease.toString())
+        }))
         this
     }
 
@@ -808,7 +801,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      * See: {@link GithubPublishSpec#prerelease(boolean)}
      */
     @Override
-    GithubPublish prerelease(boolean prerelease) {
+    GithubPublish prerelease(Boolean prerelease) {
         this.setPrerelease(prerelease)
     }
 
@@ -821,24 +814,11 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     }
 
     /**
-     * See: {@link GithubPublishSpec#isDraft()}
-     */
-    @Input
-    @Override
-    boolean isDraft() {
-        if (this.draft instanceof Callable) {
-            return ((Callable) this.draft).call().asBoolean()
-        }
-
-        this.draft.asBoolean()
-    }
-
-    /**
      * See: {@link GithubPublishSpec#setDraft(boolean)}
      */
     @Override
-    GithubPublish setDraft(boolean draft) {
-        this.draft = draft
+    GithubPublish setDraft(Boolean draft) {
+        this.draft.set(draft)
         this
     }
 
@@ -847,7 +827,13 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish setDraft(Object draft) {
-        this.draft = draft
+        this.draft.set(project.provider({
+            if (draft instanceof Callable) {
+                return Boolean.parseBoolean(((Callable) draft).call().toString())
+            }
+
+            Boolean.parseBoolean(draft.toString())
+        }))
         this
     }
 
@@ -855,7 +841,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      * See: {@link GithubPublishSpec#draft(boolean)}
      */
     @Override
-    GithubPublish draft(boolean draft) {
+    GithubPublish draft(Boolean draft) {
         this.setDraft(draft)
     }
 
@@ -868,23 +854,11 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     }
 
     /**
-     * See: {@link GithubPublishSpec#getPublishMethod()}
-     */
-    @Override
-    PublishMethod getPublishMethod() {
-        if (this.publishMethod instanceof Callable) {
-            return ((Callable) this.publishMethod).call() as PublishMethod
-        }
-
-        this.publishMethod as PublishMethod
-    }
-
-    /**
      * See: {@link GithubPublishSpec#setPublishMethod(PublishMethod)}
      */
     @Override
     GithubPublishSpec setPublishMethod(PublishMethod method) {
-        this.publishMethod = method
+        this.publishMethod.set(method)
         this
     }
 
@@ -893,7 +867,13 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublishSpec setPublishMethod(Object method) {
-        this.publishMethod = method
+        this.publishMethod.set(project.provider({
+            if (method instanceof Callable) {
+                return ((Callable) method).call() as PublishMethod
+            }
+
+            method as PublishMethod
+        }))
         this
     }
 

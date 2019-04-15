@@ -19,94 +19,101 @@ package wooga.gradle.github.base.tasks.internal
 
 import org.gradle.api.GradleException
 import org.gradle.api.internal.ConventionTask
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
 import org.kohsuke.github.GitHubBuilder
+import org.kohsuke.github.HttpException
 import wooga.gradle.github.base.internal.GithubRepositoryValidator
 import wooga.gradle.github.base.GithubSpec
+import wooga.gradle.github.base.tasks.Github
 
 abstract class AbstractGithubTask<T extends AbstractGithubTask> extends ConventionTask implements GithubSpec {
 
-    private String repositoryName
-    private String baseUrl
-    private String username
-    private String password
-    private String token
+    @Input
+    final Property<String> repositoryName
 
-    private GitHub client
+    @Optional
+    @Input
+    final Property<String> baseUrl
+
+    @Optional
+    @Input
+    final Property<String> username
+
+    @Optional
+    @Input
+    final Property<String> password
+
+
+    @Optional
+    @Input
+    final Property<String> token
+
+    protected final Property<GitHub> clientProvider
 
     private final Class<T> taskType
 
     AbstractGithubTask(Class<T> taskType) {
         this.taskType = taskType
-    }
 
-    protected GitHub getClient() {
-        if(!this.client) {
+        repositoryName = project.objects.property(String)
+        baseUrl = project.objects.property(String)
+        username = project.objects.property(String)
+        password = project.objects.property(String)
+        token = project.objects.property(String)
+
+        clientProvider = project.objects.property(GitHub)
+
+        clientProvider.set(project.provider({
             def builder = new GitHubBuilder()
 
-            if (getUsername() && getPassword()) {
-                builder = builder.withPassword(getUsername(), getPassword())
-            } else if (getUsername() && getToken()) {
-                builder = builder.withOAuthToken(getToken(), getUsername())
+            if (username.present && password.present) {
+                builder = builder.withPassword(username.get(), password.get())
+            } else if (username.present && token.present) {
+                builder = builder.withOAuthToken(token.get(), username.get())
 
-            } else if (getToken()) {
-                builder = builder.withOAuthToken(getToken())
+            } else if (token.present) {
+                builder = builder.withOAuthToken(token.get())
 
             } else {
                 builder = GitHubBuilder.fromCredentials()
             }
 
-            if (getBaseUrl()) {
-                builder = builder.withEndpoint(getBaseUrl())
+            if (baseUrl.present) {
+                builder = builder.withEndpoint(baseUrl.get())
             }
 
-            this.client = builder.build()
-        }
-
-        return client
-    }
-
-    GHRepository getRepository(GitHub client) {
-        GHRepository repository
-        try {
-            repository = client.getRepository(getRepositoryName())
-        }
-        catch (Exception e) {
-            throw new GradleException("can't find repository ${getRepositoryName()}")
-        }
-        repository
+            def client = builder.build()
+            clientProvider.set(client)
+            return client
+        }))
     }
 
     GHRepository getRepository() {
         GHRepository repository
         try {
-            repository = getClient().getRepository(getRepositoryName())
+            repository = client.getRepository(repositoryName.get())
         }
-        catch (Exception e) {
-            throw new GradleException("can't find repository ${getRepositoryName()}")
+        catch (Exception error) {
+            throw new GradleException("can't find repository ${repositoryName.get()}", error)
         }
         repository
     }
 
-    @Override
-    String getRepositoryName() {
-        repositoryName
+    GitHub getClient() {
+        this.clientProvider.get()
     }
 
     @Override
     T setRepositoryName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("repository")
-        }
-
         if (!GithubRepositoryValidator.validateRepositoryName(name)) {
             throw new IllegalArgumentException("Repository value '$name' is not a valid github repository name. Expecting `owner/repo`.")
         }
 
-        this.repositoryName = name
+        this.repositoryName.set(name)
         taskType.cast(this)
     }
 
@@ -115,19 +122,9 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         taskType.cast(this.setRepositoryName(name))
     }
 
-    @Optional
-    @Input
-    @Override
-    String getBaseUrl() {
-        baseUrl
-    }
-
     @Override
     T setBaseUrl(String baseUrl) {
-        if (baseUrl == null || baseUrl.isEmpty()) {
-            throw new IllegalArgumentException("baseUrl")
-        }
-        this.baseUrl = baseUrl
+        this.baseUrl.set(baseUrl)
         taskType.cast(this)
     }
 
@@ -136,19 +133,9 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         taskType.cast(this.setBaseUrl(baseUrl))
     }
 
-    @Optional
-    @Input
-    @Override
-    String getToken() {
-        this.token
-    }
-
     @Override
     T setToken(String token) {
-        if (token == null || token.isEmpty()) {
-            throw new IllegalArgumentException("token")
-        }
-        this.token = token
+        this.token.set(token)
         taskType.cast(this)
     }
 
@@ -157,16 +144,9 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         taskType.cast(this.setToken(token))
     }
 
-    @Optional
-    @Input
-    @Override
-    String getUsername() {
-        this.username
-    }
-
     @Override
     T setUsername(String userName) {
-        this.username = userName
+        this.username.set(userName)
         taskType.cast(this)
     }
 
@@ -176,16 +156,9 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         taskType.cast(this)
     }
 
-    @Optional
-    @Input
-    @Override
-    String getPassword() {
-        this.password
-    }
-
     @Override
     T setPassword(String password) {
-        this.password = password
+        this.password.set(password)
         taskType.cast(this)
     }
 
