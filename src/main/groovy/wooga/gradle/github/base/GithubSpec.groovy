@@ -132,7 +132,7 @@ interface GithubSpec {
      *    <li><b>gradle properties</b>
      * </ul>
      * @return the github repository name. May be {@code Null}
-     * @see GithubBasePluginConsts#GITHUB_REPOSITORY_OPTION
+     * @see GithubBasePluginConsts#GITHUB_REPOSITORY_NAME_OPTION
      */
     Property<String> getRepositoryName()
 

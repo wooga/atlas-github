@@ -47,5 +47,5 @@ class GithubBasePluginConsts {
      * @value "github.repository"
      * @see GithubSpec#repositoryName
      */
-    static final String GITHUB_REPOSITORY_OPTION = "github.repository"
+    static final String GITHUB_REPOSITORY_NAME_OPTION = "github.repositoryName"
 }

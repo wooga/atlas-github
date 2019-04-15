@@ -17,11 +17,17 @@
 
 package wooga.gradle.github
 
-import org.junit.Rule
 import nebula.test.functional.ExecutionResult
+import org.junit.Rule
+import org.junit.contrib.java.lang.system.EnvironmentVariables
 import org.junit.contrib.java.lang.system.ProvideSystemProperty
 
+import static groovy.json.StringEscapeUtils.escapeJava
+
 class IntegrationSpec extends nebula.test.IntegrationSpec {
+
+    @Rule
+    public final EnvironmentVariables environmentVariables = new EnvironmentVariables()
 
     @Rule
     ProvideSystemProperty properties = new ProvideSystemProperty("ignoreDeprecations", "true")
@@ -36,5 +42,13 @@ class IntegrationSpec extends nebula.test.IntegrationSpec {
 
     Boolean outputContains(ExecutionResult result, String message) {
         result.standardOutput.contains(message) || result.standardError.contains(message)
+    }
+
+    static String escapedPath(String path) {
+        String osName = System.getProperty("os.name").toLowerCase()
+        if (osName.contains("windows")) {
+            return escapeJava(path)
+        }
+        path
     }
 }

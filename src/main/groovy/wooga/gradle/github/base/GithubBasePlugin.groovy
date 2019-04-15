@@ -46,7 +46,7 @@ class GithubBasePlugin implements Plugin<Project> {
         GithubPluginExtention extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
 
         extension.username.set(project.provider({
-            def value = project.properties.get(GithubConsts.GITHUB_USER_NAME_OPTION)
+            def value = project.properties.get(GithubBasePluginConsts.GITHUB_USER_NAME_OPTION)
             if (value) {
                 return value.toString()
             }
@@ -62,7 +62,7 @@ class GithubBasePlugin implements Plugin<Project> {
         }))
 
         extension.token.set(project.provider({
-            def value = project.properties.get(GithubConsts.GITHUB_TOKEN_OPTION)
+            def value = project.properties.get(GithubBasePluginConsts.GITHUB_TOKEN_OPTION)
             if (value) {
                 return value.toString()
             }
@@ -70,7 +70,7 @@ class GithubBasePlugin implements Plugin<Project> {
         }))
 
         extension.repositoryName.set(project.provider({
-            def value = project.properties.get(GithubConsts.GITHUB_REPOSITORY_OPTION)
+            def value = project.properties.get(GithubBasePluginConsts.GITHUB_REPOSITORY_NAME_OPTION)
             if (value) {
                 return value.toString()
             }
