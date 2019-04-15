@@ -87,18 +87,20 @@ class GithubPublishPlugin implements Plugin<Project> {
         project.tasks.withType(GithubPublish, new Action<GithubPublish>() {
             @Override
             void execute(GithubPublish task) {
-                ConventionMapping taskConventionMapping = task.getConventionMapping()
+                task.targetCommitish.set("master")
+                task.prerelease.set(false)
+                task.draft.set(false)
+                task.publishMethod.set(PublishMethod.create)
 
-                taskConventionMapping.map("targetCommitish", { "master" })
-                taskConventionMapping.map("prerelease", { false })
-                taskConventionMapping.map("draft", { false })
-                taskConventionMapping.map("tagName", { project.version.toString() })
-                taskConventionMapping.map("releaseName", { project.version.toString() })
+                def projectProvider = project.provider({project.version.toString()})
+
+                task.tagName.set(projectProvider)
+                task.releaseName.set(projectProvider)
 
                 task.onlyIf(new Spec<GithubPublish>() {
                     @Override
                     boolean isSatisfiedBy(GithubPublish publishTask) {
-                        publishTask.repositoryName != null
+                        publishTask.repositoryName.present
                     }
                 })
             }
