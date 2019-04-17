@@ -665,32 +665,6 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         this.setReleaseName(name)
     }
 
-//    /**
-//     * See: {@link GithubPublishSpec#getBody()}
-//     */
-//    @Optional
-//    @Input
-//    @Override
-//    String getBody() {
-//        if (this.body == null) {
-//            return null
-//        }
-//
-//        if (this.body instanceof Closure) {
-//            return ((Closure) this.body).call(getRepository(getClient())).toString()
-//        }
-//
-//        if (this.body instanceof PublishBodyStrategy) {
-//            return ((PublishBodyStrategy) this.body).getBody(getRepository(getClient()))
-//        }
-//
-//        if (this.body instanceof Callable) {
-//            return ((Callable) this.body).call().toString()
-//        }
-//
-//        this.body.toString()
-//    }
-
     /**
      * See: {@link GithubPublishSpec#setBody(String)}
      */
@@ -707,7 +681,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     GithubPublish setBody(Object body) {
         this.body.set(project.provider({
             if (body instanceof Callable) {
-                return ((Callable) body).call().toString()
+                String evaluatedBody = ((Callable) body).call().toString()
+                this.body.set(evaluatedBody)
+                evaluatedBody
             }
 
             body.toString()
@@ -725,7 +701,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         }
 
         this.body.set(project.provider({
-            closure.call(getRepository()).toString()
+            String evaluatedBody = closure.call(getRepository()).toString()
+            this.body.set(evaluatedBody)
+            evaluatedBody
         }))
         this
     }
@@ -735,7 +713,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     GithubPublish setBody(PublishBodyStrategy bodyStrategy) {
         this.body.set(project.provider({
-            bodyStrategy.getBody(getRepository())
+            String evaluatedBody = bodyStrategy.getBody(getRepository())
+            this.body.set(evaluatedBody)
+            evaluatedBody
         }))
         this
     }

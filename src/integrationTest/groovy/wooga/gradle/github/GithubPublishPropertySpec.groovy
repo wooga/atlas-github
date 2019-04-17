@@ -18,6 +18,7 @@
 package wooga.gradle.github
 
 import org.kohsuke.github.GHRepository
+import spock.lang.Issue
 import spock.lang.Retry
 import spock.lang.Unroll
 import wooga.gradle.github.publish.PublishBodyStrategy
@@ -336,6 +337,57 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
         versionName = tagName.replaceFirst('v', '')
         methodName = useSetter ? "set${method.capitalize()}" : method
+    }
+
+    @Issue("https://github.com/wooga/atlas-github/issues/31")
+    def "evaluates body property once"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+            version "$versionName"
+
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                from "releaseAssets"
+                tagName = "$tagName"
+                repositoryName = "$testRepositoryName"
+                token = "$testUserToken"
+            }            
+        """.stripIndent()
+
+        buildFile << """
+            def callCounter = 0
+            
+            def publishBodyStrategy = new wooga.gradle.github.publish.PublishBodyStrategy() {
+                @Override
+                String getBody(org.kohsuke.github.GHRepository ghRepository) {
+                    callCounter = callCounter + 1
+                    return "evaluate body count: " + callCounter.toString()
+                }
+            }
+
+            testPublish.body(publishBodyStrategy)
+            
+            testPublish.doLast {
+                println("evaluate body count: " + callCounter.toString())
+            }
+        """.stripIndent()
+
+        when:
+        def result = runTasksSuccessfully("testPublish")
+
+        then:
+        hasReleaseByName(versionName)
+        def release = getReleaseByName(versionName)
+
+        release.getBody() == "evaluate body count: 1"
+        outputContains(result, "evaluate body count: 1")
+
+        where:
+        tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
+
     }
 
     @Unroll
