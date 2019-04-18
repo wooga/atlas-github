@@ -676,6 +676,8 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         this.setReleaseName(name)
     }
 
+    private String evaluatedBody
+
     /**
      * See: {@link GithubPublishSpec#getBody()}
      */
@@ -683,20 +685,27 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Input
     @Override
     String getBody() {
+        if(evaluatedBody) {
+            return evaluatedBody
+        }
+
         if (this.body == null) {
             return null
         }
 
         if (this.body instanceof Closure) {
-            return ((Closure) this.body).call(getRepository(getClient())).toString()
+            evaluatedBody = ((Closure) this.body).call(getRepository(getClient())).toString()
+            return evaluatedBody
         }
 
         if (this.body instanceof PublishBodyStrategy) {
-            return ((PublishBodyStrategy) this.body).getBody(getRepository(getClient()))
+            evaluatedBody = ((PublishBodyStrategy) this.body).getBody(getRepository(getClient()))
+            return evaluatedBody
         }
 
         if (this.body instanceof Callable) {
-            return ((Callable) this.body).call().toString()
+            evaluatedBody = ((Callable) this.body).call().toString()
+            return evaluatedBody
         }
 
         this.body.toString()
