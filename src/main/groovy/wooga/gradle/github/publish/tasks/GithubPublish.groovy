@@ -21,7 +21,9 @@ import groovy.io.FileType
 import groovy.json.JsonSlurper
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Action
+import org.gradle.api.Buildable
 import org.gradle.api.GradleException
+import org.gradle.api.Task
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTreeElement
 import org.gradle.api.logging.Logger
@@ -339,6 +341,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish from(Object... sourcePaths) {
+        this.inputs.files(sourcePaths)
         assetsCopySpec.from(sourcePaths)
         processAssets = true
         this
@@ -366,6 +369,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish from(Object sourcePath, Action<? super CopySpec> configureAction) {
+        this.inputs.files(sourcePath)
         assetsCopySpec.from(sourcePath, configureAction)
         processAssets = true
         this
