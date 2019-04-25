@@ -20,6 +20,7 @@ package wooga.gradle.github
 import spock.genesis.Gen
 import spock.genesis.transform.Iterations
 import spock.lang.IgnoreIf
+import spock.lang.Issue
 import spock.lang.Shared
 import spock.lang.Unroll
 
@@ -400,6 +401,120 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         tag << Gen.integer(20, Integer.MAX_VALUE)
         fileName << Gen.string(~/file([${characterPattern}]{10,20})\.json/)
         tagName = "v0.${tag}.0-GithubPublishAssetsIntegrationSpec"
+
+    }
+
+    @Issue("https://github.com/wooga/atlas-github/issues/30")
+    def "executes depended tasks and fetches task outputs"() {
+        given: "a task that produces an output"
+        buildFile << """
+        task createOutput {
+            outputs.file("build/outputs/${assetName}")
+            
+            doLast {
+                def outputFile = file("build/outputs/${assetName}")
+                outputFile.parentFile.mkdirs()
+                outputFile.text = "${assetContent}"
+            }
+        }
+        """.stripIndent()
+
+        and: "a publish task which from points to the custom task"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                tagName = "$tagName"
+                releaseName = "$tagName" 
+                
+                from(createOutput)
+            }
+        """
+
+        when:
+        def result = runTasksSuccessfully("testPublish")
+
+        then:
+        result.wasExecuted("createOutput")
+        def release = getRelease(tagName)
+        def assets = release.getAssets()
+        assets.size() == 1
+        assets[0].name == assetName
+
+        where:
+        tagName = "v0.8.0-GithubPublishIntegrationSpec"
+        assetName = "list.txt"
+        assetContent = "Custom content"
+    }
+
+    @Issue("https://github.com/wooga/atlas-github/issues/30")
+    def "executes depended tasks through configuration"() {
+        given: "a subproject that produces an artifact"
+        addSubproject("sub", """
+        plugins {
+            id "base"
+        }
+
+        def outputFile = file("build/outputs/${assetName}")
+        
+        task createOutput {            
+            doLast {
+                outputFile.parentFile.mkdirs()
+                outputFile.text = "${assetContent}"
+            }
+        }
+        
+        assemble.dependsOn createOutput
+        
+        configurations {
+            output
+        }
+        
+        configurations['default'].extendsFrom(configurations.output)
+        
+        artifacts {
+            output(outputFile) {
+                builtBy project.tasks.createOutput
+            }
+        }
+
+        """.stripIndent())
+
+        and: "a dependency to the sub project artifact"
+        buildFile << """
+        
+        configurations {
+            sub
+        }
+        
+        dependencies {
+            sub project(':sub')
+        }
+
+        """.stripIndent()
+
+        and: "a publish task which from points to a configuration"
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                tagName = "$tagName"
+                releaseName = "$tagName" 
+                
+                from(configurations.sub)
+            }
+        """
+
+        when:
+        def result = runTasksSuccessfully("testPublish")
+
+        then:
+        result.wasExecuted(":sub:createOutput")
+        def release = getRelease(tagName)
+        def assets = release.getAssets()
+        assets.size() == 1
+        assets[0].name == assetName
+
+        where:
+        tagName = "v0.9.0-GithubPublishIntegrationSpec"
+        assetName = "output.txt"
+        assetContent = "Custom content"
 
     }
 }
