@@ -712,6 +712,22 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             return evaluatedBody
         }
 
+        if (this.body instanceof File) {
+            evaluatedBody = ((File) this.body).text
+            return evaluatedBody
+        }
+
+        if (this.body instanceof Task) {
+            def task = this.body as Task
+            def outputs = task.outputs
+            if(outputs.hasOutput) {
+                evaluatedBody = outputs.files.singleFile.text
+                return evaluatedBody
+            } else {
+                throw new GradleException("Task provided as body input has no outputs")
+            }
+        }
+
         this.body.toString()
     }
 
@@ -729,6 +745,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      */
     @Override
     GithubPublish setBody(Object body) {
+        this.inputs.file(body)
         this.body = body
         this
     }

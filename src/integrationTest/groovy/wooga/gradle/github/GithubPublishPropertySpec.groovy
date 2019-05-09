@@ -24,7 +24,7 @@ import spock.lang.Unroll
 import wooga.gradle.github.publish.PublishBodyStrategy
 import wooga.gradle.github.publish.PublishMethod
 
-@Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
+@Retry(mode = Retry.Mode.SETUP_FEATURE_CLEANUP)
 class GithubPublishPropertySpec extends GithubPublishIntegration {
 
     def "task skips if repository is not set"() {
@@ -149,6 +149,121 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         methodValue = isLazy ? "closure" : "value"
         preValue = isLazy ? "{" : ""
         postValue = isLazy ? "}" : ""
+        tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
+    }
+
+    @Unroll
+    def "can set body with #valueType and #methodName"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+        version "$versionName"
+
+        task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+            from "releaseAssets"
+            tagName = "$tagName"
+            repositoryName = "$testRepositoryName"
+            token = "$testUserToken"
+        }
+        """.stripIndent()
+
+        if (valueType == "File") {
+            createFile("test_body.md", projectDir).text = bodyValue
+
+            buildFile << """
+            testPublish.$methodName(file("test_body.md"))
+            """.stripIndent()
+        }
+
+        if (valueType == "Task") {
+            buildFile << """
+
+            task generateBody {
+                outputs.file("body_from_task.md")
+                doLast {
+                    file("body_from_task.md").text = "$bodyValue"
+                }
+            }
+
+            testPublish.$methodName(generateBody)
+            """.stripIndent()
+        }
+
+        when:
+        def result = runTasksSuccessfully("testPublish")
+
+        then:
+        if (valueType == "Task") {
+            result.wasExecuted("generateBody")
+        }
+
+        hasReleaseByName(versionName)
+        def release = getReleaseByName(versionName)
+        release.getBody() == bodyValue
+
+        where:
+        bodyValue           | useSetter | valueType
+        "test body as file" | false     | "File"
+        "test body as file" | true      | "File"
+        "test body as task" | false     | "Task"
+        "test body as task" | true      | "Task"
+
+        method = "body"
+        methodName = useSetter ? "set${method.capitalize()}" : method
+        tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
+        versionName = tagName.replaceFirst('v', '')
+    }
+
+    @Unroll
+    def "fails to evalute body from task when #reason"() {
+        given: "files to publish"
+        createTestAssetsToPublish(1)
+
+        and: "a buildfile with publish task"
+        buildFile << """
+        version "$versionName"
+
+        task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+            from "releaseAssets"
+            tagName = "$tagName"
+            repositoryName = "$testRepositoryName"
+            token = "$testUserToken"
+        }
+        """.stripIndent()
+
+        and: "a task with potential body outputs"
+        buildFile << """
+        task generateBody
+        testPublish.body(generateBody)
+        """.stripIndent()
+
+        and: "optional outputs"
+
+        (0..<numberOfOutputs).each { i ->
+            buildFile << """
+            generateBody {
+                outputs.file("body_from_task_${i}.md")
+                doLast {
+                    file("body_from_task_${i}.md").text = "random value"
+                }
+            }
+            """.stripIndent()
+        }
+
+        when:
+        def result = runTasksWithFailure("testPublish")
+
+        then:
+        outputContains(result, expectedError)
+
+        where:
+        reason                      | numberOfOutputs | expectedError
+        "task has no outputs"       | 0               | "Task provided as body input has no outputs"
+        "task has too many outputs" | 2               | "output files to contain exactly one file, however, it contains more than one file"
+
         tagName = "v0.1.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
         versionName = tagName.replaceFirst('v', '')
     }
@@ -504,7 +619,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         createTestAssetsToPublish(1)
 
         and: "optional release"
-        if(publishMethod == PublishMethod.update) {
+        if (publishMethod == PublishMethod.update) {
             createRelease(tagName)
         }
 
