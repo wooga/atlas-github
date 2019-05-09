@@ -22,6 +22,7 @@ import groovy.json.JsonSlurper
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Action
 import org.gradle.api.GradleException
+import org.gradle.api.Task
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTreeElement
 import org.gradle.api.logging.Logger
@@ -711,12 +712,47 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     /**
      * See: {@link GithubPublishSpec#setBody(PublishBodyStrategy)}
      */
+    @Override
     GithubPublish setBody(PublishBodyStrategy bodyStrategy) {
         this.body.set(project.provider({
             String evaluatedBody = bodyStrategy.getBody(getRepository())
             this.body.set(evaluatedBody)
             evaluatedBody
         }))
+        this
+    }
+
+    /**
+     * See: {@link GithubPublishSpec#setBody(File)}
+     */
+    @Override
+    GithubPublishSpec setBody(File body) {
+        this.inputs.file(body)
+        this.body.set(project.provider({
+            String evaluatedBody = body.text
+            this.body.set(evaluatedBody)
+            evaluatedBody
+        }))
+
+        this
+    }
+
+    /**
+     * See: {@link GithubPublishSpec#setBody(Task)}
+     */
+    @Override
+    GithubPublishSpec setBody(Task body) {
+        this.inputs.file(body)
+        this.body.set(project.provider({
+            def outputs = body.outputs
+            if(!outputs.hasOutput) {
+                throw new GradleException("Task provided as body input has no outputs")
+            }
+            String evaluatedBody = outputs.files.singleFile.text
+            this.body.set(evaluatedBody)
+            evaluatedBody
+        }))
+
         this
     }
 
@@ -750,6 +786,22 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     @Override
     GithubPublish body(PublishBodyStrategy bodyStrategy) {
         this.setBody(bodyStrategy)
+    }
+
+    /**
+     * See: {@link GithubPublishSpec#body(File)}
+     */
+    @Override
+    GithubPublishSpec body(File body) {
+        this.setBody(body)
+    }
+
+    /**
+     * See: {@link GithubPublishSpec#body(Task)}
+     */
+    @Override
+    GithubPublishSpec body(Task body) {
+        this.setBody(body)
     }
 
     /**
