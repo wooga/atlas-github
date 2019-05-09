@@ -17,6 +17,7 @@
 
 package wooga.gradle.github.publish
 
+import org.gradle.api.Task
 import org.gradle.api.file.CopySourceSpec
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.util.PatternFilterable
@@ -212,9 +213,35 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * The repository object can be used to query the Git commit log or pull requests etc.
      *
      * @param bodyStrategy an object of type {@link PublishBodyStrategy} which returns the release description
-     * @return this* @see PublishBodyStrategy#getBody(org.kohsuke.github.GHRepository)
+     * @return this
+     * @see PublishBodyStrategy#getBody(org.kohsuke.github.GHRepository)
      */
     GithubPublishSpec setBody(PublishBodyStrategy bodyStrategy)
+
+    /**
+     * Sets the description text for the release.
+     * <p>
+     * This setter allows to set a {@code File} property as the provider for the release body property.
+     * The content of the file is read at runtime of the task.
+     *
+     * @param body a {@code File} which contains the body text
+     * @return this
+     */
+    GithubPublishSpec setBody(File body)
+
+    /**
+     * Sets the description text for the release.
+     * <p>
+     * This setter allows to set a {@code Task} property as the provider for the release body property.
+     * The task outputs will be evaluated at runtime. The task should only produce a single output file which
+     * will be read and set as the release body value.
+     * <p>
+     * If the task produces no outputs or more than one, the publish task will fail.
+     *
+     * @param body a {@code File} which contains the body text
+     * @return this
+     */
+    GithubPublishSpec setBody(Task body)
 
     /**
      * Sets the description text for the release.
@@ -253,6 +280,31 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @return this* @see PublishBodyStrategy#getBody(org.kohsuke.github.GHRepository)
      */
     GithubPublishSpec body(PublishBodyStrategy bodyStrategy)
+
+    /**
+     * Sets the description text for the release.
+     * <p>
+     * This setter allows to set a {@code File} property as the provider for the release body property.
+     * The content of the file is read at runtime of the task.
+     *
+     * @param body a {@code File} which contains the body text
+     * @return this
+     */
+    GithubPublishSpec body(File body)
+
+    /**
+     * Sets the description text for the release.
+     * <p>
+     * This setter allows to set a {@code Task} property as the provider for the release body property.
+     * The task outputs will be evaluated at runtime. The task should only produce a single output file which
+     * will be read and set as the release body value.
+     * <p>
+     * If the task produces no outputs or more than one, the publish task will fail.
+     *
+     * @param body a {@code File} which contains the body text
+     * @return this
+     */
+    GithubPublishSpec body(Task body)
 
     /**
      * Returns a {@code boolean} value indicating if the release as a prerelease.
