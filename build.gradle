@@ -50,4 +50,6 @@ dependencies {
     testCompile('com.nagternal:spock-genesis:0.6.0') {
         exclude group: "org.codehaus.groovy", module: "groovy-all"
     }
+
+    testCompile 'com.wooga.spock.extensions:spock-github-extension:0.1.0'
 }

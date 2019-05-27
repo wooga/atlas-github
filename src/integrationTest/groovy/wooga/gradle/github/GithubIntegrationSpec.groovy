@@ -75,7 +75,7 @@ class GithubIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
 
     def "can update files and content of repository"() {
         given: "a test file in the created repo"
-        testRepo.createContent(initialContent, "add empty release notes", file)
+        createContent(initialContent, "add empty release notes", file)
 
 
         and: "an action inside customGithubTask which changes this new file"
