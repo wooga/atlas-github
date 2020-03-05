@@ -216,8 +216,8 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
         where:
         fileName                   | expectedFileName           | tag
-        "file to publish.json"     | "file.to.publish.json"     | "0.5.0"
-        "filetoöÖäÄüÜpublish.json" | "filetooOaAuUpublish.json" | "0.6.0"
+        "file to publish.json"     | "file+to+publish.json"     | "0.5.0"
+        "filetoöÖäÄüÜpublish.json" | "fileto.C3.B6.C3.96.C3.A4.C3.84.C3.BC.C3.9Cpublish.json" | "0.6.0"
 
         tagName = "v${tag}-GithubPublishAssetsIntegrationSpec"
     }
@@ -363,7 +363,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
 
         //It seems there is an issue when accessing deleted assets.
         //The redirection points to the asset file we just deleted
-        //new URL(assets.get(0).browserDownloadUrl).text == """{"body" : "initial"}"""
+        new URL(assets.get(0).browserDownloadUrl).text == """{"body" : "initial"}"""
 
         outputContains(result, "restore updated asset ${updatedAsset1.name}")
         outputContains(result, "delete published asset ${workingAsset2.name}")
