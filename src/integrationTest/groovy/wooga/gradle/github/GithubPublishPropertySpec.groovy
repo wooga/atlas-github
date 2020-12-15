@@ -104,7 +104,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         then:
         def releaseValueCheck = releaseNameValue ? releaseNameValue : versionName
-        def targetCommitishValueCheck = targetCommitishValue ? targetCommitishValue : "master"
+        def targetCommitishValueCheck = targetCommitishValue ? targetCommitishValue : testRepo.defaultBranch.name
 
         hasReleaseByName(releaseValueCheck)
         def release = getReleaseByName(releaseValueCheck)
