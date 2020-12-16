@@ -89,7 +89,7 @@ class GithubPublishPlugin implements Plugin<Project> {
             void execute(GithubPublish task) {
                 ConventionMapping taskConventionMapping = task.getConventionMapping()
 
-                taskConventionMapping.map("targetCommitish", { "master" })
+                taskConventionMapping.map("targetCommitish", { null })
                 taskConventionMapping.map("prerelease", { false })
                 taskConventionMapping.map("draft", { false })
                 taskConventionMapping.map("tagName", { project.version.toString() })

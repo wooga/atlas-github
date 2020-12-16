@@ -379,7 +379,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         expectedBody = "Updated Body"
         expectedPrerelease = false
         expectedDraft = false
-        expectedTargetCommitish = "master"
+        expectedTargetCommitish = testRepo.defaultBranch.name
 
         initialName = expectedName.replace("Update", "Initial")
         initialBody = expectedBody.replace("Update", "Initial")
