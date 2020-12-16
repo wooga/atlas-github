@@ -275,7 +275,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
             try {
                 result = setReleasePropertiesAndCommit(releasePropertySet)
             } catch (Exception error) {
-                throw new GithubReleaseCreateException("failed to create release ${release.tagName}", error)
+                throw new GithubReleaseCreateException("failed to create release ${getTagName()}", error)
             }
         }
         result
