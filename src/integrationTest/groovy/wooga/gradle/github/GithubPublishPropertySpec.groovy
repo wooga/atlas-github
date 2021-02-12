@@ -104,7 +104,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
 
         then:
         def releaseValueCheck = releaseNameValue ? releaseNameValue : versionName
-        def targetCommitishValueCheck = targetCommitishValue ? targetCommitishValue : "master"
+        def targetCommitishValueCheck = targetCommitishValue ? targetCommitishValue : testRepo.defaultBranch.name
 
         hasReleaseByName(releaseValueCheck)
         def release = getReleaseByName(releaseValueCheck)
@@ -455,6 +455,7 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
     }
 
     @Issue("https://github.com/wooga/atlas-github/issues/31")
+    @Unroll
     def "evaluates body property once"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
@@ -656,69 +657,6 @@ class GithubPublishPropertySpec extends GithubPublishIntegration {
         PublishMethod.createOrUpdate | true      | true
         PublishMethod.createOrUpdate | false     | false
         PublishMethod.createOrUpdate | false     | true
-
-        methodName = useSetter ? "setPublishMethod" : "publishMethod"
-        methodValue = isLazy ? "closure" : "value"
-        preValue = isLazy ? "{" : ""
-        postValue = isLazy ? "}" : ""
-        tagName = "v0.3.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
-        versionName = tagName.replaceFirst('v', '')
-    }
-
-    @Unroll
-    def "can set publishMethod with #publishMethod #methodValue and #methodName Kotlin"() {
-        given: "a kotlin buildfile"
-        def kotlinBuildFile = createFile("build.gradle.kts", projectDir)
-        buildFile.delete()
-        kotlinBuildFile << """
-            plugins {
-                id("net.wooga.github") version "1.3.0"
-            }
-        """.stripIndent()
-
-        fork = true
-
-        and: "files to publish"
-        createTestAssetsToPublish(1)
-
-        and: "optional release"
-        if(publishMethod == PublishMethod.update) {
-            createRelease(tagName)
-        }
-
-        and: "a buildfile with publish task"
-
-        kotlinBuildFile << """
-            version = "$versionName"
-            
-            tasks.register<wooga.gradle.github.publish.tasks.GithubPublish>("testPublish") {
-                draft(false)
-                tagName("${tagName}")
-                repositoryName("$testRepositoryName")
-                token("$testUserToken")
-            }
-        """.stripIndent()
-
-        when:
-        def result = runTasks("testPublish")
-
-        then:
-        hasRelease(tagName)
-
-        where:
-        publishMethod                | useSetter | isLazy
-        PublishMethod.create         | true      | false
-//        PublishMethod.create         | true      | true
-//        PublishMethod.create         | false     | false
-//        PublishMethod.create         | false     | true
-//        PublishMethod.update         | true      | false
-//        PublishMethod.update         | true      | true
-//        PublishMethod.update         | false     | false
-//        PublishMethod.update         | false     | true
-//        PublishMethod.createOrUpdate | true      | false
-//        PublishMethod.createOrUpdate | true      | true
-//        PublishMethod.createOrUpdate | false     | false
-//        PublishMethod.createOrUpdate | false     | true
 
         methodName = useSetter ? "setPublishMethod" : "publishMethod"
         methodValue = isLazy ? "closure" : "value"

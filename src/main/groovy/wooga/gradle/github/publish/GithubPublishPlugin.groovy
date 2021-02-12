@@ -87,7 +87,6 @@ class GithubPublishPlugin implements Plugin<Project> {
         project.tasks.withType(GithubPublish, new Action<GithubPublish>() {
             @Override
             void execute(GithubPublish task) {
-                task.targetCommitish.set("master")
                 task.prerelease.set(false)
                 task.draft.set(false)
                 task.publishMethod.set(PublishMethod.create)

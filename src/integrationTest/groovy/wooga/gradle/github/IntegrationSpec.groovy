@@ -17,6 +17,7 @@
 
 package wooga.gradle.github
 
+import org.junit.Rule
 import nebula.test.functional.ExecutionResult
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
