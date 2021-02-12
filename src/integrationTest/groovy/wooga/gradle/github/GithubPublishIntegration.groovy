@@ -17,38 +17,34 @@
 
 package wooga.gradle.github
 
+import com.wooga.spock.extensions.github.GithubRepository
+import com.wooga.spock.extensions.github.Repository
+import com.wooga.spock.extensions.github.api.RateLimitHandlerWait
+import com.wooga.spock.extensions.github.api.TravisBuildNumberPostFix
+import org.kohsuke.github.GHContentUpdateResponse
 import org.kohsuke.github.GHRelease
-import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
-import org.kohsuke.github.PagedIterable
 import spock.lang.Retry
 import spock.lang.Shared
 
 @Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
 abstract class GithubPublishIntegration extends IntegrationSpec {
-    String uniquePostfix() {
-        String key = "TRAVIS_JOB_NUMBER"
-        def env = System.getenv()
-        if (env.containsKey(key)) {
-            return env.get(key)
-        }
-        ""
+
+    @Shared
+    @GithubRepository(
+            usernameEnv = "ATLAS_GITHUB_INTEGRATION_USER",
+            tokenEnv = "ATLAS_GITHUB_INTEGRATION_PASSWORD",
+            repositoryPostFixProvider = [TravisBuildNumberPostFix.class],
+            rateLimitHandler = RateLimitHandlerWait.class,
+            resetAfterTestCase = true
+    )
+    Repository testRepo
+
+    def setup() {
+        buildFile << """
+            ${applyPlugin(GithubPlugin)}
+        """.stripIndent()
     }
-
-    @Shared
-    def testUserName = System.getenv("ATLAS_GITHUB_INTEGRATION_USER")
-
-    @Shared
-    def testUserToken = System.getenv("ATLAS_GITHUB_INTEGRATION_PASSWORD")
-
-    @Shared
-    def testRepositoryName = "${testUserName}/atlas-github-integration" + uniquePostfix()
-
-    @Shared
-    GitHub client
-
-    @Shared
-    GHRepository testRepo
 
     def maybeDelete(String repoName) {
         try {
@@ -59,54 +55,32 @@ abstract class GithubPublishIntegration extends IntegrationSpec {
         }
     }
 
-    def createTestRepo() {
-        maybeDelete(testRepositoryName)
+    GHContentUpdateResponse createContent(String content, String commitMessage, String path) throws IOException {
+        return testRepo.createContent().content(content).message(commitMessage).path(path).commit();
+    }
 
-        def builder = client.createRepository(testRepositoryName.split('/')[1])
-        builder.description("Integration test repo for wooga/atlas-github")
-        builder.autoInit(false)
-        builder.licenseTemplate('MIT')
-        builder.private_(false)
-        builder.issues(false)
-        builder.wiki(false)
-        testRepo = builder.create()
+    GitHub getClient() {
+        testRepo.client
     }
 
     def createRelease(String tagName) {
-        def builder = testRepo.createRelease(tagName)
-        builder.create()
-    }
-
-    def setupSpec() {
-        client = GitHub.connectUsingOAuth(testUserToken)
-        createTestRepo()
-    }
-
-    def setup() {
-        buildFile << """
-            ${applyPlugin(GithubPlugin)}
-        """.stripIndent()
-    }
-
-    def cleanup() {
-        cleanupReleases()
+        testRepo.createRelease(tagName,tagName)
     }
 
     void cleanupReleases() {
-        try {
-            PagedIterable<GHRelease> releases = testRepo.listReleases()
-            releases.each {
-                it.delete()
-            }
-        }
-        catch(Error e) {
-
-        }
-
+        testRepo.cleanupReleases()
     }
 
-    def cleanupSpec() {
-        maybeDelete(testRepositoryName)
+    String getTestUserName() {
+        testRepo.userName
+    }
+
+    String getTestUserToken() {
+        testRepo.token
+    }
+
+    String getTestRepositoryName() {
+        testRepo.fullName
     }
 
     File createTestAssetsToPublish(int numberOfFiles) {

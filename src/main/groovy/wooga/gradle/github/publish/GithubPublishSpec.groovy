@@ -41,10 +41,16 @@ import wooga.gradle.github.base.GithubSpec
  *
  * <pre>
  * {@code
- *     String getReleaseName() {*         if(this.releaseName == null) {*             return null
- *}*         if (this.releaseName instanceof Callable) {*             return ((Callable) this.releaseName).call().toString()
- *}*         this.releaseName.toString()
- *}*}
+ *     String getReleaseName() {
+ *         if(this.releaseName == null) {
+ *             return null
+ *         }
+ *         if (this.releaseName instanceof Callable) {
+ *             return ((Callable) this.releaseName).call().toString()
+ *         }
+ *         this.releaseName.toString()
+ *     }
+ * }
  */
 interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterable {
 
