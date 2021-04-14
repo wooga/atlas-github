@@ -28,7 +28,7 @@ import spock.lang.Retry
 import spock.lang.Shared
 
 @Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
-abstract class GithubPublishIntegration extends IntegrationSpec {
+abstract class AbstractGithubIntegrationSpec extends IntegrationSpec {
 
     @Shared
     @GithubRepository(

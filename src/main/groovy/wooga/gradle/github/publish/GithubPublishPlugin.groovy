@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,14 +87,15 @@ class GithubPublishPlugin implements Plugin<Project> {
         project.tasks.withType(GithubPublish, new Action<GithubPublish>() {
             @Override
             void execute(GithubPublish task) {
-                task.prerelease.set(false)
-                task.draft.set(false)
-                task.publishMethod.set(PublishMethod.create)
+                //todo Move default values to convention
+                task.prerelease.convention(false)
+                task.draft.convention(false)
+                task.publishMethod.convention(PublishMethod.create)
 
                 def projectProvider = project.provider({project.version.toString()})
 
-                task.tagName.set(projectProvider)
-                task.releaseName.set(projectProvider)
+                task.tagName.convention(projectProvider)
+                task.releaseName.convention(projectProvider)
 
                 task.onlyIf(new Spec<GithubPublish>() {
                     @Override

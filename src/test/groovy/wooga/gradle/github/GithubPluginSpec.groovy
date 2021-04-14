@@ -21,7 +21,7 @@ import nebula.test.ProjectSpec
 import org.gradle.api.publish.plugins.PublishingPlugin
 import spock.lang.Unroll
 import wooga.gradle.github.base.GithubBasePlugin
-import wooga.gradle.github.base.GithubPluginExtention
+import wooga.gradle.github.base.GithubPluginExtension
 import wooga.gradle.github.publish.tasks.GithubPublish
 import wooga.gradle.github.publish.GithubPublishPlugin
 
@@ -44,7 +44,7 @@ class GithubPluginSpec extends ProjectSpec {
 
         where:
         extensionName                   | extensionType
-        GithubBasePlugin.EXTENSION_NAME | GithubPluginExtention.class
+        GithubBasePlugin.EXTENSION_NAME | GithubPluginExtension.class
     }
 
     @Unroll("creates the task #taskName")

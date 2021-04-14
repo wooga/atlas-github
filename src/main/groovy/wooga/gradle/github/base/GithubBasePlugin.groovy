@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,10 +43,10 @@ class GithubBasePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        GithubPluginExtention extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
+        GithubPluginExtension extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
 
         extension.username.set(project.provider({
-            def value = project.properties.get(GithubBasePluginConsts.GITHUB_USER_NAME_OPTION)
+            def value = project.properties.get(GithubBasePluginConvention.GITHUB_USER_NAME_OPTION)
             if (value) {
                 return value.toString()
             }
@@ -62,7 +62,7 @@ class GithubBasePlugin implements Plugin<Project> {
         }))
 
         extension.token.set(project.provider({
-            def value = project.properties.get(GithubBasePluginConsts.GITHUB_TOKEN_OPTION)
+            def value = project.properties.get(GithubBasePluginConvention.GITHUB_TOKEN_OPTION)
             if (value) {
                 return value.toString()
             }
@@ -70,7 +70,7 @@ class GithubBasePlugin implements Plugin<Project> {
         }))
 
         extension.repositoryName.set(project.provider({
-            def value = project.properties.get(GithubBasePluginConsts.GITHUB_REPOSITORY_NAME_OPTION)
+            def value = project.properties.get(GithubBasePluginConvention.GITHUB_REPOSITORY_NAME_OPTION)
             if (value) {
                 return value.toString()
             }
