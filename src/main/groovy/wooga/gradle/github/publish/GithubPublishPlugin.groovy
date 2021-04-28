@@ -33,20 +33,15 @@ import wooga.gradle.github.publish.tasks.GithubPublish
  * Example:
  * <pre>
  * {@code
- *     plugins{
- *         id "net.wooga.github" version "0.6.1"
- *     }
- *
- *     github {
- *         username = "wooga"
+ *     plugins{*         id "net.wooga.github" version "0.6.1"
+ *}*
+ *     github {*         username = "wooga"
  *         password = "the_password"
  *         token "a github access token"
  *         repositoryName "wooga/atlas-github"
  *         baseUrl = null
- *     }
- *
- *     githubPublish {
- *         targetCommitish = "master
+ *}*
+ *     githubPublish {*         targetCommitish = "master
  *         tagName = project.version
  *         releaseName = project.version
  *         body = "Release XYZ"
@@ -54,8 +49,7 @@ import wooga.gradle.github.publish.tasks.GithubPublish
  *         draft = false
  *
  *         from(file('build/output'))
- *     }
- * }
+ *}*}
  * </pre>
  */
 class GithubPublishPlugin implements Plugin<Project> {
@@ -87,12 +81,11 @@ class GithubPublishPlugin implements Plugin<Project> {
         project.tasks.withType(GithubPublish, new Action<GithubPublish>() {
             @Override
             void execute(GithubPublish task) {
-                //todo Move default values to convention
-                task.prerelease.convention(false)
-                task.draft.convention(false)
-                task.publishMethod.convention(PublishMethod.create)
+                task.prerelease.convention(GithubPublishPluginConvention.defaultPublishPrerelease)
+                task.draft.convention(GithubPublishPluginConvention.defaultPublishDraft)
+                task.publishMethod.convention(GithubPublishPluginConvention.defaultPublishMethod)
 
-                def projectProvider = project.provider({project.version.toString()})
+                def projectProvider = project.provider({ project.version.toString() })
 
                 task.tagName.convention(projectProvider)
                 task.releaseName.convention(projectProvider)

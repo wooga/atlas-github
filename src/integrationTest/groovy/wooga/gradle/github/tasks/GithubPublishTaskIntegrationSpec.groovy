@@ -73,27 +73,50 @@ class GithubPublishTaskIntegrationSpec extends AbstractGithubTaskIntegrationSpec
         outputContains(result, "property: " + expectedValue.toString())
 
         where:
-        property          | method                | rawValue | type
-        "draft"           | "draft.set"           | true     | "Boolean"
-        "draft"           | "draft.set"           | false    | "Provider<Boolean>"
-        "draft"           | "setDraft"            | true     | "Provider<Boolean>"
-        "prerelease"      | "prerelease.set"      | false    | "Boolean"
-        "prerelease"      | "prerelease.set"      | true     | "Provider<Boolean>"
-        "prerelease"      | "setPrerelease"       | false    | "Provider<Boolean>"
-        "targetCommitish" | "targetCommitish.set" | "foo"    | "String"
-        "targetCommitish" | "targetCommitish.set" | "bar"    | "Provider<String>"
-        "targetCommitish" | "setTargetCommitish"  | "foobar" | "Provider<String>"
-        "releaseName"     | "releaseName.set"     | "foo"    | "String"
-        "releaseName"     | "releaseName.set"     | "bar"    | "Provider<String>"
-        "releaseName"     | "setReleaseName"      | "foobar" | "Provider<String>"
-        "tagName"         | "tagName.set"         | "foo"    | "String"
-        "tagName"         | "tagName.set"         | "bar"    | "Provider<String>"
-        "tagName"         | "setTagName"          | "foobar" | "Provider<String>"
-        "body"            | "body.set"            | "foo"    | "String"
-        "body"            | "body.set"            | "bar"    | "Provider<String>"
-        "body"            | "setBody"             | "foobar" | "Provider<String>"
+        property          | method                | rawValue                     | type
+        "draft"           | "draft.set"           | true                         | "Boolean"
+        "draft"           | "draft.set"           | false                        | "Provider<Boolean>"
+        "draft"           | "setDraft"            | true                         | "Provider<Boolean>"
 
-        value = wrapValueBasedOnType(rawValue, type)
+        "prerelease"      | "prerelease.set"      | false                        | "Boolean"
+        "prerelease"      | "prerelease.set"      | true                         | "Provider<Boolean>"
+        "prerelease"      | "setPrerelease"       | false                        | "Provider<Boolean>"
+
+        "targetCommitish" | "targetCommitish.set" | "foo"                        | "String"
+        "targetCommitish" | "targetCommitish.set" | "bar"                        | "Provider<String>"
+        "targetCommitish" | "setTargetCommitish"  | "foobar"                     | "Provider<String>"
+
+        "releaseName"     | "releaseName.set"     | "foo"                        | "String"
+        "releaseName"     | "releaseName.set"     | "bar"                        | "Provider<String>"
+        "releaseName"     | "setReleaseName"      | "foobar"                     | "Provider<String>"
+
+        "tagName"         | "tagName.set"         | "foo"                        | "String"
+        "tagName"         | "tagName.set"         | "bar"                        | "Provider<String>"
+        "tagName"         | "setTagName"          | "foobar"                     | "Provider<String>"
+
+        "body"            | "body.set"            | "foo"                        | "String"
+        "body"            | "body.set"            | "bar"                        | "Provider<String>"
+        "body"            | "body.set"            | "foo"                        | "String"
+
+        "publishMethod"   | "publishMethod.set"   | PublishMethod.create         | "Provider<PublishMethod>"
+        "publishMethod"   | "publishMethod.set"   | PublishMethod.update         | "Provider<PublishMethod>"
+        "publishMethod"   | "publishMethod.set"   | PublishMethod.createOrUpdate | "Provider<PublishMethod>"
+        "publishMethod"   | "setPublishMethod"    | PublishMethod.create         | "Provider<PublishMethod>"
+        "publishMethod"   | "setPublishMethod"    | PublishMethod.update         | "Provider<PublishMethod>"
+        "publishMethod"   | "setPublishMethod"    | PublishMethod.createOrUpdate | "Provider<PublishMethod>"
+        "publishMethod"   | "setPublishMethod"    | "create"                     | "String"
+        "publishMethod"   | "setPublishMethod"    | "update"                     | "String"
+        "publishMethod"   | "setPublishMethod"    | "createOrUpdate"             | "String"
+
+        value = wrapValueBasedOnType(rawValue, type.toString()) { type ->
+            switch (type) {
+                case PublishMethod.class.simpleName:
+                    return "${PublishMethod.class.name}.${rawValue.toString()}"
+                default:
+                    return rawValue
+            }
+
+        }
         expectedValue = rawValue
     }
 
@@ -127,15 +150,14 @@ class GithubPublishTaskIntegrationSpec extends AbstractGithubTaskIntegrationSpec
         versionName = tagName.replaceFirst('v', '')
     }
 
-    @Unroll
-    // todo Write proper behaviour test implementation
-    def "can set publishMethod with #publishMethod"() {
+    @Unroll("task of type GithubPublish with publishMethod #publishMethod will #message")
+    def "publishMethod will create or update release"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
 
         and: "optional release"
-        if (publishMethod == PublishMethod.update) {
-            createRelease(tagName)
+        if (releaseAlreadyCreated) {
+            createRelease(tagName.toString(), releaseBodyBeforeUpdate.toString())
         }
 
         and: "a buildfile with publish task"
@@ -149,17 +171,32 @@ class GithubPublishTaskIntegrationSpec extends AbstractGithubTaskIntegrationSpec
                 tagName = "${tagName}"
                 repositoryName = "$testRepositoryName"
                 token = "$testUserToken"
+                body = "${releaseBody}"
             }
         """.stripIndent()
 
         when:
-        runTasksSuccessfully(testTaskName)
+        def result = runTasks(testTaskName)
 
         then:
-        hasRelease(tagName)
+        result.success != expectedFailure
+
+        if(result.success) {
+            assert hasRelease(tagName)
+            def release = getRelease(tagName)
+            assert release.body == releaseBody
+        }
 
         where:
-        publishMethod << PublishMethod.values()
+        publishMethod                | releaseAlreadyCreated | releaseBodyBeforeUpdate | releaseBody       | expectedFailure | message
+        PublishMethod.create         | false                 | _                       | "release created" | false           | "create a new release"
+        PublishMethod.create         | true                  | "release created"       | _                 | true            | "fail when release already exists"
+
+        PublishMethod.update         | false                 | _                       | _                 | true            | "fail when release to update doesn't exist"
+        PublishMethod.update         | true                  | "release created"       | "release updated" | false           | "update release"
+
+        PublishMethod.createOrUpdate | true                  | "release created"       | "release updated" | false           | "update release when release exists"
+        PublishMethod.createOrUpdate | false                 | _                       | "release updated" | false           | "create release when release doesn't exist"
 
         tagName = "v0.3.${Math.abs(new Random().nextInt() % 1000) + 1}-GithubPublishPropertySpec"
         versionName = tagName.replaceFirst('v', '')

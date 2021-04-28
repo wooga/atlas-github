@@ -130,45 +130,6 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         body.set(value)
     }
 
-//    /**
-//     * See: {@link GithubPublishSpec#setBody(PublishBodyStrategy)}
-//     */
-//    @Override
-//    void setBody(PublishBodyStrategy bodyStrategy) {
-//        this.body.set(project.provider({
-//            String evaluatedBody = bodyStrategy.getBody(getRepository())
-//            evaluatedBody
-//        }.memoize()))
-//    }
-//
-//    /**
-//     * See: {@link GithubPublishSpec#setBody(File)}
-//     */
-//    @Override
-//    void setBody(File body) {
-//        this.inputs.file(body)
-//        this.body.set(project.provider({
-//            String evaluatedBody = body.text
-//            evaluatedBody
-//        }.memoize()))
-//    }
-//
-//    /**
-//     * See: {@link GithubPublishSpec#setBody(Task)}
-//     */
-//    @Override
-//    void setBody(Task body) {
-//        this.inputs.files(body.outputs.files)
-//        this.body.set(project.provider({
-//            def outputs = body.outputs
-//            if(!outputs.hasOutput) {
-//                throw new GradleException("Task provided as body input has no outputs")
-//            }
-//            String evaluatedBody = outputs.files.singleFile.text
-//            evaluatedBody
-//        }.memoize()))
-//    }
-
     @Input
     private final Property<Boolean> prerelease
 
@@ -247,13 +208,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     protected void processReleaseAssets(GHRelease release) throws GithubReleaseUploadAssetsException, GithubReleaseUpdateException {
         getDestinationDir().mkdirs()
-        WorkResult assetCopyResult = project.sync(new Action<CopySpec>()
-        {
-            @Override
-            void execute(CopySpec copySpec) {
-                copySpec.into(getDestinationDir())
-                copySpec.with(assetsCopySpec)
-            }
+        WorkResult assetCopyResult = project.sync({CopySpec copySpec ->
+            copySpec.into(getDestinationDir())
+            copySpec.with(assetsCopySpec)
         })
 
         if (assetCopyResult.didWork) {

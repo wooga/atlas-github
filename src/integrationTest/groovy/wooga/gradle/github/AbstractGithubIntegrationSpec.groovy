@@ -63,6 +63,16 @@ abstract class AbstractGithubIntegrationSpec extends IntegrationSpec {
         testRepo.client
     }
 
+    def createRelease(String tagName, String body) {
+        def releaseBuilder = testRepo.createRelease(tagName)
+        releaseBuilder.name(tagName)
+        releaseBuilder.draft(false)
+        releaseBuilder.prerelease(false)
+        releaseBuilder.commitish(testRepo.getDefaultBranch().name)
+        releaseBuilder.body(body)
+        releaseBuilder.create()
+    }
+
     def createRelease(String tagName) {
         testRepo.createRelease(tagName,tagName)
     }

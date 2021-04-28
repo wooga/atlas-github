@@ -54,7 +54,7 @@ class GithubBasePlugin implements Plugin<Project> {
         }))
 
         extension.password.set(project.provider({
-            def value = project.properties.get(GithubConsts.GITHUB_USER_PASSWORD_OPTION)
+            def value = project.properties.get(GithubBasePluginConvention.GITHUB_USER_PASSWORD_OPTION)
             if (value) {
                 return value.toString()
             }
