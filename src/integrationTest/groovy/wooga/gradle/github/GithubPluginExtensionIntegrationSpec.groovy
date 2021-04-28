@@ -1,6 +1,6 @@
 package wooga.gradle.github
 
-import spock.lang.Ignore
+
 import spock.lang.Unroll
 
 class GithubPluginExtensionIntegrationSpec extends IntegrationSpec {
@@ -43,24 +43,18 @@ class GithubPluginExtensionIntegrationSpec extends IntegrationSpec {
         }
     }
 
-    String envNameFromProperty(String property) {
-        "GITHUB_${property.replaceAll(/([A-Z])/, "_\$1").toUpperCase()}"
+    String envNameFromProperty(String extensionName, String property) {
+        "${extensionName.toUpperCase()}_${property.replaceAll(/([A-Z])/, "_\$1").toUpperCase()}"
     }
 
-    @Unroll(":#property returns '#testValue' if #reason")
-    @Ignore
-    // todo Update property testing for extension
+    @Unroll()
     def "extension property :#property returns '#testValue' if #reason"() {
         given:
         buildFile << """
             task(custom) {
                 doLast {
-                    def value = "not set"
-                    if(github.${property}.present) {
-                      value = github.${property}.get()
-                    }
-
-                    println("github.${property}: " + value)
+                    def value = ${extensionName}.${property}.getOrNull()
+                    println("${extensionName}.${property}: " + value)
                 }
             }
         """
@@ -68,115 +62,85 @@ class GithubPluginExtensionIntegrationSpec extends IntegrationSpec {
         and: "a gradle.properties"
         def propertiesFile = createFile("gradle.properties")
 
-        def escapedValue = (value instanceof String) ? escapedPath(value) : value
-
         switch (location) {
             case PropertyLocation.script:
-                buildFile << "github.${property} = ${escapedValue}"
+                buildFile << "${extensionName}.${invocation}"
                 break
             case PropertyLocation.property:
-                propertiesFile << "github.${property} = ${escapedValue}"
+                propertiesFile << "${extensionName}.${property} = ${escapedValue}"
                 break
             case PropertyLocation.env:
-                environmentVariables.set(envNameFromProperty(property), "${value}")
+                environmentVariables.set(envNameFromProperty(extensionName, property), "${value}")
                 break
             default:
                 break
         }
 
-        when: ""
-        def result = runTasks("custom")
-
-        then:
-        result.success
-        result.standardOutput.contains("github.${property}: ${testValue}")
-
-        where:
-        property         | value                      | expectedValue            | providedValue            | location
-        "repositoryName" | "testUser/testRepo"        | _                        | "testUser/testRepo"      | PropertyLocation.property
-        "repositoryName" | "'testUser/testRepo'"      | 'testUser/testRepo'      | "testUser/testRepo"      | PropertyLocation.script
-        "repositoryName" | null                       | "not set"                | null                     | PropertyLocation.none
-
-        "username"       | "testUser"                 | _                        | "testUser"               | PropertyLocation.property
-        "username"       | "'testUser'"               | 'testUser'               | "testUser"               | PropertyLocation.script
-        "username"       | null                       | "not set"                | null                     | PropertyLocation.none
-
-        "password"       | "testPass"                 | _                        | "testPass"               | PropertyLocation.property
-        "password"       | "'testPass'"               | 'testPass'               | "testPass"               | PropertyLocation.script
-        "password"       | null                       | "not set"                | null                     | PropertyLocation.none
-
-        "token"          | "accessToken"              | _                        | "accessToken"            | PropertyLocation.property
-        "token"          | "'accessToken'"            | 'accessToken'            | "accessToken"            | PropertyLocation.script
-        "token"          | null                       | "not set"                | null                     | PropertyLocation.none
-
-        "baseUrl"        | "https://api.github.com"   | 'not set'                | "https://api.github.com" | PropertyLocation.property
-        "baseUrl"        | "'https://api.github.com'" | 'https://api.github.com' | "https://api.github.com" | PropertyLocation.script
-        "baseUrl"        | null                       | "not set"                | null                     | PropertyLocation.none
-
-        testValue = (expectedValue == _) ? value : expectedValue
-        reason = location.reason() + ((location == PropertyLocation.none) ? "" : " with '$providedValue'")
-    }
-
-    @Unroll
-    def "can set #property with #type"() {
-        given:
-        buildFile << """
-            task(custom) {
-                doLast {
-                    def value = "not set"
-                    if(github.${property}.present) {
-                      value = github.${property}.get()
-                    }
-
-                    println("github.${property}: " + value)
-                }
-            }
-        """
-
-        def escapedValue = (value instanceof String) ? escapedPath(value) : value
-
-        switch (type) {
-            case PropertySetType.setter:
-                buildFile << "github.${property} = ${escapedValue}"
-                break
-            case PropertySetType.setMethod:
-                buildFile << "github.${property} ${escapedValue}"
-                break
-            case PropertySetType.propertySet:
-                buildFile << "github.${property}.set(${escapedValue})"
-                break
+        and: "the test value with replace placeholders"
+        if (testValue instanceof String) {
+            testValue = testValue.replaceAll("#projectDir#", escapedPath(projectDir.path))
         }
 
         when: ""
-        def result = runTasks("custom")
+        def result = runTasksSuccessfully("custom")
 
         then:
-        result.success
-        result.standardOutput.contains("github.${property}: ${testValue}")
+        result.standardOutput.contains("${extensionName}.${property}: ${testValue}")
 
         where:
-        property         | value                      | expectedValue            | type
-        "repositoryName" | "'testUser/testRepo'"      | "testUser/testRepo"      | PropertySetType.setter
-        "repositoryName" | "'testUser/testRepo'"      | "testUser/testRepo"      | PropertySetType.setMethod
-        "repositoryName" | "'testUser/testRepo'"      | "testUser/testRepo"      | PropertySetType.propertySet
+        property         | method               | rawValue                   | expectedValue | type               | location                  | additionalInfo
+        "repositoryName" | _                    | "testUser/testRepo"        | _             | _                  | PropertyLocation.property | ""
+        "repositoryName" | _                    | "testUser/testRepo"        | _             | "String"           | PropertyLocation.script   | ""
+        "repositoryName" | _                    | "testUser/testRepo"        | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "repositoryName" | "repositoryName.set" | "testUser/testRepo"        | _             | "String"           | PropertyLocation.script   | ""
+        "repositoryName" | "repositoryName.set" | "testUser/testRepo"        | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "repositoryName" | "setRepositoryName"  | "testUser/testRepo"        | _             | "String"           | PropertyLocation.script   | ""
+        "repositoryName" | "setRepositoryName"  | "testUser/testRepo"        | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "repositoryName" | _                    | _                          | null          | _                  | PropertyLocation.none     | ""
 
-        "username"       | "'testUser'"               | "testUser"               | PropertySetType.setter
-        "username"       | "'testUser'"               | "testUser"               | PropertySetType.setMethod
-        "username"       | "'testUser'"               | "testUser"               | PropertySetType.propertySet
+        "username"       | _                    | "someUser2"                | _             | _                  | PropertyLocation.property | ""
+        "username"       | _                    | "someUser3"                | _             | "String"           | PropertyLocation.script   | ""
+        "username"       | _                    | "someUser4"                | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "username"       | "username.set"       | "someUser5"                | _             | "String"           | PropertyLocation.script   | ""
+        "username"       | "username.set"       | "someUser6"                | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "username"       | "setUsername"        | "someUser7"                | _             | "String"           | PropertyLocation.script   | ""
+        "username"       | "setUsername"        | "someUser8"                | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "username"       | _                    | _                          | null          | _                  | PropertyLocation.none     | ""
 
-        "password"       | "'testPass'"               | "testPass"               | PropertySetType.setter
-        "password"       | "'testPass'"               | "testPass"               | PropertySetType.setMethod
-        "password"       | "'testPass'"               | "testPass"               | PropertySetType.propertySet
+        "password"       | _                    | "userPass2"                | _             | _                  | PropertyLocation.property | ""
+        "password"       | _                    | "userPass3"                | _             | "String"           | PropertyLocation.script   | ""
+        "password"       | _                    | "userPass4"                | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "password"       | "password.set"       | "userPass5"                | _             | "String"           | PropertyLocation.script   | ""
+        "password"       | "password.set"       | "userPass6"                | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "password"       | "setPassword"        | "userPass7"                | _             | "String"           | PropertyLocation.script   | ""
+        "password"       | "setPassword"        | "userPass8"                | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "password"       | _                    | _                          | null          | _                  | PropertyLocation.none     | ""
 
-        "token"          | "'accessToken'"            | "accessToken"            | PropertySetType.setter
-        "token"          | "'accessToken'"            | "accessToken"            | PropertySetType.setMethod
-        "token"          | "'accessToken'"            | "accessToken"            | PropertySetType.propertySet
+        "token"          | _                    | "token2"                   | _             | _                  | PropertyLocation.property | ""
+        "token"          | _                    | "token3"                   | _             | "String"           | PropertyLocation.script   | ""
+        "token"          | _                    | "token4"                   | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "token"          | "token.set"          | "token5"                   | _             | "String"           | PropertyLocation.script   | ""
+        "token"          | "token.set"          | "token6"                   | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "token"          | "setToken"           | "token7"                   | _             | "String"           | PropertyLocation.script   | ""
+        "token"          | "setToken"           | "token8"                   | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "token"          | _                    | _                          | null          | _                  | PropertyLocation.none     | ""
 
-        "baseUrl"        | "'https://api.github.com'" | "https://api.github.com" | PropertySetType.setter
-        "baseUrl"        | "'https://api.github.com'" | "https://api.github.com" | PropertySetType.setMethod
-        "baseUrl"        | "'https://api.github.com'" | "https://api.github.com" | PropertySetType.propertySet
+        "baseUrl"        | _                    | "https://api.github.com/2" | _             | _                  | PropertyLocation.property | ""
+        "baseUrl"        | _                    | "https://api.github.com/3" | _             | "String"           | PropertyLocation.script   | ""
+        "baseUrl"        | _                    | "https://api.github.com/4" | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "baseUrl"        | "baseUrl.set"        | "https://api.github.com/5" | _             | "String"           | PropertyLocation.script   | ""
+        "baseUrl"        | "baseUrl.set"        | "https://api.github.com/6" | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "baseUrl"        | "setBaseUrl"         | "https://api.github.com/7" | _             | "String"           | PropertyLocation.script   | ""
+        "baseUrl"        | "setBaseUrl"         | "https://api.github.com/8" | _             | "Provider<String>" | PropertyLocation.script   | ""
+        "baseUrl"        | _                    | _                          | null          | _                  | PropertyLocation.none     | ""
 
-        testValue = (expectedValue == _) ? value : expectedValue
+        extensionName = "github"
+        value = (type != _) ? wrapValueBasedOnType(rawValue, type.toString()) : rawValue
+        providedValue = (location == PropertyLocation.script) ? type : value
+        testValue = (expectedValue == _) ? rawValue : expectedValue
+        reason = location.reason() + ((location == PropertyLocation.none) ? "" : "  with '$providedValue' ") + additionalInfo
+        escapedValue = (value instanceof String) ? escapedPath(value) : value
+        invocation = (method != _) ? "${method}(${escapedValue})" : "${property} = ${escapedValue}"
     }
 
     def "validates repoName property before set"() {
@@ -190,12 +154,12 @@ class GithubPluginExtensionIntegrationSpec extends IntegrationSpec {
 
         then:
         result.success == (expectedError == null)
-        if(!result.success) {
+        if (!result.success) {
             outputContains(result, expectedError)
         }
 
         where:
-        repositoryName      | expectedError
-        'some value'        | "Repository value 'some value' is not a valid github repository name. Expecting `owner/repo`"
+        repositoryName | expectedError
+        'some value'   | "Repository value 'some value' is not a valid github repository name. Expecting `owner/repo`"
     }
 }

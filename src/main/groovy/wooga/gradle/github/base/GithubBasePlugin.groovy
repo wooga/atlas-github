@@ -77,6 +77,14 @@ class GithubBasePlugin implements Plugin<Project> {
             null
         }))
 
+        extension.baseUrl.set(project.provider({
+            def value = project.properties.get(GithubBasePluginConvention.GITHUB_BASE_URL_OPTION)
+            if (value) {
+                return value.toString()
+            }
+            null
+        }))
+
         project.tasks.withType(AbstractGithubTask, new Action<AbstractGithubTask>() {
             @Override
             void execute(AbstractGithubTask task) {

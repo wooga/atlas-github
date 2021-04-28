@@ -48,4 +48,11 @@ class GithubBasePluginConvention {
      * @see GithubSpec#getRepositoryName()
      */
     static final String GITHUB_REPOSITORY_NAME_OPTION = "github.repositoryName"
+
+    /**
+     * Gradle property name to set the default value for {@code baseUrl}.
+     * @value "github.baseUrl"
+     * @see GithubSpec#getBaseUrl()
+     */
+    static final String GITHUB_BASE_URL_OPTION = "github.baseUrl"
 }
