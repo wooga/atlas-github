@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.gradle.api.file.FileTreeElement
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.specs.Specs
 import org.gradle.api.tasks.Input
@@ -76,35 +77,96 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     private Boolean isNewlyCreatedRelease = false
 
     @Input
-    final Property<String> tagName
-
-    @Input
-    @Optional
-    final Property<String> targetCommitish
-
-    @Input
-    final Property<String> releaseName
-
-    @Input
-    @Optional
-    final Property<String> body
-
-    @Input
-    final Property<Boolean> prerelease
-
-    @Input
-    final Property<Boolean> draft
-
-    final Property<PublishMethod> publishMethod
+    private final Property<String> tagName
 
     @Override
-    Property<Boolean> isPrerelease() {
-        return prerelease
+    Property<String> getTagName() {
+        tagName
     }
 
     @Override
-    Property<Boolean> isDraft() {
-        return draft
+    void setTagName(Provider<String> value) {
+        tagName.set(value)
+    }
+
+    @Optional
+    @Input
+    private final Property<String> targetCommitish
+
+    @Override
+    Property<String> getTargetCommitish() {
+        targetCommitish
+    }
+
+    @Override
+    void setTargetCommitish(Provider<String> value) {
+        targetCommitish.set(value)
+    }
+
+    @Input
+    private final Property<String> releaseName
+
+    @Override
+    Property<String> getReleaseName() {
+        releaseName
+    }
+
+    @Override
+    void setReleaseName(Provider<String> value) {
+        releaseName.set(value)
+    }
+
+    @Optional
+    @Input
+    private final Property<String> body
+
+    @Override
+    Property<String> getBody() {
+        body
+    }
+
+    @Override
+    void setBody(Provider<String> value) {
+        body.set(value)
+    }
+
+    @Input
+    private final Property<Boolean> prerelease
+
+    Property<Boolean> getPrerelease() {
+        prerelease
+    }
+
+    void setPrerelease(Provider<Boolean> value) {
+        prerelease.set(value)
+    }
+
+    @Input
+    private final Property<Boolean> draft
+
+    @Override
+    Property<Boolean> getDraft() {
+        draft
+    }
+
+    @Override
+    void setDraft(Provider<Boolean> value) {
+        draft.set(value)
+    }
+
+    @Input
+    private final Property<PublishMethod> publishMethod
+
+    Property<PublishMethod> getPublishMethod() {
+        publishMethod
+    }
+
+    void setPublishMethod(Provider<PublishMethod> value) {
+        publishMethod.set(value)
+    }
+
+    void setPublishMethod(String value) {
+        publishMethod.set(PublishMethod.valueOf(value))
     }
 
     GithubPublish() {
@@ -146,13 +208,9 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
     protected void processReleaseAssets(GHRelease release) throws GithubReleaseUploadAssetsException, GithubReleaseUpdateException {
         getDestinationDir().mkdirs()
-        WorkResult assetCopyResult = project.sync(new Action<CopySpec>()
-        {
-            @Override
-            void execute(CopySpec copySpec) {
-                copySpec.into(getDestinationDir())
-                copySpec.with(assetsCopySpec)
-            }
+        WorkResult assetCopyResult = project.sync({CopySpec copySpec ->
+            copySpec.into(getDestinationDir())
+            copySpec.with(assetsCopySpec)
         })
 
         if (assetCopyResult.didWork) {
@@ -548,384 +606,4 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     GithubPublish exclude(Closure excludeSpec) {
         this.exclude(Specs.<FileTreeElement> convertClosureToSpec(excludeSpec))
     }
-
-    /**
-     * See: {@link GithubPublishSpec#setTagName(String)}
-     */
-    @Override
-    GithubPublish setTagName(String tagName) {
-        this.tagName.set(tagName)
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setTagName(Object)}
-     */
-    @Override
-    GithubPublish setTagName(Object tagName) {
-        this.tagName.set(project.provider({
-            if (tagName instanceof Callable) {
-                return ((Callable) tagName).call().toString()
-            }
-
-            tagName.toString()
-        }))
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#tagName(String)}
-     */
-    @Override
-    GithubPublish tagName(String tagName) {
-        this.setTagName(tagName)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#tagName(Object)}
-     */
-    @Override
-    GithubPublish tagName(Object tagName) {
-        this.setTagName(tagName)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setTargetCommitish(String)}
-     */
-    @Override
-    GithubPublish setTargetCommitish(String targetCommitish) {
-        this.targetCommitish.set(targetCommitish)
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setTargetCommitish(Object)}
-     */
-    @Override
-    GithubPublish setTargetCommitish(Object targetCommitish) {
-        this.targetCommitish.set(project.provider({
-            if (targetCommitish instanceof Callable) {
-                return ((Callable) targetCommitish).call().toString()
-            }
-
-            targetCommitish.toString()
-        }))
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#targetCommitish(String)}
-     */
-    @Override
-    GithubPublish targetCommitish(String targetCommitish) {
-        this.setTargetCommitish(targetCommitish)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#targetCommitish(Object)}
-     */
-    @Override
-    GithubPublish targetCommitish(Object targetCommitish) {
-        this.setTargetCommitish(targetCommitish)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setReleaseName(String)}
-     */
-    @Override
-    GithubPublish setReleaseName(String name) {
-        this.releaseName.set(name)
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setReleaseName(Object)}
-     */
-    @Override
-    GithubPublish setReleaseName(Object name) {
-        this.releaseName.set(project.provider({
-            if (name instanceof Callable) {
-                return ((Callable) name).call().toString()
-            }
-
-            name.toString()
-        }))
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#releaseName(Object)}
-     */
-    @Override
-    GithubPublish releaseName(Object name) {
-        this.setReleaseName(name)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#releaseName(String)}
-     */
-    @Override
-    GithubPublish releaseName(String name) {
-        this.setReleaseName(name)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setBody(String)}
-     */
-    @Override
-    GithubPublish setBody(String body) {
-        this.body.set(body)
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setBody(Object)}
-     */
-    @Override
-    GithubPublish setBody(Object body) {
-        this.body.set(project.provider({
-            if (body instanceof Callable) {
-                String evaluatedBody = ((Callable) body).call().toString()
-                this.body.set(evaluatedBody)
-                evaluatedBody
-            }
-
-            body.toString()
-        }))
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setBody(Closure)}
-     */
-    @Override
-    GithubPublish setBody(Closure closure) {
-        if (closure.maximumNumberOfParameters > 1) {
-            throw new GradleException("Too many parameters for body clojure")
-        }
-
-        this.body.set(project.provider({
-            String evaluatedBody = closure.call(getRepository()).toString()
-            this.body.set(evaluatedBody)
-            evaluatedBody
-        }))
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setBody(PublishBodyStrategy)}
-     */
-    @Override
-    GithubPublish setBody(PublishBodyStrategy bodyStrategy) {
-        this.body.set(project.provider({
-            String evaluatedBody = bodyStrategy.getBody(getRepository())
-            this.body.set(evaluatedBody)
-            evaluatedBody
-        }))
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setBody(File)}
-     */
-    @Override
-    GithubPublishSpec setBody(File body) {
-        this.inputs.file(body)
-        this.body.set(project.provider({
-            String evaluatedBody = body.text
-            this.body.set(evaluatedBody)
-            evaluatedBody
-        }))
-
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setBody(Task)}
-     */
-    @Override
-    GithubPublishSpec setBody(Task body) {
-        this.inputs.file(body)
-        this.body.set(project.provider({
-            def outputs = body.outputs
-            if(!outputs.hasOutput) {
-                throw new GradleException("Task provided as body input has no outputs")
-            }
-            String evaluatedBody = outputs.files.singleFile.text
-            this.body.set(evaluatedBody)
-            evaluatedBody
-        }))
-
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#body(String)}
-     */
-    @Override
-    GithubPublish body(String body) {
-        this.setBody(body)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#body(Object)}
-     */
-    @Override
-    GithubPublish body(Object body) {
-        this.setBody(body)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#body(Closure)}
-     */
-    @Override
-    GithubPublish body(Closure bodyStrategy) {
-        this.setBody(bodyStrategy)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#body(PublishBodyStrategy)}
-     */
-    @Override
-    GithubPublish body(PublishBodyStrategy bodyStrategy) {
-        this.setBody(bodyStrategy)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#body(File)}
-     */
-    @Override
-    GithubPublishSpec body(File body) {
-        this.setBody(body)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#body(Task)}
-     */
-    @Override
-    GithubPublishSpec body(Task body) {
-        this.setBody(body)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setPrerelease(boolean)}
-     */
-    @Override
-    GithubPublish setPrerelease(Boolean prerelease) {
-        this.prerelease.set(prerelease)
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setPrerelease(Object)}
-     */
-    @Override
-    GithubPublish setPrerelease(Object prerelease) {
-
-        this.prerelease.set(project.provider({
-            if (prerelease instanceof Callable) {
-                return Boolean.parseBoolean(((Callable) prerelease).call().toString())
-            }
-
-            Boolean.parseBoolean(prerelease.toString())
-        }))
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#prerelease(boolean)}
-     */
-    @Override
-    GithubPublish prerelease(Boolean prerelease) {
-        this.setPrerelease(prerelease)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#prerelease(Object)}
-     */
-    @Override
-    GithubPublish prerelease(Object prerelease) {
-        this.setPrerelease(prerelease)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setDraft(boolean)}
-     */
-    @Override
-    GithubPublish setDraft(Boolean draft) {
-        this.draft.set(draft)
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setDraft(Object)}
-     */
-    @Override
-    GithubPublish setDraft(Object draft) {
-        this.draft.set(project.provider({
-            if (draft instanceof Callable) {
-                return Boolean.parseBoolean(((Callable) draft).call().toString())
-            }
-
-            Boolean.parseBoolean(draft.toString())
-        }))
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#draft(boolean)}
-     */
-    @Override
-    GithubPublish draft(Boolean draft) {
-        this.setDraft(draft)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#draft(Object)}
-     */
-    @Override
-    GithubPublish draft(Object draft) {
-        this.setDraft(draft)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setPublishMethod(PublishMethod)}
-     */
-    @Override
-    GithubPublishSpec setPublishMethod(PublishMethod method) {
-        this.publishMethod.set(method)
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setPublishMethod(Object)}
-     */
-    @Override
-    GithubPublishSpec setPublishMethod(Object method) {
-        this.publishMethod.set(project.provider({
-            if (method instanceof Callable) {
-                return ((Callable) method).call() as PublishMethod
-            }
-
-            method as PublishMethod
-        }))
-        this
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setPublishMethod(PublishMethod)}
-     */
-    @Override
-    GithubPublishSpec publishMethod(PublishMethod method) {
-        this.setPublishMethod(method)
-    }
-
-    /**
-     * See: {@link GithubPublishSpec#setPublishMethod(Object)}
-     */
-    @Override
-    GithubPublishSpec publishMethod(Object method) {
-        this.setPublishMethod(method)
-    }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ package wooga.gradle.github.base.tasks.internal
 import org.gradle.api.GradleException
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.kohsuke.github.GHRepository
@@ -33,27 +34,83 @@ import wooga.gradle.github.base.tasks.Github
 abstract class AbstractGithubTask<T extends AbstractGithubTask> extends ConventionTask implements GithubSpec {
 
     @Input
-    final Property<String> repositoryName
+    private final Property<String> repositoryName
+
+    @Override
+    Property<String> getRepositoryName() {
+        repositoryName
+    }
+
+    @Override
+    void setRepositoryName(Provider<String> value) {
+        repositoryName.set(value)
+    }
+
+    void setRepositoryName(String name) {
+        if (!GithubRepositoryValidator.validateRepositoryName(name)) {
+            throw new IllegalArgumentException("Repository value '$name' is not a valid github repository name. Expecting `owner/repo`.")
+        }
+
+        repositoryName.set(name)
+    }
+    
+    @Optional
+    @Input
+    private final Property<String> baseUrl
+
+    @Override
+    Property<String> getBaseUrl() {
+        baseUrl
+    }
+
+    @Override
+    void setBaseUrl(Provider<String> value) {
+        baseUrl.set(value)
+    }
+    
+    @Optional
+    @Input
+    private final Property<String> username
+
+    @Override
+    Property<String> getUsername() {
+        username
+    }
+
+    @Override
+    void setUsername(Provider<String> value) {
+        username.set(value)
+    }
 
     @Optional
     @Input
-    final Property<String> baseUrl
+    private final Property<String> password
+
+    @Override
+    Property<String> getPassword() {
+        password
+    }
+
+    @Override
+    void setPassword(Provider<String> value) {
+        password.set(value)
+    }
 
     @Optional
     @Input
-    final Property<String> username
+    private final Property<String> token
 
-    @Optional
-    @Input
-    final Property<String> password
+    @Override
+    Property<String> getToken() {
+        token
+    }
 
-
-    @Optional
-    @Input
-    final Property<String> token
+    @Override
+    void setToken(Provider<String> value) {
+        token.set(value)
+    }
 
     protected final Property<GitHub> clientProvider
-
     private final Class<T> taskType
 
     AbstractGithubTask(Class<T> taskType) {
@@ -107,64 +164,5 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         this.clientProvider.get()
     }
 
-    @Override
-    T setRepositoryName(String name) {
-        if (!GithubRepositoryValidator.validateRepositoryName(name)) {
-            throw new IllegalArgumentException("Repository value '$name' is not a valid github repository name. Expecting `owner/repo`.")
-        }
 
-        this.repositoryName.set(name)
-        taskType.cast(this)
-    }
-
-    @Override
-    T repositoryName(String name) {
-        taskType.cast(this.setRepositoryName(name))
-    }
-
-    @Override
-    T setBaseUrl(String baseUrl) {
-        this.baseUrl.set(baseUrl)
-        taskType.cast(this)
-    }
-
-    @Override
-    T baseUrl(String baseUrl) {
-        taskType.cast(this.setBaseUrl(baseUrl))
-    }
-
-    @Override
-    T setToken(String token) {
-        this.token.set(token)
-        taskType.cast(this)
-    }
-
-    @Override
-    T token(String token) {
-        taskType.cast(this.setToken(token))
-    }
-
-    @Override
-    T setUsername(String userName) {
-        this.username.set(userName)
-        taskType.cast(this)
-    }
-
-    @Override
-    T username(String username) {
-        this.setUsername(username)
-        taskType.cast(this)
-    }
-
-    @Override
-    T setPassword(String password) {
-        this.password.set(password)
-        taskType.cast(this)
-    }
-
-    @Override
-    T password(String password) {
-        this.setPassword(password)
-        taskType.cast(this)
-    }
 }

@@ -28,7 +28,7 @@ import spock.lang.Retry
 import spock.lang.Shared
 
 @Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
-abstract class GithubPublishIntegration extends IntegrationSpec {
+abstract class AbstractGithubIntegrationSpec extends IntegrationSpec {
 
     @Shared
     @GithubRepository(
@@ -61,6 +61,16 @@ abstract class GithubPublishIntegration extends IntegrationSpec {
 
     GitHub getClient() {
         testRepo.client
+    }
+
+    def createRelease(String tagName, String body) {
+        def releaseBuilder = testRepo.createRelease(tagName)
+        releaseBuilder.name(tagName)
+        releaseBuilder.draft(false)
+        releaseBuilder.prerelease(false)
+        releaseBuilder.commitish(testRepo.getDefaultBranch().name)
+        releaseBuilder.body(body)
+        releaseBuilder.create()
     }
 
     def createRelease(String tagName) {

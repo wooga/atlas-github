@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,6 @@ package wooga.gradle.github.base
 /**
  * Extension point for the github plugin.
  */
-interface GithubPluginExtention extends GithubSpec {
+interface GithubPluginExtension extends GithubSpec {
 
 }

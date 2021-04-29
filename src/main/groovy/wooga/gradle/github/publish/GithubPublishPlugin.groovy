@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,20 +33,15 @@ import wooga.gradle.github.publish.tasks.GithubPublish
  * Example:
  * <pre>
  * {@code
- *     plugins{
- *         id "net.wooga.github" version "0.6.1"
- *     }
- *
- *     github {
- *         username = "wooga"
+ *     plugins{*         id "net.wooga.github" version "0.6.1"
+ *}*
+ *     github {*         username = "wooga"
  *         password = "the_password"
  *         token "a github access token"
  *         repositoryName "wooga/atlas-github"
  *         baseUrl = null
- *     }
- *
- *     githubPublish {
- *         targetCommitish = "master
+ *}*
+ *     githubPublish {*         targetCommitish = "master
  *         tagName = project.version
  *         releaseName = project.version
  *         body = "Release XYZ"
@@ -54,8 +49,7 @@ import wooga.gradle.github.publish.tasks.GithubPublish
  *         draft = false
  *
  *         from(file('build/output'))
- *     }
- * }
+ *}*}
  * </pre>
  */
 class GithubPublishPlugin implements Plugin<Project> {
@@ -87,14 +81,14 @@ class GithubPublishPlugin implements Plugin<Project> {
         project.tasks.withType(GithubPublish, new Action<GithubPublish>() {
             @Override
             void execute(GithubPublish task) {
-                task.prerelease.set(false)
-                task.draft.set(false)
-                task.publishMethod.set(PublishMethod.create)
+                task.prerelease.convention(GithubPublishPluginConvention.defaultPublishPrerelease)
+                task.draft.convention(GithubPublishPluginConvention.defaultPublishDraft)
+                task.publishMethod.convention(GithubPublishPluginConvention.defaultPublishMethod)
 
-                def projectProvider = project.provider({project.version.toString()})
+                def projectProvider = project.provider({ project.version.toString() })
 
-                task.tagName.set(projectProvider)
-                task.releaseName.set(projectProvider)
+                task.tagName.convention(projectProvider)
+                task.releaseName.convention(projectProvider)
 
                 task.onlyIf(new Spec<GithubPublish>() {
                     @Override

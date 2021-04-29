@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,41 @@ package wooga.gradle.github.base.internal
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
-import wooga.gradle.github.base.GithubPluginExtention
+import org.gradle.api.provider.Provider
+import wooga.gradle.github.base.GithubPluginExtension
 import wooga.gradle.github.base.GithubSpec
 
-class DefaultGithubPluginExtension implements GithubPluginExtention {
+class DefaultGithubPluginExtension implements GithubPluginExtension {
 
     final Property<String> repositoryName
+    @Override
+    void setRepositoryName(Provider<String> name) {
+        this.repositoryName.set(name)
+    }
+
     final Property<String> baseUrl
+    @Override
+    void setBaseUrl(Provider<String> baseUrl) {
+        this.baseUrl.set(baseUrl)
+    }
 
     final Property<String> username
-    final Property<String> password
-    final Property<String> token
+    @Override
+    void setUsername(Provider<String> username) {
+        this.username.set(username)
+    }
 
+    final Property<String> password
+    @Override
+    void setPassword(Provider<String> password) {
+        this.password.set(password)
+    }
+
+    final Property<String> token
+    @Override
+    void setToken(Provider<String> token) {
+        this.token.set(token)
+    }
     private final Closure property
 
     DefaultGithubPluginExtension(Project project) {
@@ -43,62 +66,11 @@ class DefaultGithubPluginExtension implements GithubPluginExtention {
         token = project.objects.property(String)
     }
 
-    @Override
-    DefaultGithubPluginExtension setUsername(String username) {
-        this.username.set(username)
-        this
-    }
 
-    @Override
-    GithubSpec username(String username) {
-        setUsername(username)
-    }
 
-    @Override
-    DefaultGithubPluginExtension setPassword(String password) {
-        this.password.set(password)
-        this
-    }
 
-    @Override
-    GithubSpec password(String password) {
-        setPassword(password)
-    }
 
-    @Override
-    DefaultGithubPluginExtension setRepositoryName(String name) {
-        if (!GithubRepositoryValidator.validateRepositoryName(name)) {
-            throw new IllegalArgumentException("Repository value '$name' is not a valid github repository name. Expecting `owner/repo`.")
-        }
 
-        this.repositoryName.set(name)
-        this
-    }
 
-    @Override
-    DefaultGithubPluginExtension repositoryName(String name) {
-        setRepositoryName(name)
-    }
 
-    @Override
-    DefaultGithubPluginExtension setBaseUrl(String baseUrl) {
-        this.baseUrl.set(baseUrl)
-        this
-    }
-
-    @Override
-    DefaultGithubPluginExtension baseUrl(String baseUrl) {
-        setBaseUrl(baseUrl)
-    }
-
-    @Override
-    DefaultGithubPluginExtension setToken(String token) {
-        this.token.set(token)
-        this
-    }
-
-    @Override
-    DefaultGithubPluginExtension token(String token) {
-        setToken(token)
-    }
 }
