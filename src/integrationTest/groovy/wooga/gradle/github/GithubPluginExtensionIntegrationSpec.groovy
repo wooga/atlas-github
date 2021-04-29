@@ -142,24 +142,4 @@ class GithubPluginExtensionIntegrationSpec extends IntegrationSpec {
         escapedValue = (value instanceof String) ? escapedPath(value) : value
         invocation = (method != _) ? "${method}(${escapedValue})" : "${property} = ${escapedValue}"
     }
-
-    def "validates repoName property before set"() {
-        given: ""
-        buildFile << """
-        github.repositoryName = "${repositoryName}"
-        """.stripIndent()
-
-        when:
-        def result = runTasks("tasks")
-
-        then:
-        result.success == (expectedError == null)
-        if (!result.success) {
-            outputContains(result, expectedError)
-        }
-
-        where:
-        repositoryName | expectedError
-        'some value'   | "Repository value 'some value' is not a valid github repository name. Expecting `owner/repo`"
-    }
 }
