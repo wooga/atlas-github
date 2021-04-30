@@ -343,7 +343,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         """
 
         when:
-        runTasksSuccessfully("testPublish")
+        def result = runTasksSuccessfully("testPublish")
 
         then:
         def release = getRelease(tagName)
@@ -357,7 +357,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         assets.any { it.name == "initial.json" }
 
         when:
-        runTasksSuccessfully("testPublishOrUpdate")
+        result = runTasksSuccessfully("testPublishOrUpdate")
 
         then:
         def updatedRelease = getRelease(tagName)

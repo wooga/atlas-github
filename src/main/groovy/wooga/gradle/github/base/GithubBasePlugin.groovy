@@ -85,15 +85,12 @@ class GithubBasePlugin implements Plugin<Project> {
             null
         }))
 
-        project.tasks.withType(AbstractGithubTask, new Action<AbstractGithubTask>() {
-            @Override
-            void execute(AbstractGithubTask task) {
-                task.baseUrl.set(extension.baseUrl)
-                task.repositoryName.set(extension.repositoryName)
-                task.username.set(extension.username)
-                task.password.set(extension.password)
-                task.token.set(extension.token)
-            }
-        })
+        project.tasks.withType(AbstractGithubTask).configureEach { task ->
+            task.baseUrl.set(extension.baseUrl)
+            task.repositoryName.set(extension.repositoryName)
+            task.username.set(extension.username)
+            task.password.set(extension.password)
+            task.token.set(extension.token)
+        }
     }
 }
