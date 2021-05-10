@@ -92,8 +92,8 @@ class GithubPluginSpec extends ProjectSpec {
         project.plugins.apply(PLUGIN_NAME)
 
         then:
-        def publishTasks = project.tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME)
-        def githubPublishTask = project.tasks.getByName(GithubPublishPlugin.PUBLISH_TASK_NAME)
+        def githubPublishTask = project.tasks.named(GithubPublishPlugin.PUBLISH_TASK_NAME)
+        def publishTasks = project.tasks.findByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME)
         publishTasks.dependsOn.contains(githubPublishTask)
     }
 }

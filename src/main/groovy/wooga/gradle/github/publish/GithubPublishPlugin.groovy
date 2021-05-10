@@ -72,31 +72,27 @@ class GithubPublishPlugin implements Plugin<Project> {
     }
 
     private static void createDefaultPublishTask(final TaskContainer tasks) {
-        def githubPublish = tasks.create(name: PUBLISH_TASK_NAME, type: GithubPublish, group: GithubBasePlugin.GROUP)
-        githubPublish.description = "Publish github release"
-        tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).dependsOn githubPublish
+        def githubPublish = tasks.register(PUBLISH_TASK_NAME, GithubPublish)
+        githubPublish.configure { GithubPublish task ->
+            task.group = GithubBasePlugin.GROUP
+            task.description = "Publish github release"
+        }
+        tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).configure {task ->
+            task.dependsOn(githubPublish)
+        }
     }
 
     private static void configurePublishTaskDefaults(final Project project) {
-        project.tasks.withType(GithubPublish, new Action<GithubPublish>() {
-            @Override
-            void execute(GithubPublish task) {
-                task.prerelease.convention(GithubPublishPluginConvention.defaultPublishPrerelease)
-                task.draft.convention(GithubPublishPluginConvention.defaultPublishDraft)
-                task.publishMethod.convention(GithubPublishPluginConvention.defaultPublishMethod)
+        def projectProvider = project.provider({ project.version.toString() })
+        project.tasks.withType(GithubPublish).configureEach {task ->
+            task.prerelease.set(false)
+            task.draft.set(false)
+            task.publishMethod.set(PublishMethod.create)
 
-                def projectProvider = project.provider({ project.version.toString() })
+            task.tagName.set(projectProvider)
+            task.releaseName.set(projectProvider)
 
-                task.tagName.convention(projectProvider)
-                task.releaseName.convention(projectProvider)
-
-                task.onlyIf(new Spec<GithubPublish>() {
-                    @Override
-                    boolean isSatisfiedBy(GithubPublish publishTask) {
-                        publishTask.repositoryName.present
-                    }
-                })
-            }
-        })
+            task.onlyIf { GithubPublish publishTask -> publishTask.repositoryName.present }
+        }
     }
 }
