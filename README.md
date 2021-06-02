@@ -32,7 +32,7 @@ plugins {
 github {
     userName = "wooga"
     password = "a password."
-    token "a github access token"
+    token = "a github access token"
     repositoryName "wooga/atlas-github"
     baseUrl = null
 }
@@ -40,8 +40,8 @@ github {
 githubPublish {
     userName = "wooga"
     password = "a password."
-    token "a github access token"
-    repositoryName "wooga/atlas-github"
+    token = "a github access token"
+    repositoryName = "wooga/atlas-github"
     baseUrl = null
     targetCommitish = "master"
     tagName = project.version
@@ -92,6 +92,7 @@ Tested with Oracle JDK8
 | 6.6             | ![yes] |
 | 6.7             | ![yes] |
 | 6.8             | ![yes] |
+| 6.9             | ![yes] |
 | 7.0             | ![yes] |    |
 
 Development
@@ -131,8 +132,8 @@ limitations under the License.
 [github]:               https://github.com
 [github-env-auth]:      http://github-api.kohsuke.org/apidocs/org/kohsuke/github/GitHubBuilder.html#fromEnvironment--
 [github-cred-auth]:     http://github-api.kohsuke.org/apidocs/org/kohsuke/github/GitHubBuilder.html#fromCredentials--
-[yes]:                  http://atlas-resources.wooga.com/icons/icon_check.svg "yes"
-[no]:                   http://atlas-resources.wooga.com/icons/icon_uncheck.svg "no"
+[yes]:                  https://resources.atlas.wooga.com/icons/icon_check.svg "yes"
+[no]:                   https://resources.atlas.wooga.com/icons/icon_uncheck.svg "no"
 [github-api]:           http://github-api.kohsuke.org/source-repository.html
 [copy-spec]:            https://docs.gradle.org/3.4/javadoc/org/gradle/api/file/CopySpec.html
 [copy-spec-into]:       https://docs.gradle.org/3.4/javadoc/org/gradle/api/file/CopySpec.html#into(java.lang.Object)

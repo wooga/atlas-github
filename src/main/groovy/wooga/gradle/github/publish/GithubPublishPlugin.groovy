@@ -18,12 +18,14 @@
 package wooga.gradle.github.publish
 
 import org.gradle.api.Action
+import org.gradle.api.DefaultTask
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.Task
 import org.gradle.api.publish.plugins.PublishingPlugin
-import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.TaskProvider
 import wooga.gradle.github.base.GithubBasePlugin
 import wooga.gradle.github.publish.tasks.GithubPublish
 
@@ -77,7 +79,7 @@ class GithubPublishPlugin implements Plugin<Project> {
             task.group = GithubBasePlugin.GROUP
             task.description = "Publish github release"
         }
-        tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).configure {task ->
+        tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).configure { task ->
             task.dependsOn(githubPublish)
         }
     }

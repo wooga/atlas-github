@@ -55,7 +55,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         then:
         def release = getRelease(tagName)
         !release.isDraft()
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 1
         assets.any { it.name == "package.zip" }
 
@@ -91,7 +91,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         then:
         def release = getRelease(tagName)
         !release.isDraft()
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 1
         assets.any { it.name == "package.zip" }
 
@@ -132,7 +132,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         then:
         def release = getRelease(tagName)
         !release.isDraft()
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 4
         assets.every() { it.name =~ /fileToPublish\d\.json/ }
 
@@ -175,7 +175,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         then:
         def release = getRelease(tagName)
         !release.isDraft()
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 2
         assets.any { it.name == "package.zip" }
         assets.any { it.name == "fileToPublish.json" }
@@ -210,7 +210,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         then:
         def release = getRelease(tagName)
         !release.isDraft()
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 1
         assets.any { it.name == expectedFileName }
         outputContains(result, "asset '${fileName}' renamed by github to '${expectedFileName}'")
@@ -260,7 +260,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         then:
         def release = getRelease(tagName)
 
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 0
 
         outputContains(result, "delete published asset ${workingAsset0.name}")
@@ -309,9 +309,9 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         then:
         def release = getRelease(tagName)
 
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 1
-        assets.get(0).name == publishedAsset.name
+        assets.getAt(0).name == publishedAsset.name
 
         outputContains(result, "delete published asset ${workingAsset1.name}")
         outputContains(result, "delete published asset ${workingAsset2.name}")
@@ -358,9 +358,9 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         then:
         def release = getRelease(tagName)
 
-        def assets = release.getAssets()
+        def assets = release.listAssets()
         assets.size() == 1
-        assets.get(0).name == publishedAsset.name
+        assets.getAt(0).name == publishedAsset.name
 
         //It seems there is an issue when accessing deleted assets.
         //The redirection points to the asset file we just deleted
@@ -440,7 +440,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         then:
         result.wasExecuted("createOutput")
         def release = getRelease(tagName)
-        def assets = release.getAssets()
+        def assets = release.listAssets()
         assets.size() == 1
         assets[0].name == assetName
 
@@ -512,7 +512,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         then:
         result.wasExecuted(":sub:createOutput")
         def release = getRelease(tagName)
-        def assets = release.getAssets()
+        def assets = release.listAssets()
         assets.size() == 1
         assets[0].name == assetName
 
@@ -521,5 +521,41 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         assetName = "output.txt"
         assetContent = "Custom content"
 
+    }
+
+    def "publish assets from sub projects"() {
+        given:
+        String javaProject = """
+        plugins {
+            id "java"
+        }
+        """.stripIndent()
+
+        File sub1 = addSubproject("lib1", javaProject)
+        File sub2 = addSubproject("lib2", javaProject)
+
+        writeHelloWorld(sub1)
+        writeHelloWorld(sub2)
+
+        buildFile << """
+            task testPublish(type:wooga.gradle.github.publish.tasks.GithubPublish) {
+                from {subprojects.configurations.archives.artifacts.files}
+                tagName = "$tagName"
+            }
+        """
+
+        when:
+        runTasksSuccessfully("testPublish")
+
+        then:
+        def release = getRelease(tagName)
+        !release.isDraft()
+        def assets = release.listAssets()
+        assets.size() == 2
+        assets.any { it.name == "lib1.jar" }
+        assets.any { it.name == "lib2.jar" }
+
+        where:
+        tagName = "v0.1.1-MultiProjectPublishIntegrationSpec"
     }
 }
