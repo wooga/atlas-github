@@ -22,6 +22,7 @@ import org.gradle.api.internal.ConventionTask
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
@@ -149,6 +150,7 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         }))
     }
 
+    @Internal
     GHRepository getRepository() {
         GHRepository repository
         try {
@@ -160,6 +162,7 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         repository
     }
 
+    @Internal
     GitHub getClient() {
         this.clientProvider.get()
     }
