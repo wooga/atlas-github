@@ -203,7 +203,7 @@ class GithubPublishTaskIntegrationSpec extends AbstractGithubTaskIntegrationSpec
     }
 
     @Unroll
-    def "fails when setting #methodName with invalid repository name #repoName"() {
+    def "fails when setting task with invalid repository name #repoName"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
 

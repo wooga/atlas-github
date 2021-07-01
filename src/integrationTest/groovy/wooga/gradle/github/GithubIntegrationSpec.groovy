@@ -17,6 +17,10 @@
 
 package wooga.gradle.github
 
+import org.kohsuke.github.GHFileNotFoundException
+import org.kohsuke.github.GHRepository
+import org.kohsuke.github.GitHub
+
 import java.nio.charset.StandardCharsets
 
 class GithubIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
@@ -130,7 +134,7 @@ class GithubIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
         runTasksSuccessfully("customGithubTask")
 
         then:
-        def customRepo = client.getRepository(customRepositoryName)
+        def customRepo = retry(3){ client.getRepository(customRepositoryName) }
         customRepo.description == description
 
         cleanup:
@@ -155,5 +159,18 @@ class GithubIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
         expect:
         def result = runTasksWithFailure("customGithubTask")
         outputContains(result, "can't find repository $testUserName/customRepo")
+    }
+
+    public static <T> T retry(int retries, Closure<T> code) {
+        try {
+            return code()
+        } catch(IOException e) {
+            if(retries > 0) {
+                sleep(1000)
+                return retry(retries-1, code)
+            } else {
+                throw e
+            }
+        }
     }
 }
