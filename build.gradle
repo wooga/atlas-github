@@ -43,7 +43,7 @@ github {
 dependencies {
     compile 'org.kohsuke:github-api:1.117'
     compile 'org.zeroturnaround:zt-zip:1.14'
-    compile 'org.apache.tika:tika-core:1.24.1'
+    compile 'org.apache.tika:tika-core:2.0.0'
     testCompile('org.spockframework:spock-core:1.2-groovy-2.4') {
         exclude module: 'groovy-all'
     }
