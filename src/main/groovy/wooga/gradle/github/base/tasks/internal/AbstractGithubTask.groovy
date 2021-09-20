@@ -26,17 +26,15 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
-import org.kohsuke.github.GitHubBuilder
-import org.kohsuke.github.HttpException
+import wooga.gradle.github.base.internal.GithubClientFactory
 import wooga.gradle.github.base.internal.GithubRepositoryValidator
 import wooga.gradle.github.base.GithubSpec
-import wooga.gradle.github.base.tasks.Github
 
 abstract class AbstractGithubTask<T extends AbstractGithubTask> extends ConventionTask implements GithubSpec {
 
-    @Input
     private final Property<String> repositoryName
 
+    @Input
     @Override
     Property<String> getRepositoryName() {
         repositoryName
@@ -56,9 +54,9 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
     }
     
     @Optional
-    @Input
     private final Property<String> baseUrl
 
+    @Input
     @Override
     Property<String> getBaseUrl() {
         baseUrl
@@ -70,9 +68,9 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
     }
     
     @Optional
-    @Input
     private final Property<String> username
 
+    @Input
     @Override
     Property<String> getUsername() {
         username
@@ -84,9 +82,9 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
     }
 
     @Optional
-    @Input
     private final Property<String> password
 
+    @Input
     @Override
     Property<String> getPassword() {
         password
@@ -98,9 +96,9 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
     }
 
     @Optional
-    @Input
     private final Property<String> token
 
+    @Input
     @Override
     Property<String> getToken() {
         token
@@ -112,6 +110,13 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
     }
 
     protected final Property<GitHub> clientProvider
+
+    @Internal
+    @Override
+    Property<GitHub> getClientProvider() {
+        clientProvider
+    }
+
     private final Class<T> taskType
 
     AbstractGithubTask(Class<T> taskType) {
@@ -122,32 +127,8 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         username = project.objects.property(String)
         password = project.objects.property(String)
         token = project.objects.property(String)
-
         clientProvider = project.objects.property(GitHub)
-
-        clientProvider.set(project.provider({
-            def builder = new GitHubBuilder()
-
-            if (username.present && password.present) {
-                builder = builder.withPassword(username.get(), password.get())
-            } else if (username.present && token.present) {
-                builder = builder.withOAuthToken(token.get(), username.get())
-
-            } else if (token.present) {
-                builder = builder.withOAuthToken(token.get())
-
-            } else {
-                builder = GitHubBuilder.fromCredentials()
-            }
-
-            if (baseUrl.present) {
-                builder = builder.withEndpoint(baseUrl.get())
-            }
-
-            def client = builder.build()
-            clientProvider.set(client)
-            return client
-        }))
+        clientProvider.set(GithubClientFactory.clientProvider(username, password, token))
     }
 
     @Internal
@@ -164,8 +145,6 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
 
     @Internal
     GitHub getClient() {
-        this.clientProvider.get()
+        clientProvider.get()
     }
-
-
 }

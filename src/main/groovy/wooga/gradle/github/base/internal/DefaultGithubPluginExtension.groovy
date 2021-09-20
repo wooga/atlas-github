@@ -20,8 +20,9 @@ package wooga.gradle.github.base.internal
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
+import org.kohsuke.github.GitHub
 import wooga.gradle.github.base.GithubPluginExtension
-import wooga.gradle.github.base.GithubSpec
 
 class DefaultGithubPluginExtension implements GithubPluginExtension {
 
@@ -54,10 +55,18 @@ class DefaultGithubPluginExtension implements GithubPluginExtension {
     void setToken(Provider<String> token) {
         this.token.set(token)
     }
-    private final Closure property
+    @Override @Internal
+    Provider<GitHub> getClientProvider() {
+        return GithubClientFactory.clientProvider(username, password, token).
+        orElse(project.provider {
+          throw new IOException("could not find valid credentials for github client")
+        })
+    }
+
+    private final Project project
 
     DefaultGithubPluginExtension(Project project) {
-        this.property = project.&findProperty
+        this.project = project
 
         repositoryName = project.objects.property(String)
         baseUrl = project.objects.property(String)
@@ -65,12 +74,4 @@ class DefaultGithubPluginExtension implements GithubPluginExtension {
         password = project.objects.property(String)
         token = project.objects.property(String)
     }
-
-
-
-
-
-
-
-
 }

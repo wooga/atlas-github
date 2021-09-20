@@ -91,6 +91,7 @@ class GithubBasePlugin implements Plugin<Project> {
             task.username.set(extension.username)
             task.password.set(extension.password)
             task.token.set(extension.token)
+            task.clientProvider.convention(extension.clientProvider)
         }
     }
 }
