@@ -55,4 +55,11 @@ class GithubBasePluginConvention {
      * @see GithubSpec#getBaseUrl()
      */
     static final String GITHUB_BASE_URL_OPTION = "github.baseUrl"
+
+    /**
+     * Gradle property name to set the default value for {@code branchName}.
+     * @value "github.branchName"
+     * @see GithubSpec#getBranchName()
+     */
+    static final String GITHUB_BRANCH_NAME_OPTION = "github.branch.name"
 }

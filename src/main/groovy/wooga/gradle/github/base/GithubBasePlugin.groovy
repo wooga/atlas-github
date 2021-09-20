@@ -17,10 +17,11 @@
 
 package wooga.gradle.github.base
 
-import org.gradle.api.Action
+import org.ajoberstar.grgit.Grgit
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import wooga.gradle.github.base.internal.DefaultGithubPluginExtension
+import wooga.gradle.github.base.internal.RepositoryInfo
 import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
 
 /**
@@ -43,54 +44,43 @@ class GithubBasePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+        Grgit git = Grgit.init(dir: project.rootProject.projectDir)
+        RepositoryInfo repoInfo = new RepositoryInfo(project, git)
+
         GithubPluginExtension extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
 
         extension.username.set(project.provider({
-            def value = project.properties.get(GithubBasePluginConvention.GITHUB_USER_NAME_OPTION)
-            if (value) {
-                return value.toString()
-            }
-            null
+            project.properties.get(GithubBasePluginConvention.GITHUB_USER_NAME_OPTION)?.toString()
         }))
 
         extension.password.set(project.provider({
-            def value = project.properties.get(GithubBasePluginConvention.GITHUB_USER_PASSWORD_OPTION)
-            if (value) {
-                return value.toString()
-            }
-            null
+            project.properties.get(GithubBasePluginConvention.GITHUB_USER_PASSWORD_OPTION)?.toString()
         }))
 
         extension.token.set(project.provider({
-            def value = project.properties.get(GithubBasePluginConvention.GITHUB_TOKEN_OPTION)
-            if (value) {
-                return value.toString()
-            }
-            null
-        }))
-
-        extension.repositoryName.set(project.provider({
-            def value = project.properties.get(GithubBasePluginConvention.GITHUB_REPOSITORY_NAME_OPTION)
-            if (value) {
-                return value.toString()
-            }
-            null
+            project.properties.get(GithubBasePluginConvention.GITHUB_TOKEN_OPTION)?.toString()
         }))
 
         extension.baseUrl.set(project.provider({
-            def value = project.properties.get(GithubBasePluginConvention.GITHUB_BASE_URL_OPTION)
-            if (value) {
-                return value.toString()
-            }
-            null
+            project.properties.get(GithubBasePluginConvention.GITHUB_BASE_URL_OPTION)?.toString()
         }))
+
+        extension.repositoryName.set(project.provider{
+            project.properties.get(GithubBasePluginConvention.GITHUB_REPOSITORY_NAME_OPTION)?.toString()
+        }.orElse(repoInfo.repositoryNameProviderFromLocalGit()))
+
+        extension.branchName.set(project.provider {
+            project.properties.get(GithubBasePluginConvention.GITHUB_BRANCH_NAME_OPTION)?.toString()
+        }.orElse(repoInfo.branchNameProviderFromLocalGit()))
 
         project.tasks.withType(AbstractGithubTask).configureEach { task ->
             task.baseUrl.set(extension.baseUrl)
-            task.repositoryName.set(extension.repositoryName)
             task.username.set(extension.username)
             task.password.set(extension.password)
             task.token.set(extension.token)
+            task.repositoryName.set(extension.repositoryName)
+            task.branchName.set(extension.branchName)
+            //must be convention as the clientProvider set on task construction has priority
             task.clientProvider.convention(extension.clientProvider)
         }
     }

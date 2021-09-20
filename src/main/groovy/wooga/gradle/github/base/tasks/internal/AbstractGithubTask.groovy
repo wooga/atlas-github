@@ -52,7 +52,7 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
 
         repositoryName.set(name)
     }
-    
+
     @Optional
     private final Property<String> baseUrl
 
@@ -66,7 +66,7 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
     void setBaseUrl(Provider<String> value) {
         baseUrl.set(value)
     }
-    
+
     @Optional
     private final Property<String> username
 
@@ -117,6 +117,14 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         clientProvider
     }
 
+    protected final Property<String> branchName
+
+    @Internal
+    @Override
+    Property<String> getBranchName() {
+        return branchName
+    }
+
     private final Class<T> taskType
 
     AbstractGithubTask(Class<T> taskType) {
@@ -129,6 +137,7 @@ abstract class AbstractGithubTask<T extends AbstractGithubTask> extends Conventi
         token = project.objects.property(String)
         clientProvider = project.objects.property(GitHub)
         clientProvider.set(GithubClientFactory.clientProvider(username, password, token))
+        branchName = project.objects.property(String)
     }
 
     @Internal
