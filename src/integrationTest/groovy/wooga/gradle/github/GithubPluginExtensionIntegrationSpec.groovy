@@ -28,7 +28,7 @@ class GithubPluginExtensionIntegrationSpec extends IntegrationSpec {
         ${applyPlugin(GithubPlugin)}
         """.stripIndent()
         git = Grgit.init(dir: projectDir)
-        def remoteURL = "https://github.com/${remoteRepo}"
+        def remoteURL = "https://github.com/${remoteRepo}.git"
         git.remote.add(name: "origin", url: remoteURL, pushUrl: remoteURL)
         git.commit(message: "initial")
         git.checkout(branch: currentBranch, createBranch: true)

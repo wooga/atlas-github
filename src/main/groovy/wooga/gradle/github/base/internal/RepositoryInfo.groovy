@@ -18,7 +18,7 @@ class RepositoryInfo {
         this.git = git
     }
 
-    Provider<String> repositoryNameProviderFromLocalGit() {
+    Provider<String> getRepositoryNameFromLocalGit() {
         return project.provider {
             git.remote.list().find {it.name == DEFAULT_REMOTE}?: null
         }.map{remote ->
@@ -29,7 +29,7 @@ class RepositoryInfo {
         }
     }
 
-    Provider<String> branchNameProviderFromLocalGit() {
+    Provider<String> getBranchNameFromLocalGit() {
         def currentBranch = git.branch.current()
         return project.provider { currentBranch.trackingBranch }.
                         orElse(currentBranch).

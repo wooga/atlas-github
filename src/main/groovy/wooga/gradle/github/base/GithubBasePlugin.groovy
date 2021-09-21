@@ -67,11 +67,11 @@ class GithubBasePlugin implements Plugin<Project> {
 
         extension.repositoryName.set(project.provider{
             project.properties.get(GithubBasePluginConvention.GITHUB_REPOSITORY_NAME_OPTION)?.toString()
-        }.orElse(repoInfo.repositoryNameProviderFromLocalGit()))
+        }.orElse(repoInfo.repositoryNameFromLocalGit))
 
         extension.branchName.set(project.provider {
             project.properties.get(GithubBasePluginConvention.GITHUB_BRANCH_NAME_OPTION)?.toString()
-        }.orElse(repoInfo.branchNameProviderFromLocalGit()))
+        }.orElse(repoInfo.branchNameFromLocalGit))
 
         project.tasks.withType(AbstractGithubTask).configureEach { task ->
             task.baseUrl.set(extension.baseUrl)
