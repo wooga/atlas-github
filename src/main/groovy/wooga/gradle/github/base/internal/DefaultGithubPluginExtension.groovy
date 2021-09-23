@@ -55,6 +55,7 @@ class DefaultGithubPluginExtension implements GithubPluginExtension {
     void setToken(Provider<String> token) {
         this.token.set(token)
     }
+
     @Override @Internal
     Provider<GitHub> getClientProvider() {
         return GithubClientFactory.clientProvider(username, password, token).
@@ -62,6 +63,8 @@ class DefaultGithubPluginExtension implements GithubPluginExtension {
           throw new IOException("could not find valid credentials for github client")
         })
     }
+
+    final Property<String> branchName
 
     private final Project project
 
@@ -73,5 +76,6 @@ class DefaultGithubPluginExtension implements GithubPluginExtension {
         username = project.objects.property(String)
         password = project.objects.property(String)
         token = project.objects.property(String)
+        branchName = project.objects.property(String)
     }
 }

@@ -131,8 +131,7 @@ interface GithubSpec {
      * Sets the github access token.
      *
      * @param token the token. Must not be {@code Null} or {@code empty}
-     * @return this
-     * @throws IllegalArgumentException
+     * @return this* @throws IllegalArgumentException
      */
     void setToken(Provider<String> token)
 
@@ -149,4 +148,23 @@ interface GithubSpec {
      * @throws IOException if no credentials are found
      */
     Provider<GitHub> getClientProvider()
+
+    /**
+     * Returns the current git branch. Default value is in order of precedence:
+     * <ul>
+     *     <li>current branch's remote branch</li>
+     *     <li>current branch</li>
+     * </ul>
+     *
+     * <p>
+     * The value can also be set via gradle properties.
+     * The precedence order is:
+     * <ul>
+     *    <li><b>direct parameter in build.gradle code</b>
+     *    <li><b>gradle properties</b>
+     * </ul>
+     * @return the current branch name. May be {@code Null} if there is no set up git repository
+     * @see GithubBasePluginConvention#GITHUB_BRANCH_NAME_OPTION
+     */
+    Provider<String> getBranchName()
 }

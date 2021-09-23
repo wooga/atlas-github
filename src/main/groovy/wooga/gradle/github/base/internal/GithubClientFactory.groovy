@@ -15,11 +15,11 @@ class GithubClientFactory {
         Provider hasCredsProvider = username.orElse(password).orElse(token).orElse("").
         map({
             return it == "" && !hasExternalCredentials()? null : true
-        }.memoize())
+        })
         return hasCredsProvider.map({
             return new GithubClientFactory().
                     createGithubClient(username.getOrNull(), password.getOrNull(), token.getOrNull())
-        }.memoize())
+        })
     }
 
     private static boolean hasExternalCredentials() {

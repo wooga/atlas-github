@@ -188,4 +188,5 @@ class GithubAuthenticationIntegrationSpec extends AbstractGithubIntegrationSpec 
         then:
         result.standardOutput.contains("Repository: ${testRepo.repository.fullName}".toString())
     }
+
 }
