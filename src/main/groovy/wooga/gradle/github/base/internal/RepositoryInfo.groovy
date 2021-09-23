@@ -11,15 +11,19 @@ class RepositoryInfo {
     private static final String DEFAULT_REMOTE = "origin"
 
     final Project project
-    final Grgit git
+    final Provider<Grgit> grgitProvider
 
     RepositoryInfo(Project project, Grgit git) {
+        this(project, project.provider{git})
+    }
+
+    RepositoryInfo(Project project, Provider<Grgit> grgitProvider) {
         this.project = project
-        this.git = git
+        this.grgitProvider = grgitProvider
     }
 
     Provider<String> getRepositoryNameFromLocalGit() {
-        return project.provider {
+        return grgitProvider.map { git ->
             git.remote.list().find {it.name == DEFAULT_REMOTE}?: null
         }.map{remote ->
             def remoteURL = remote.url
@@ -30,9 +34,11 @@ class RepositoryInfo {
     }
 
     Provider<String> getBranchNameFromLocalGit() {
-        def currentBranch = git.branch.current()
-        return project.provider { currentBranch.trackingBranch }.
-                        orElse(currentBranch).
-                        map {it.name }
+        return grgitProvider.
+                map { git -> git.branch.current() }.
+                map { currentBranch ->
+                        currentBranch.trackingBranch != null ? currentBranch.trackingBranch : currentBranch
+                }.
+                map{branch -> branch.name }
     }
 }

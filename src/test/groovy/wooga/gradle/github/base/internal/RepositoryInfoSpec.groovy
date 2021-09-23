@@ -46,9 +46,21 @@ class RepositoryInfoSpec extends ProjectSpec {
         !repoName.present
     }
 
+    def "gets empty providers if there is no local git repository"(){
+        given: "a gradle project"
+        and: "without local git"
+
+        when: "getting repository name form repository info"
+        def repoInfo = new RepositoryInfo(project, null as Grgit)
+
+        then:
+        !repoInfo.repositoryNameFromLocalGit.present
+        !repoInfo.branchNameFromLocalGit.present
+    }
+
     @Unroll
     def "creates repository info with expected branch"() {
-        given: "grgit installation"
+        given: "git installation"
         def git = mockedGrgitOnBranch(localBranch, trackingBranch)
 
         when:
@@ -62,11 +74,10 @@ class RepositoryInfoSpec extends ProjectSpec {
         where:
         localBranch | trackingBranch | expBranch
         "branch"    | null           | "branch"
-        null        | "tracking"     | "tracking"
         "branch"    | "tracking"     | "tracking"
     }
 
-    def mockedGrgitOnBranch(String currentBranchName, String currentTrackingBranchName = null,
+    def mockedGrgitOnBranch(String currentBranchName, String currentTrackingBranchName,
                             String remoteURL = "github.com:cmp/repo") {
         def gitMock = GroovyMock(Grgit)
 

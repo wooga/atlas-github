@@ -20,9 +20,12 @@ package wooga.gradle.github.base
 import org.ajoberstar.grgit.Grgit
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import wooga.gradle.github.base.internal.DefaultGithubPluginExtension
 import wooga.gradle.github.base.internal.RepositoryInfo
 import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
+
+import java.nio.file.Paths
 
 /**
  * A base {@link org.gradle.api.Plugin} to register and set conventions for all {@link AbstractGithubTask} types.
@@ -44,7 +47,7 @@ class GithubBasePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        Grgit git = Grgit.init(dir: project.rootProject.projectDir)
+        Provider<Grgit> git = project.provider { getsGitIfExists(project.rootProject.rootDir) }
         RepositoryInfo repoInfo = new RepositoryInfo(project, git)
 
         GithubPluginExtension extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
@@ -83,5 +86,14 @@ class GithubBasePlugin implements Plugin<Project> {
             //must be convention as the clientProvider set on task construction has priority
             task.clientProvider.convention(extension.clientProvider)
         }
+    }
+
+    static Grgit getsGitIfExists(File folder) {
+        FileFilter filter = { File file -> file.directory && file.name == ".git"}
+        def gitPresent = folder.listFiles(filter).size() > 0
+        if(gitPresent) {
+            return Grgit.init(dir: folder)
+        }
+        return null
     }
 }
