@@ -19,6 +19,8 @@ package wooga.gradle.github.base
 
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.kohsuke.github.GHRepository
+import org.kohsuke.github.GitHub
 
 /**
  * Base Task spec definitions for a github tasks/actions.
@@ -129,7 +131,22 @@ interface GithubSpec {
      * Sets the github access token.
      *
      * @param token the token. Must not be {@code Null} or {@code empty}
-     * @return this* @throws IllegalArgumentException
+     * @return this
+     * @throws IllegalArgumentException
      */
     void setToken(Provider<String> token)
+
+    /**
+     * Gets a client for github REST API operations, using
+     * credential providers set on this object in the following order:
+     * 1. username and password,
+     * 2. username and token
+     * 3. token,
+     * 4. external credentials (environment variables, .github file, etc)
+     *
+     * See org.kohsuke.github.GitHub for more details on the client.
+     * @return Provider for github client with given credentials
+     * @throws IOException if no credentials are found
+     */
+    Provider<GitHub> getClientProvider()
 }

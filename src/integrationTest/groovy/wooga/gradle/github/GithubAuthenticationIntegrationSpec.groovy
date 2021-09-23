@@ -167,4 +167,25 @@ class GithubAuthenticationIntegrationSpec extends AbstractGithubIntegrationSpec 
 //        testUserName | null          | testUserToken | "https://api.github.com" | "username/token/baseUrl"
 //        null         | null          | testUserToken | "https://api.github.com" | "token/baseUrl"
     }
+
+    def "gets client from set up credentials"() {
+        given:
+        buildFile << """
+            github {
+                username="${testRepo.userName}"
+                token="${testRepo.token}"
+            }
+            task(custom) {
+                doLast {
+                    def client = github.clientProvider.get()
+                    println("Repository: " + client.getRepository("${testRepo.repository.fullName}").fullName)
+                }
+            }            
+        """
+        when:
+        def result = runTasksSuccessfully("custom")
+
+        then:
+        result.standardOutput.contains("Repository: ${testRepo.repository.fullName}".toString())
+    }
 }
