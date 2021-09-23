@@ -255,6 +255,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         """
 
         when:
+        throttle()
         def result = runTasksWithFailure("testPublish")
 
         then:
@@ -304,6 +305,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         """
 
         when:
+        throttle()
         def result = runTasksWithFailure("testPublish")
 
         then:
@@ -353,6 +355,7 @@ class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDef
         """
 
         when:
+        throttle()
         def result = runTasksWithFailure("testPublish")
 
         then:

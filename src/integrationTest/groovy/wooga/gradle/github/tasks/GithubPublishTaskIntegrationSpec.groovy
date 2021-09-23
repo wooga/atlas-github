@@ -182,6 +182,7 @@ class GithubPublishTaskIntegrationSpec extends AbstractGithubTaskIntegrationSpec
         result.success != expectedFailure
 
         if(result.success) {
+            throttle()
             assert hasRelease(tagName)
             def release = getRelease(tagName)
             assert release.body == releaseBody

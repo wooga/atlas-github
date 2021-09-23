@@ -29,7 +29,7 @@ import spock.lang.Shared
 
 import static wooga.gradle.github.GithubIntegrationSpec.retry
 
-@Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
+@Retry(mode = Retry.Mode.SETUP_FEATURE_CLEANUP)
 abstract class AbstractGithubIntegrationSpec extends IntegrationSpec {
 
     @Shared
@@ -46,6 +46,7 @@ abstract class AbstractGithubIntegrationSpec extends IntegrationSpec {
         buildFile << """
             ${applyPlugin(GithubPlugin)}
         """.stripIndent()
+        throttle()
     }
 
     def maybeDelete(String repoName) {
@@ -65,18 +66,22 @@ abstract class AbstractGithubIntegrationSpec extends IntegrationSpec {
         testRepo.client
     }
 
-    def createRelease(String tagName, String body) {
+    GHRelease createRelease(String tagName, String body) {
         def releaseBuilder = testRepo.createRelease(tagName)
         releaseBuilder.name(tagName)
         releaseBuilder.draft(false)
         releaseBuilder.prerelease(false)
         releaseBuilder.commitish(testRepo.getDefaultBranch().name)
         releaseBuilder.body(body)
-        releaseBuilder.create()
+        def release = releaseBuilder.create()
+        throttle()
+        release
     }
 
-    def createRelease(String tagName) {
-        testRepo.createRelease(tagName,tagName)
+    GHRelease createRelease(String tagName) {
+        def release = testRepo.createRelease(tagName, tagName)
+        throttle()
+        release
     }
 
     void cleanupReleases() {
@@ -112,21 +117,27 @@ abstract class AbstractGithubIntegrationSpec extends IntegrationSpec {
         numberOfFiles.eachWithIndex { int entry, int i ->
             createFile("file${i}", packageDirectory) << "test content"
         }
+        throttle()
 
         assets
     }
 
-    GHRelease getRelease(String tagName, int retry=10) {
+    GHRelease getRelease(String tagName, int retry = 10) {
         def release = (GHRelease) testRepo.listReleases().find { it.tagName == tagName }
-        if(release == null && retry > 0) {
-            sleep(1000)
-            getRelease(tagName, retry-1)
+        if (release == null && retry > 0) {
+            throttle()
+            getRelease(tagName, retry - 1)
         }
         return release
     }
 
-    GHRelease getReleaseByName(String name) {
-        (GHRelease) testRepo.listReleases().find({ it.name == name })
+    GHRelease getReleaseByName(String name, retry = 10) {
+        def release = (GHRelease) testRepo.listReleases().find({ it.name == name })
+        if (release == null && retry > 0) {
+            throttle()
+            getReleaseByName(name, retry - 1)
+        }
+        return release
     }
 
     Boolean hasRelease(String tagName) {

@@ -166,7 +166,7 @@ class GithubIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
             return code()
         } catch(IOException e) {
             if(retries > 0) {
-                sleep(1000)
+                throttle()
                 return retry(retries-1, code)
             } else {
                 throw e

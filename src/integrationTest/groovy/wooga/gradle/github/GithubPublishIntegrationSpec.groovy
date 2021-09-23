@@ -166,6 +166,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
 
         when:
         runTasksSuccessfully("testPublish")
+        throttle()
 
         then:
         def release = getRelease(tagName)

@@ -41,6 +41,10 @@ class IntegrationSpec extends nebula.test.IntegrationSpec {
             fork = true
         }
     }
+    
+    static throttle() {
+        sleep(1000)
+    }
 
     Boolean outputContains(ExecutionResult result, String message) {
         result.standardOutput.contains(message) || result.standardError.contains(message)
