@@ -21,9 +21,7 @@ import groovy.io.FileType
 import groovy.json.JsonSlurper
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Action
-import org.gradle.api.Buildable
 import org.gradle.api.GradleException
-import org.gradle.api.Task
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTreeElement
 import org.gradle.api.logging.Logger
@@ -32,20 +30,17 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.specs.Specs
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.WorkResult
+import org.gradle.api.tasks.*
 import org.gradle.util.ConfigureUtil
-import org.kohsuke.github.*
+import org.kohsuke.github.GHAsset
+import org.kohsuke.github.GHRelease
+import org.kohsuke.github.GHRepository
+import org.kohsuke.github.HttpException
 import org.zeroturnaround.zip.ZipUtil
 import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
 import wooga.gradle.github.publish.GithubPublishSpec
-import wooga.gradle.github.publish.PublishBodyStrategy
 import wooga.gradle.github.publish.PublishMethod
 import wooga.gradle.github.publish.internal.*
-
-import java.util.concurrent.Callable
 
 /**
  * Publish a Github release with or without provided assets.
@@ -56,7 +51,8 @@ import java.util.concurrent.Callable
  * Example:
  * <pre>
  * {@code
- *     githubPublish {*         targetCommitish = "master"
+ *     githubPublish {
+ *         targetCommitish = "master"
  *         tagName = project.version
  *         releaseName = project.version
  *         body = "Release XYZ"
@@ -64,7 +60,8 @@ import java.util.concurrent.Callable
  *         draft = false
  *         publishMethod = "create"
  *         from(file('build/output'))
- *}*}
+ *     }
+ *}
  */
 class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
 
@@ -186,6 +183,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
         publishMethod = project.objects.property(PublishMethod)
     }
 
+    @OutputDirectory
     File getDestinationDir() {
         assetCollectDirectory
     }
@@ -439,6 +437,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      * @return The include patterns. Returns an empty set when there are no include patterns.
      */
     @Override
+    @Input
     Set<String> getIncludes() {
         assetsCopySpec.getIncludes()
     }
@@ -449,6 +448,7 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
      * @return The include patterns. Returns an empty set when there are no include patterns.
      */
     @Override
+    @Input
     Set<String> getExcludes() {
         assetsCopySpec.getExcludes()
     }
