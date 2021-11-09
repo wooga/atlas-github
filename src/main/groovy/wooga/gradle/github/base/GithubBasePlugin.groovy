@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@
 
 package wooga.gradle.github.base
 
-import org.gradle.api.Action
+import org.ajoberstar.grgit.Grgit
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.provider.Provider
 import wooga.gradle.github.base.internal.DefaultGithubPluginExtension
+import wooga.gradle.github.base.internal.RepositoryInfo
 import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
+
+import java.nio.file.Paths
 
 /**
  * A base {@link org.gradle.api.Plugin} to register and set conventions for all {@link AbstractGithubTask} types.
@@ -44,17 +47,53 @@ class GithubBasePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        GithubPluginExtention extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
-        project.tasks.withType(AbstractGithubTask, new Action<AbstractGithubTask>() {
-            @Override
-            void execute(AbstractGithubTask task) {
-                ConventionMapping taskConventionMapping = task.getConventionMapping()
-                taskConventionMapping.map("baseUrl", { extension.getBaseUrl() })
-                taskConventionMapping.map("repositoryName", { extension.getRepositoryName() })
-                taskConventionMapping.map("username", { extension.getUsername() })
-                taskConventionMapping.map("password", { extension.getPassword() })
-                taskConventionMapping.map("token", { extension.getToken() })
-            }
-        })
+        Provider<Grgit> git = project.provider { getsGitIfExists(project.rootProject.rootDir) }
+        RepositoryInfo repoInfo = new RepositoryInfo(project, git)
+
+        GithubPluginExtension extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
+
+        extension.username.set(project.provider({
+            project.properties.get(GithubBasePluginConvention.GITHUB_USER_NAME_OPTION)?.toString()
+        }))
+
+        extension.password.set(project.provider({
+            project.properties.get(GithubBasePluginConvention.GITHUB_USER_PASSWORD_OPTION)?.toString()
+        }))
+
+        extension.token.set(project.provider({
+            project.properties.get(GithubBasePluginConvention.GITHUB_TOKEN_OPTION)?.toString()
+        }))
+
+        extension.baseUrl.set(project.provider({
+            project.properties.get(GithubBasePluginConvention.GITHUB_BASE_URL_OPTION)?.toString()
+        }))
+
+        extension.repositoryName.set(project.provider{
+            project.properties.get(GithubBasePluginConvention.GITHUB_REPOSITORY_NAME_OPTION)?.toString()
+        }.orElse(repoInfo.repositoryNameFromLocalGit))
+
+        extension.branchName.set(project.provider {
+            project.properties.get(GithubBasePluginConvention.GITHUB_BRANCH_NAME_OPTION)?.toString()
+        }.orElse(repoInfo.branchNameFromLocalGit))
+
+        project.tasks.withType(AbstractGithubTask).configureEach { task ->
+            task.baseUrl.set(extension.baseUrl)
+            task.username.set(extension.username)
+            task.password.set(extension.password)
+            task.token.set(extension.token)
+            task.repositoryName.set(extension.repositoryName)
+            task.branchName.set(extension.branchName)
+            //must be convention as the clientProvider set on task construction has priority
+            task.clientProvider.convention(extension.clientProvider)
+        }
+    }
+
+    static Grgit getsGitIfExists(File folder) {
+        FileFilter filter = { File file -> file.directory && file.name == ".git"}
+        def gitPresent = folder.listFiles(filter).size() > 0
+        if(gitPresent) {
+            return Grgit.init(dir: folder)
+        }
+        return null
     }
 }

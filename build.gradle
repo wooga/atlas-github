@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '1.5.0'
+    id 'net.wooga.plugins' version '2.2.1'
 }
 
 group 'net.wooga.gradle'
@@ -28,7 +28,7 @@ pluginBundle {
     tags = ['github', 'publishing']
 
     plugins {
-        unity {
+        github {
             id = 'net.wooga.github'
             displayName = 'Gradle Github plugin'
             description = 'This plugin provides tasks and conventions to publish artifacts to github releases'
@@ -41,15 +41,16 @@ github {
 }
 
 dependencies {
-    compile 'org.kohsuke:github-api:1.117'
-    compile 'org.zeroturnaround:zt-zip:1.14'
-    compile 'org.apache.tika:tika-core:1.24.1'
-    testCompile('org.spockframework:spock-core:1.2-groovy-2.4') {
-        exclude module: 'groovy-all'
-    }
-    testCompile('com.nagternal:spock-genesis:0.6.0') {
+    implementation 'org.kohsuke:github-api:1.131'
+    implementation 'org.zeroturnaround:zt-zip:1.14'
+    implementation 'org.apache.tika:tika-core:1.24.1'
+    implementation 'org.ajoberstar.grgit:grgit-core:4.1.0'
+
+    testImplementation('com.nagternal:spock-genesis:0.6.0') {
         exclude group: "org.codehaus.groovy", module: "groovy-all"
     }
 
-    testCompile 'com.wooga.spock.extensions:spock-github-extension:0.1.0'
+    testImplementation('com.wooga.spock.extensions:spock-github-extension:0.2.0') {
+        exclude group: "org.codehaus.groovy", module: "groovy-all"
+    }
 }

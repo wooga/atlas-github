@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@
 package wooga.gradle.github.publish
 
 import org.gradle.api.Action
+import org.gradle.api.DefaultTask
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.Task
 import org.gradle.api.publish.plugins.PublishingPlugin
-import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.TaskProvider
 import wooga.gradle.github.base.GithubBasePlugin
 import wooga.gradle.github.publish.tasks.GithubPublish
 
@@ -33,20 +35,15 @@ import wooga.gradle.github.publish.tasks.GithubPublish
  * Example:
  * <pre>
  * {@code
- *     plugins{
- *         id "net.wooga.github" version "0.6.1"
- *     }
- *
- *     github {
- *         username = "wooga"
+ *     plugins{*         id "net.wooga.github" version "0.6.1"
+ *}*
+ *     github {*         username = "wooga"
  *         password = "the_password"
  *         token "a github access token"
  *         repositoryName "wooga/atlas-github"
  *         baseUrl = null
- *     }
- *
- *     githubPublish {
- *         targetCommitish = "master
+ *}*
+ *     githubPublish {*         targetCommitish = "master
  *         tagName = project.version
  *         releaseName = project.version
  *         body = "Release XYZ"
@@ -54,8 +51,7 @@ import wooga.gradle.github.publish.tasks.GithubPublish
  *         draft = false
  *
  *         from(file('build/output'))
- *     }
- * }
+ *}*}
  * </pre>
  */
 class GithubPublishPlugin implements Plugin<Project> {
@@ -78,30 +74,27 @@ class GithubPublishPlugin implements Plugin<Project> {
     }
 
     private static void createDefaultPublishTask(final TaskContainer tasks) {
-        def githubPublish = tasks.create(name: PUBLISH_TASK_NAME, type: GithubPublish, group: GithubBasePlugin.GROUP)
-        githubPublish.description = "Publish github release"
-        tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).dependsOn githubPublish
+        def githubPublish = tasks.register(PUBLISH_TASK_NAME, GithubPublish)
+        githubPublish.configure { GithubPublish task ->
+            task.group = GithubBasePlugin.GROUP
+            task.description = "Publish github release"
+        }
+        tasks.named(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).configure { task ->
+            task.dependsOn(githubPublish)
+        }
     }
 
     private static void configurePublishTaskDefaults(final Project project) {
-        project.tasks.withType(GithubPublish, new Action<GithubPublish>() {
-            @Override
-            void execute(GithubPublish task) {
-                ConventionMapping taskConventionMapping = task.getConventionMapping()
+        def projectProvider = project.provider({ project.version.toString() })
+        project.tasks.withType(GithubPublish).configureEach {task ->
+            task.prerelease.set(false)
+            task.draft.set(false)
+            task.publishMethod.set(PublishMethod.create)
 
-                taskConventionMapping.map("targetCommitish", { null })
-                taskConventionMapping.map("prerelease", { false })
-                taskConventionMapping.map("draft", { false })
-                taskConventionMapping.map("tagName", { project.version.toString() })
-                taskConventionMapping.map("releaseName", { project.version.toString() })
+            task.tagName.set(projectProvider)
+            task.releaseName.set(projectProvider)
 
-                task.onlyIf(new Spec<GithubPublish>() {
-                    @Override
-                    boolean isSatisfiedBy(GithubPublish publishTask) {
-                        publishTask.repositoryName != null
-                    }
-                })
-            }
-        })
+            task.onlyIf { GithubPublish publishTask -> publishTask.repositoryName.present }
+        }
     }
 }

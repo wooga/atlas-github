@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,142 +18,64 @@
 package wooga.gradle.github.base.internal
 
 import org.gradle.api.Project
-import wooga.gradle.github.base.GithubPluginExtention
-import wooga.gradle.github.base.GithubSpec
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
+import org.kohsuke.github.GitHub
+import wooga.gradle.github.base.GithubPluginExtension
 
-class DefaultGithubPluginExtension implements GithubPluginExtention {
+class DefaultGithubPluginExtension implements GithubPluginExtension {
 
-    static final String GITHUB_USER_NAME_OPTION = "github.username"
-    static final String GITHUB_USER_PASSWORD_OPTION = "github.password"
-    static final String GITHUB_TOKEN_OPTION = "github.token"
-    static final String GITHUB_REPOSITORY_OPTION = "github.repository"
+    final Property<String> repositoryName
+    @Override
+    void setRepositoryName(Provider<String> name) {
+        this.repositoryName.set(name)
+    }
 
-    private String repositoryName
-    private String baseUrl
+    final Property<String> baseUrl
+    @Override
+    void setBaseUrl(Provider<String> baseUrl) {
+        this.baseUrl.set(baseUrl)
+    }
 
-    private String username
-    private String password
-    private String token
+    final Property<String> username
+    @Override
+    void setUsername(Provider<String> username) {
+        this.username.set(username)
+    }
 
-    private final Closure property
+    final Property<String> password
+    @Override
+    void setPassword(Provider<String> password) {
+        this.password.set(password)
+    }
+
+    final Property<String> token
+    @Override
+    void setToken(Provider<String> token) {
+        this.token.set(token)
+    }
+
+    @Override @Internal
+    Provider<GitHub> getClientProvider() {
+        return GithubClientFactory.clientProvider(username, password, token).
+        orElse(project.provider {
+          throw new IOException("could not find valid credentials for github client")
+        })
+    }
+
+    final Property<String> branchName
+
+    private final Project project
 
     DefaultGithubPluginExtension(Project project) {
-        this.property = project.&findProperty
-    }
+        this.project = project
 
-    DefaultGithubPluginExtension(Map<String, ?> properties) {
-        this.property = properties.&get
-    }
-
-    @Override
-    String getUsername() {
-        this.username ?: property(GITHUB_USER_NAME_OPTION)
-    }
-
-    @Override
-    DefaultGithubPluginExtension setUsername(String username) {
-        if (username == null || username.isEmpty()) {
-            throw new IllegalArgumentException("username")
-        }
-
-        this.username = username
-        this
-    }
-
-    @Override
-    GithubSpec username(String username) {
-        setUsername(username)
-    }
-
-    @Override
-    String getPassword() {
-        this.password ?: property(GITHUB_USER_PASSWORD_OPTION)
-    }
-
-    @Override
-    DefaultGithubPluginExtension setPassword(String password) {
-        if (password == null || password.isEmpty()) {
-            throw new IllegalArgumentException("password")
-        }
-
-        this.password = password
-        this
-    }
-
-    @Override
-    GithubSpec password(String password) {
-        setPassword(password)
-    }
-
-    @Override
-    String getRepositoryName() {
-        String value = this.repositoryName
-        if (!this.repositoryName && property(GITHUB_REPOSITORY_OPTION)) {
-            value = property(GITHUB_REPOSITORY_OPTION)
-        }
-
-        if (value && !GithubRepositoryValidator.validateRepositoryName(value)) {
-            throw new IllegalArgumentException("Repository value '$value' is not a valid github repository name. Expecting `owner/repo`.")
-        }
-
-        value
-    }
-
-    @Override
-    DefaultGithubPluginExtension setRepositoryName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("repository")
-        }
-
-        if (!GithubRepositoryValidator.validateRepositoryName(name)) {
-            throw new IllegalArgumentException("Repository value '$name' is not a valid github repository name. Expecting `owner/repo`.")
-        }
-
-        this.repositoryName = name
-        this
-    }
-
-    @Override
-    DefaultGithubPluginExtension repositoryName(String name) {
-        setRepositoryName(name)
-    }
-
-    @Override
-    String getBaseUrl() {
-        baseUrl
-    }
-
-    @Override
-    DefaultGithubPluginExtension setBaseUrl(String baseUrl) {
-        if (baseUrl == null || baseUrl.isEmpty()) {
-            throw new IllegalArgumentException("baseUrl")
-        }
-
-        this.baseUrl = baseUrl
-        this
-    }
-
-    @Override
-    DefaultGithubPluginExtension baseUrl(String baseUrl) {
-        setBaseUrl(baseUrl)
-    }
-
-    @Override
-    String getToken() {
-        this.token ?: property(GITHUB_TOKEN_OPTION)
-    }
-
-    @Override
-    DefaultGithubPluginExtension setToken(String token) {
-        if (token == null || token.isEmpty()) {
-            throw new IllegalArgumentException("token")
-        }
-        this.token = token
-        this
-    }
-
-    @Override
-    DefaultGithubPluginExtension token(String token) {
-        setToken(token)
+        repositoryName = project.objects.property(String)
+        baseUrl = project.objects.property(String)
+        username = project.objects.property(String)
+        password = project.objects.property(String)
+        token = project.objects.property(String)
+        branchName = project.objects.property(String)
     }
 }

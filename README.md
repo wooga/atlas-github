@@ -32,7 +32,7 @@ plugins {
 github {
     userName = "wooga"
     password = "a password."
-    token "a github access token"
+    token = "a github access token"
     repositoryName "wooga/atlas-github"
     baseUrl = null
 }
@@ -40,8 +40,8 @@ github {
 githubPublish {
     userName = "wooga"
     password = "a password."
-    token "a github access token"
-    repositoryName "wooga/atlas-github"
+    token = "a github access token"
+    repositoryName = "wooga/atlas-github"
     baseUrl = null
     targetCommitish = "master"
     tagName = project.version
@@ -71,28 +71,29 @@ Gradle and Java Compatibility
 Built with Oracle JDK7
 Tested with Oracle JDK8
 
-| Gradle Version | Works       |
-| :------------- | :---------: |
-| <= 2.13        | ![no]       |
-| 2.14           | ![yes]      |
-| 3.0            | ![yes]      |
-| 3.1            | ![yes]      |
-| 3.2            | ![yes]      |
-| 3.4            | ![yes]      |
-| 3.4.1          | ![yes]      |
-| 3.5            | ![yes]      |
-| 3.5.1          | ![yes]      |
-| 4.0            | ![yes]      |
-| 4.1            | ![yes]      |
-| 4.2            | ![yes]      |
-| 4.3            | ![yes]      |
-| 4.4            | ![yes]      |
-| 4.5            | ![yes]      |
-| 4.6            | ![yes]      |
-| 4.7            | ![yes]      |
-| 4.8            | ![yes]      |
-| 4.9            | ![yes]      |
-| 4.10           | ![yes]      |
+| Gradle Version  | Works  |
+| :-------------: | :----: |
+| < 5.0           | ![no]  |
+| 5.0             | ![yes] |
+| 5.1             | ![yes] |
+| 5.2             | ![yes] |
+| 5.3             | ![yes] |
+| 5.4             | ![yes] |
+| 5.5             | ![yes] |
+| 5.6             | ![yes] |
+| 5.6             | ![yes] |
+| 6.0             | ![yes] |
+| 6.1             | ![yes] |
+| 6.2             | ![yes] |
+| 6.3             | ![yes] |
+| 6.4             | ![yes] |
+| 6.5             | ![yes] |
+| 6.6             | ![yes] |
+| 6.6             | ![yes] |
+| 6.7             | ![yes] |
+| 6.8             | ![yes] |
+| 6.9             | ![yes] |
+| 7.0             | ![yes] |    |
 
 Development
 ===========
@@ -131,8 +132,8 @@ limitations under the License.
 [github]:               https://github.com
 [github-env-auth]:      http://github-api.kohsuke.org/apidocs/org/kohsuke/github/GitHubBuilder.html#fromEnvironment--
 [github-cred-auth]:     http://github-api.kohsuke.org/apidocs/org/kohsuke/github/GitHubBuilder.html#fromCredentials--
-[yes]:                  http://atlas-resources.wooga.com/icons/icon_check.svg "yes"
-[no]:                   http://atlas-resources.wooga.com/icons/icon_uncheck.svg "no"
+[yes]:                  https://resources.atlas.wooga.com/icons/icon_check.svg "yes"
+[no]:                   https://resources.atlas.wooga.com/icons/icon_uncheck.svg "no"
 [github-api]:           http://github-api.kohsuke.org/source-repository.html
 [copy-spec]:            https://docs.gradle.org/3.4/javadoc/org/gradle/api/file/CopySpec.html
 [copy-spec-into]:       https://docs.gradle.org/3.4/javadoc/org/gradle/api/file/CopySpec.html#into(java.lang.Object)

@@ -35,7 +35,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         then:
         def release = getRelease(tagName)
         !release.isDraft()
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 0
 
         where:
@@ -93,7 +93,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         then:
         def release = getRelease(tagName)
         !release.isDraft()
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 1
         assets.any { it.name == "fileNine" }
 
@@ -132,7 +132,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         then:
         def release = getRelease(tagName)
         !release.isDraft()
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 2
         assets.any { it.name == "fileOne" }
         assets.any { it.name == "fileTwo" }
@@ -170,7 +170,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         then:
         def release = getRelease(tagName)
         !release.isDraft()
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 2
         assets.any { it.name == "one.zip" }
         assets.any { it.name == "two.zip" }
@@ -297,7 +297,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         then:
         def release = getRelease(tagName)
         !release.isDraft()
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 1
         assets.any { it.name == "fileToPublish.json" }
 
@@ -343,7 +343,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         """
 
         when:
-        runTasksSuccessfully("testPublish")
+        def result = runTasksSuccessfully("testPublish")
 
         then:
         def release = getRelease(tagName)
@@ -352,12 +352,12 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         release.isPrerelease() == initialPrerelease
         release.isDraft() == initialDraft
 
-        def assets = release.assets
+        def assets = release.listAssets()
         assets.size() == 1
         assets.any { it.name == "initial.json" }
 
         when:
-        runTasksSuccessfully("testPublishOrUpdate")
+        result = runTasksSuccessfully("testPublishOrUpdate")
 
         then:
         def updatedRelease = getRelease(tagName)
@@ -367,7 +367,7 @@ class GithubPublishIntegrationSpec extends GithubPublishIntegrationWithDefaultAu
         updatedRelease.isDraft() == expectedDraft
         updatedRelease.targetCommitish == expectedTargetCommitish
 
-        def updatedAssets = updatedRelease.assets
+        def updatedAssets = updatedRelease.listAssets()
         updatedAssets.size() == 2
         updatedAssets.any { it.name == "update.json" }
         updatedAssets.any { it.name == "initial.json" }

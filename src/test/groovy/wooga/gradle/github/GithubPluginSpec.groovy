@@ -21,7 +21,7 @@ import nebula.test.ProjectSpec
 import org.gradle.api.publish.plugins.PublishingPlugin
 import spock.lang.Unroll
 import wooga.gradle.github.base.GithubBasePlugin
-import wooga.gradle.github.base.GithubPluginExtention
+import wooga.gradle.github.base.GithubPluginExtension
 import wooga.gradle.github.publish.tasks.GithubPublish
 import wooga.gradle.github.publish.GithubPublishPlugin
 
@@ -44,7 +44,7 @@ class GithubPluginSpec extends ProjectSpec {
 
         where:
         extensionName                   | extensionType
-        GithubBasePlugin.EXTENSION_NAME | GithubPluginExtention.class
+        GithubBasePlugin.EXTENSION_NAME | GithubPluginExtension.class
     }
 
     @Unroll("creates the task #taskName")
@@ -92,8 +92,8 @@ class GithubPluginSpec extends ProjectSpec {
         project.plugins.apply(PLUGIN_NAME)
 
         then:
-        def publishTasks = project.tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME)
-        def githubPublishTask = project.tasks.getByName(GithubPublishPlugin.PUBLISH_TASK_NAME)
+        def githubPublishTask = project.tasks.named(GithubPublishPlugin.PUBLISH_TASK_NAME)
+        def publishTasks = project.tasks.findByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME)
         publishTasks.dependsOn.contains(githubPublishTask)
     }
 }

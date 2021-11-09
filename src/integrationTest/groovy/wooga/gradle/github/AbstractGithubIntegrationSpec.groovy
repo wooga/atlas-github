@@ -27,8 +27,10 @@ import org.kohsuke.github.GitHub
 import spock.lang.Retry
 import spock.lang.Shared
 
+import static wooga.gradle.github.GithubIntegrationSpec.retry
+
 @Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
-abstract class GithubPublishIntegration extends IntegrationSpec {
+abstract class AbstractGithubIntegrationSpec extends IntegrationSpec {
 
     @Shared
     @GithubRepository(
@@ -61,6 +63,16 @@ abstract class GithubPublishIntegration extends IntegrationSpec {
 
     GitHub getClient() {
         testRepo.client
+    }
+
+    def createRelease(String tagName, String body) {
+        def releaseBuilder = testRepo.createRelease(tagName)
+        releaseBuilder.name(tagName)
+        releaseBuilder.draft(false)
+        releaseBuilder.prerelease(false)
+        releaseBuilder.commitish(testRepo.getDefaultBranch().name)
+        releaseBuilder.body(body)
+        releaseBuilder.create()
     }
 
     def createRelease(String tagName) {
@@ -104,8 +116,13 @@ abstract class GithubPublishIntegration extends IntegrationSpec {
         assets
     }
 
-    GHRelease getRelease(String tagName) {
-        (GHRelease) testRepo.listReleases().find({ it.tagName == tagName })
+    GHRelease getRelease(String tagName, int retry=10) {
+        def release = (GHRelease) testRepo.listReleases().find { it.tagName == tagName }
+        if(release == null && retry > 0) {
+            sleep(1000)
+            getRelease(tagName, retry-1)
+        }
+        return release
     }
 
     GHRelease getReleaseByName(String name) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,10 @@ package wooga.gradle.github
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
 import org.junit.contrib.java.lang.system.RestoreSystemProperties
+import spock.lang.Ignore
 import spock.lang.Unroll
 
-class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
+class GithubAuthenticationIntegrationSpec extends AbstractGithubIntegrationSpec {
 
     def setup() {
         buildFile << """
@@ -64,7 +65,6 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
         "username = '${testUserName}'; password = '${testUserToken}'"                        | "username/password"
         "username = '${testUserName}'; token = '${testUserToken}'"                           | "username/token"
         "token = '${testUserToken}'"                                                         | "token"
-        "token('${testUserToken}').username('${testUserName}').password('${testUserToken}')" | "username/password/token set with chained method"
     }
 
     @Unroll
@@ -125,6 +125,7 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
     public final EnvironmentVariables environmentVariables = new EnvironmentVariables()
 
     @Unroll
+    @Ignore
     def "can set authentication in environment with #authMethod"() {
         given: "files to publish"
         createTestAssetsToPublish(1)
@@ -135,6 +136,7 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
         and: "task with errors"
         assert runTasksWithFailure("testPublish")
 
+        fork = true
         when: "setting auth properties in environment"
 
         if (username) {
@@ -158,11 +160,33 @@ class GithubAuthenticationIntegrationSpec extends GithubPublishIntegration {
 
         where:
         username     | password      | token         | baseUrl                  | authMethod
-        testUserName | testUserToken | null          | null                     | "username/password"
+        //testUserName | testUserToken | null          | null                     | "username/password"
         testUserName | null          | testUserToken | null                     | "username/token"
-        null         | null          | testUserToken | null                     | "token"
+//        null         | null          | testUserToken | null                     | "token"
         testUserName | testUserToken | null          | "https://api.github.com" | "username/password/baseUrl"
-        testUserName | null          | testUserToken | "https://api.github.com" | "username/token/baseUrl"
-        null         | null          | testUserToken | "https://api.github.com" | "token/baseUrl"
+//        testUserName | null          | testUserToken | "https://api.github.com" | "username/token/baseUrl"
+//        null         | null          | testUserToken | "https://api.github.com" | "token/baseUrl"
     }
+
+    def "gets client from set up credentials"() {
+        given:
+        buildFile << """
+            github {
+                username="${testRepo.userName}"
+                token="${testRepo.token}"
+            }
+            task(custom) {
+                doLast {
+                    def client = github.clientProvider.get()
+                    println("Repository: " + client.getRepository("${testRepo.repository.fullName}").fullName)
+                }
+            }            
+        """
+        when:
+        def result = runTasksSuccessfully("custom")
+
+        then:
+        result.standardOutput.contains("Repository: ${testRepo.repository.fullName}".toString())
+    }
+
 }

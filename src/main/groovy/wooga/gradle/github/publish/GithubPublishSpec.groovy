@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@
 
 package wooga.gradle.github.publish
 
+import org.gradle.api.Task
 import org.gradle.api.file.CopySourceSpec
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.util.PatternFilterable
 import wooga.gradle.github.base.GithubSpec
 
@@ -57,39 +60,14 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      *
      * @return the Git tag name
      */
-    String getTagName()
+    Property<String> getTagName()
 
     /**
      * Sets the tag name for the release.
      *
-     * @param  the {@code String} tagName value
-     * @return this
+     * @param the {@code String} tagName value
      */
-    GithubPublishSpec setTagName(String tagName)
-
-    /**
-     * Sets the tag name for the release.
-     *
-     * @param  the {@code Object} tagName value.
-     * @return this
-     */
-    GithubPublishSpec setTagName(Object tagName)
-
-    /**
-     * Sets the tag name for the release.
-     *
-     * @param  the {@code String} tagName value
-     * @return this
-     */
-    GithubPublishSpec tagName(String tagName)
-
-    /**
-     * Sets the tag name for the release.
-     *
-     * @param  the {@code Object} tagName value.
-     * @return this
-     */
-    GithubPublishSpec tagName(Object tagName)
+    void setTagName(Provider<String> tagName)
 
     /**
      * Returns the commitish value that determines where the Git tag is created from.
@@ -97,249 +75,80 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * Can be any branch or commit SHA. Unused if the Git tag already exists.
      *
      * @default the repository's default branch (usually master).
-     * @return  this
+     * @return this
      */
-    String getTargetCommitish()
+    Property<String> getTargetCommitish()
 
     /**
      * Sets the commitish value.
      *
-     * @param  targetCommitish the commitish value, can be any branch or commit SHA
+     * @param targetCommitish the commitish value, can be any branch or commit SHA
      * @return this
      */
-    GithubPublishSpec setTargetCommitish(String targetCommitish)
-
-    /**
-     * Sets the commitish value.
-     *
-     * @param  targetCommitish the commitish value, can be any branch or commit SHA
-     * @return this
-     */
-    GithubPublishSpec setTargetCommitish(Object targetCommitish)
-
-    /**
-     * Sets the commitish value.
-     *
-     * @param  targetCommitish the commitish value, can be any branch or commit SHA
-     * @return this
-     */
-    GithubPublishSpec targetCommitish(String targetCommitish)
-
-    /**
-     * Sets the commitish value.
-     *
-     * @param  targetCommitish the commitish value, can be any branch or commit SHA
-     * @return this
-     */
-    GithubPublishSpec targetCommitish(Object targetCommitish)
+    void setTargetCommitish(Provider<String> targetCommitish)
 
     /**
      * Returns the name of the release.
      *
      * @return the name of the release
      */
-    String getReleaseName()
+    Property<String> getReleaseName()
 
     /**
      * Sets the name of the release.
      *
-     * @param  name the name to use for the release
+     * @param name the name to use for the release
      * @return this
      */
-    GithubPublishSpec setReleaseName(String name)
-
-    /**
-     * Sets the name of the release.
-     *
-     * @param  name the name to use for the release
-     * @return this
-     */
-    GithubPublishSpec setReleaseName(Object name)
-
-    /**
-     * Sets the name of the release.
-     *
-     * @param  name the name to use for the release
-     * @return this
-     */
-    GithubPublishSpec releaseName(String name)
-
-    /**
-     * Sets the name of the release.
-     *
-     * @param  name the name to use for the release
-     * @return this
-     */
-    GithubPublishSpec releaseName(Object name)
+    void setReleaseName(Provider<String> name)
 
     /**
      * Returns the description text of the release
      *
      * @return the release description
      */
-    String getBody()
+    Property<String> getBody()
 
     /**
      * Sets the description text for the release.
      *
-     * @param  body the release description
+     * @param body the release description
      * @return this
      */
-    GithubPublishSpec setBody(String body)
-
-    /**
-     * Sets the description text for the release.
-     * <p>
-     * The provided value can be any object with a valid {@code toString} method.
-     * If the value is a {@code Callable}, the result after calling the object
-     * and executing {@code toString} on the return value will be used.
-     *
-     * @param  body the release description
-     * @return this
-     */
-    GithubPublishSpec setBody(Object body)
-
-    /**
-     * Sets the description text for the release.
-     * <p>
-     * The closure will be called with a {@link org.kohsuke.github.GHRepository} repository object.
-     * The repository object can be used to query the Git commit log or pull requests etc.
-     *
-     * @param  closure a configuration closure which returns the release description
-     * @return this
-     */
-    GithubPublishSpec setBody(Closure closure)
-
-    /**
-     * Sets the description text for the release.
-     * <p>
-     * The body strategies {@code getBody()} method will be called with a {@link org.kohsuke.github.GHRepository} repository object.
-     * The repository object can be used to query the Git commit log or pull requests etc.
-     *
-     * @param  bodyStrategy an object of type {@link PublishBodyStrategy} which returns the release description
-     * @return this
-     * @see    PublishBodyStrategy#getBody(org.kohsuke.github.GHRepository)
-     */
-    GithubPublishSpec setBody(PublishBodyStrategy bodyStrategy)
-
-    /**
-     * Sets the description text for the release.
-     *
-     * @param  body the release description
-     * @return this
-     */
-    GithubPublishSpec body(String body)
-
-    /**
-     * Sets the description text for the release.
-     *
-     * @param  body the release description
-     * @return this
-     */
-    GithubPublishSpec body(Object body)
-
-    /**
-     * Sets the description text for the release.
-     * <p>
-     * The closure will be called with a {@link org.kohsuke.github.GHRepository} repository object.
-     * The repository object can be used to query the Git commit log or pull requests etc.
-     *
-     * @param  closure a configuration closure which returns the release description
-     * @return this
-     */
-    GithubPublishSpec body(Closure bodyStrategy)
-
-    /**
-     * Sets the description text for the release.
-     * <p>
-     * The body strategies {@code getBody()} method will be called with a {@link org.kohsuke.github.GHRepository} repository object.
-     * The repository object can be used to query the Git commit log or pull requests etc.
-     *
-     * @param  bodyStrategy an object of type {@link PublishBodyStrategy} which returns the release description
-     * @return this
-     * @see    PublishBodyStrategy#getBody(org.kohsuke.github.GHRepository)
-     */
-    GithubPublishSpec body(PublishBodyStrategy bodyStrategy)
+    void setBody(Provider<String> body)
 
     /**
      * Returns a {@code boolean} value indicating if the release as a prerelease.
      *
-     * @return  {@code true} to identify the release as a prerelease. {@code false} to identify the release as a full release.
+     * @return {@code true} to identify the release as a prerelease. {@code false} to identify the release as a full release.
      * @default {@code false}
      */
-    boolean isPrerelease()
+    Property<Boolean> getPrerelease()
 
     /**
      * Sets the prerelease status of the release.
      *
-     * @param  prerelease the prerelease status. Set {@code true} to identify the release as a prerelease.
+     * @param prerelease the prerelease status. Set {@code true} to identify the release as a prerelease.
      * @return this
      */
-    GithubPublishSpec setPrerelease(boolean prerelease)
+    void setPrerelease(Provider<Boolean> prerelease)
 
-    /**
-     * Sets the prerelease status of the release.
-     *
-     * @param  prerelease the prerelease status. Set {@code true} to identify the release as a prerelease.
-     * @return this
-     */
-    GithubPublishSpec setPrerelease(Object prerelease)
-
-    /**
-     * Sets the prerelease status of the release.
-     *
-     * @param  prerelease the prerelease status. Set {@code true} to identify the release as a prerelease.
-     * @return this
-     */
-    GithubPublishSpec prerelease(boolean prerelease)
-
-    /**
-     * Sets the prerelease status of the release.
-     *
-     * @param  prerelease the prerelease status. Set {@code true} to identify the release as a prerelease.
-     * @return this
-     */
-    GithubPublishSpec prerelease(Object prerelease)
 
     /**
      * Returns a {@code boolean} value indicating if the release will be automatically published.
      *
-     * @return  {@code true} to create a draft (unpublished) release, {@code false} to create a published one.
+     * @return {@code true} to create a draft (unpublished) release, {@code false} to create a published one.
      * @default {@code false}
      */
-    boolean isDraft()
+    Property<Boolean> getDraft()
 
     /**
      * Sets the publication status for the release.
      *
-     * @param  draft the status. Set to {@code true} to create a draft (unpublished) release.
+     * @param draft the status. Set to {@code true} to create a draft (unpublished) release.
      * @return this
      */
-    GithubPublishSpec setDraft(boolean draft)
-
-    /**
-     * Sets the publication status for the release.
-     *
-     * @param  draft the status. Set to {@code true} to create a draft (unpublished) release.
-     * @return this
-     */
-    GithubPublishSpec setDraft(Object draft)
-
-    /**
-     * Sets the publication status for the release.
-     *
-     * @param  draft the status. Set to {@code true} to create a draft (unpublished) release.
-     * @return this
-     */
-    GithubPublishSpec draft(boolean draft)
-
-    /**
-     * Sets the publication status for the release.
-     *
-     * @param  draft the status. Set to {@code true} to create a draft (unpublished) release.
-     * @return this
-     */
-    GithubPublishSpec draft(Object draft)
+    void setDraft(Provider<Boolean> draft)
 
     /**
      * Returns a {@code PublishMethod} value indicating if a release should be created or updated.
@@ -355,50 +164,18 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * When set to {@code update}, the {@code GithubPublish} task will fail if a release doesn't exists.
      * When set to {@code createOrUpdate}, the {@code GithubPublish} task will create a release if missing.
      *
-     * @return  {@code PublishMethod} indicating if a release should be created or updated.
+     * @return {@code PublishMethod} indicating if a release should be created or updated.
      * @default {@code PublishMethod.create}
-     * @see wooga.gradle.github.publish.tasks.GithubPublish
-     * @see wooga.gradle.github.publish.PublishMethod
+     * @see wooga.gradle.github.publish.tasks.GithubPublish* @see wooga.gradle.github.publish.PublishMethod
      */
-    PublishMethod getPublishMethod()
+    Property<PublishMethod> getPublishMethod()
 
     /**
      * Sets the publish method.
      *
-     * @param  {@code PublishMethod} indicating if a release should be created or updated.
-     * @return this
-     *
+     * @param {@code PublishMethod} indicating if a release should be created or updated.
+     * @return this*
      * @see #getPublishMethod()
      */
-    GithubPublishSpec setPublishMethod(PublishMethod method)
-
-    /**
-     * Sets the publish method.
-     *
-     * @param  {@code Object} which can be converted to a {@code PublishMethod}
-     * @return this
-     *
-     * @see #getPublishMethod()
-     */
-    GithubPublishSpec setPublishMethod(Object method)
-
-    /**
-     * Sets the publish method.
-     *
-     * @param  {@code PublishMethod} indicating if a release should be created or updated.
-     * @return this
-     *
-     * @see #getPublishMethod()
-     */
-    GithubPublishSpec publishMethod(PublishMethod method)
-
-    /**
-     * Sets the publish method.
-     *
-     * @param  {@code Object} which can be converted to a {@code PublishMethod}
-     * @return this
-     *
-     * @see #getPublishMethod()
-     */
-    GithubPublishSpec publishMethod(Object method)
+    void setPublishMethod(Provider<PublishMethod> method)
 }

@@ -20,7 +20,7 @@ package wooga.gradle.github
 import spock.lang.Retry
 
 @Retry(mode=Retry.Mode.SETUP_FEATURE_CLEANUP)
-abstract class GithubPublishIntegrationWithDefaultAuth extends GithubPublishIntegration {
+abstract class GithubPublishIntegrationWithDefaultAuth extends AbstractGithubIntegrationSpec {
 
     def setup() {
         buildFile << """

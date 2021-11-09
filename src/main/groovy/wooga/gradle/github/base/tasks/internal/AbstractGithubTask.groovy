@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Wooga GmbH
+ * Copyright 2018-2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,179 +19,141 @@ package wooga.gradle.github.base.tasks.internal
 
 import org.gradle.api.GradleException
 import org.gradle.api.internal.ConventionTask
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
-import org.kohsuke.github.GitHubBuilder
+import wooga.gradle.github.base.internal.GithubClientFactory
 import wooga.gradle.github.base.internal.GithubRepositoryValidator
 import wooga.gradle.github.base.GithubSpec
 
 abstract class AbstractGithubTask<T extends AbstractGithubTask> extends ConventionTask implements GithubSpec {
 
-    private String repositoryName
-    private String baseUrl
-    private String username
-    private String password
-    private String token
+    private final Property<String> repositoryName
 
-    private GitHub client
+    @Input
+    @Override
+    Property<String> getRepositoryName() {
+        repositoryName
+    }
+
+    @Override
+    void setRepositoryName(Provider<String> value) {
+        repositoryName.set(value)
+    }
+
+    void setRepositoryName(String name) {
+        if (!GithubRepositoryValidator.validateRepositoryName(name)) {
+            throw new IllegalArgumentException("Repository value '$name' is not a valid github repository name. Expecting `owner/repo`.")
+        }
+
+        repositoryName.set(name)
+    }
+
+    @Optional
+    private final Property<String> baseUrl
+
+    @Input
+    @Override
+    Property<String> getBaseUrl() {
+        baseUrl
+    }
+
+    @Override
+    void setBaseUrl(Provider<String> value) {
+        baseUrl.set(value)
+    }
+
+    @Optional
+    private final Property<String> username
+
+    @Input
+    @Override
+    Property<String> getUsername() {
+        username
+    }
+
+    @Override
+    void setUsername(Provider<String> value) {
+        username.set(value)
+    }
+
+    @Optional
+    private final Property<String> password
+
+    @Input
+    @Override
+    Property<String> getPassword() {
+        password
+    }
+
+    @Override
+    void setPassword(Provider<String> value) {
+        password.set(value)
+    }
+
+    @Optional
+    private final Property<String> token
+
+    @Input
+    @Override
+    Property<String> getToken() {
+        token
+    }
+
+    @Override
+    void setToken(Provider<String> value) {
+        token.set(value)
+    }
+
+    protected final Property<GitHub> clientProvider
+
+    @Internal
+    @Override
+    Property<GitHub> getClientProvider() {
+        clientProvider
+    }
+
+    protected final Property<String> branchName
+
+    @Internal
+    @Override
+    Property<String> getBranchName() {
+        return branchName
+    }
 
     private final Class<T> taskType
 
     AbstractGithubTask(Class<T> taskType) {
         this.taskType = taskType
+
+        repositoryName = project.objects.property(String)
+        baseUrl = project.objects.property(String)
+        username = project.objects.property(String)
+        password = project.objects.property(String)
+        token = project.objects.property(String)
+        clientProvider = project.objects.property(GitHub)
+        clientProvider.set(GithubClientFactory.clientProvider(username, password, token))
+        branchName = project.objects.property(String)
     }
 
-    protected GitHub getClient() {
-        if(!this.client) {
-            def builder = new GitHubBuilder()
-
-            if (getUsername() && getPassword()) {
-                builder = builder.withPassword(getUsername(), getPassword())
-            } else if (getUsername() && getToken()) {
-                builder = builder.withOAuthToken(getToken(), getUsername())
-
-            } else if (getToken()) {
-                builder = builder.withOAuthToken(getToken())
-
-            } else {
-                builder = GitHubBuilder.fromCredentials()
-            }
-
-            if (getBaseUrl()) {
-                builder = builder.withEndpoint(getBaseUrl())
-            }
-
-            this.client = builder.build()
-        }
-
-        return client
-    }
-
-    GHRepository getRepository(GitHub client) {
-        GHRepository repository
-        try {
-            repository = client.getRepository(getRepositoryName())
-        }
-        catch (Exception e) {
-            throw new GradleException("can't find repository ${getRepositoryName()}")
-        }
-        repository
-    }
-
+    @Internal
     GHRepository getRepository() {
         GHRepository repository
         try {
-            repository = getClient().getRepository(getRepositoryName())
+            repository = client.getRepository(repositoryName.get())
         }
-        catch (Exception e) {
-            throw new GradleException("can't find repository ${getRepositoryName()}")
+        catch (Exception error) {
+            throw new GradleException("can't find repository ${repositoryName.get()}", error)
         }
         repository
     }
 
-    @Override
-    String getRepositoryName() {
-        repositoryName
-    }
-
-    @Override
-    T setRepositoryName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("repository")
-        }
-
-        if (!GithubRepositoryValidator.validateRepositoryName(name)) {
-            throw new IllegalArgumentException("Repository value '$name' is not a valid github repository name. Expecting `owner/repo`.")
-        }
-
-        this.repositoryName = name
-        taskType.cast(this)
-    }
-
-    @Override
-    T repositoryName(String name) {
-        taskType.cast(this.setRepositoryName(name))
-    }
-
-    @Optional
-    @Input
-    @Override
-    String getBaseUrl() {
-        baseUrl
-    }
-
-    @Override
-    T setBaseUrl(String baseUrl) {
-        if (baseUrl == null || baseUrl.isEmpty()) {
-            throw new IllegalArgumentException("baseUrl")
-        }
-        this.baseUrl = baseUrl
-        taskType.cast(this)
-    }
-
-    @Override
-    T baseUrl(String baseUrl) {
-        taskType.cast(this.setBaseUrl(baseUrl))
-    }
-
-    @Optional
-    @Input
-    @Override
-    String getToken() {
-        this.token
-    }
-
-    @Override
-    T setToken(String token) {
-        if (token == null || token.isEmpty()) {
-            throw new IllegalArgumentException("token")
-        }
-        this.token = token
-        taskType.cast(this)
-    }
-
-    @Override
-    T token(String token) {
-        taskType.cast(this.setToken(token))
-    }
-
-    @Optional
-    @Input
-    @Override
-    String getUsername() {
-        this.username
-    }
-
-    @Override
-    T setUsername(String userName) {
-        this.username = userName
-        taskType.cast(this)
-    }
-
-    @Override
-    T username(String username) {
-        this.setUsername(username)
-        taskType.cast(this)
-    }
-
-    @Optional
-    @Input
-    @Override
-    String getPassword() {
-        this.password
-    }
-
-    @Override
-    T setPassword(String password) {
-        this.password = password
-        taskType.cast(this)
-    }
-
-    @Override
-    T password(String password) {
-        this.setPassword(password)
-        taskType.cast(this)
+    @Internal
+    GitHub getClient() {
+        clientProvider.get()
     }
 }
