@@ -7,7 +7,7 @@ import org.gradle.api.provider.Provider
 
 class RepositoryInfo {
 
-    private static final String DOMAIN = "github.com"
+    private static final String GITHUB_DOMAIN = "github.com"
     private static final String DEFAULT_REMOTE = "origin"
 
     final Project project
@@ -24,11 +24,11 @@ class RepositoryInfo {
 
     Provider<String> getRepositoryNameFromLocalGit() {
         return grgitProvider.map { git ->
-            git.remote.list().find {it.name == DEFAULT_REMOTE}?: null
+            git.remote.list().find {it.name == DEFAULT_REMOTE && it.url.contains(GITHUB_DOMAIN)}?: null
         }.map{remote ->
             def remoteURL = remote.url
-            def domainIndex = remoteURL.indexOf(DOMAIN)
-            def urlAfterDomain = remoteURL.substring(domainIndex + DOMAIN.length() + 1)
+            def domainIndex = remoteURL.indexOf(GITHUB_DOMAIN)
+            def urlAfterDomain = remoteURL.substring(domainIndex + GITHUB_DOMAIN.length() + 1)
             return urlAfterDomain.replace(".git", "")
         }
     }
