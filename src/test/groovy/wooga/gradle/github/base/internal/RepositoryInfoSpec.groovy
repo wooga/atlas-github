@@ -58,6 +58,23 @@ class RepositoryInfoSpec extends ProjectSpec {
         !repoInfo.branchNameFromLocalGit.present
     }
 
+
+    def "gets empty repository name if current git remote is not from github.com"(){
+        given: "a gradle project"
+        and: "a local git with set 'origin' remote not from github.com"
+        def remoteURL = "https://bitbucket.org/repo"
+        def git = Grgit.init(dir: project.projectDir)
+        git.remote.add(name: "origin", url: remoteURL, pushUrl: remoteURL)
+
+
+        when: "getting repository name form repository info"
+        def repoInfo = new RepositoryInfo(project, git)
+
+        then:
+        !repoInfo.repositoryNameFromLocalGit.present
+        repoInfo.branchNameFromLocalGit.present
+    }
+
     @Unroll
     def "creates repository info with expected branch"() {
         given: "git installation"
