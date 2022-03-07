@@ -41,7 +41,7 @@ github {
 }
 
 dependencies {
-    implementation 'org.kohsuke:github-api:1.131'
+    implementation 'org.kohsuke:github-api:1.303'
     implementation 'org.zeroturnaround:zt-zip:1.14'
     implementation 'org.apache.tika:tika-core:1.24.1'
     implementation 'org.ajoberstar.grgit:grgit-core:[4.1.1,5)'
