@@ -50,7 +50,7 @@ dependencies {
         exclude group: "org.codehaus.groovy", module: "groovy-all"
     }
 
-    testImplementation('com.wooga.spock.extensions:spock-github-extension:0.2.0') {
+    testImplementation('com.wooga.spock.extensions:spock-github-extension:0.3.0') {
         exclude group: "org.codehaus.groovy", module: "groovy-all"
     }
 }
