@@ -17,12 +17,12 @@
 
 package wooga.gradle.github
 
-import org.kohsuke.github.GHFileNotFoundException
-import org.kohsuke.github.GHRepository
-import org.kohsuke.github.GitHub
+
+import spock.lang.Ignore
 
 import java.nio.charset.StandardCharsets
 
+@Ignore
 class GithubIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
 
     def setup() {

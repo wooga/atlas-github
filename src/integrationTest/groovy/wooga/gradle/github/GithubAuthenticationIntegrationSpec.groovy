@@ -23,6 +23,7 @@ import org.junit.contrib.java.lang.system.RestoreSystemProperties
 import spock.lang.Ignore
 import spock.lang.Unroll
 
+@Ignore
 class GithubAuthenticationIntegrationSpec extends AbstractGithubIntegrationSpec {
 
     def setup() {

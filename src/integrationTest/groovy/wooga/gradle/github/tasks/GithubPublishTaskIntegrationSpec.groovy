@@ -24,6 +24,7 @@ import wooga.gradle.github.publish.PublishMethod
 import wooga.gradle.github.publish.tasks.GithubPublish
 import wooga.gradle.github.tasks.AbstractGithubTaskIntegrationSpec
 
+@Ignore
 @Retry(mode = Retry.Mode.SETUP_FEATURE_CLEANUP)
 class GithubPublishTaskIntegrationSpec extends AbstractGithubTaskIntegrationSpec {
 
