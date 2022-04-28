@@ -19,13 +19,9 @@ package wooga.gradle.github
 
 import spock.genesis.Gen
 import spock.genesis.transform.Iterations
-import spock.lang.Ignore
-import spock.lang.IgnoreIf
-import spock.lang.Issue
-import spock.lang.Shared
-import spock.lang.Unroll
-import java.util.concurrent.TimeUnit
+import spock.lang.*
 
+@Ignore
 class GithubPublishAssetsIntegrationSpec extends GithubPublishIntegrationWithDefaultAuth {
 
     def "publish directories as zip archives"() {
