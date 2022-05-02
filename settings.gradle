@@ -22,4 +22,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'atlas-github'
+rootProject.name = 'github'

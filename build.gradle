@@ -16,7 +16,7 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '2.2.3'
+    id 'net.wooga.plugins' version '3.1.0'
     id 'net.wooga.snyk' version '0.10.0'
     id "net.wooga.snyk-gradle-plugin" version "0.2.0"
     id "net.wooga.cve-dependency-resolution" version "0.4.0"
@@ -29,12 +29,15 @@ pluginBundle {
     website = 'https://wooga.github.io/atlas-github/'
     vcsUrl = 'https://github.com/wooga/atlas-github'
     tags = ['github', 'publishing']
+}
 
+gradlePlugin {
     plugins {
         github {
             id = 'net.wooga.github'
             displayName = 'Gradle Github plugin'
             description = 'This plugin provides tasks and conventions to publish artifacts to github releases'
+            implementationClass = 'wooga.gradle.github.GithubPlugin'
         }
     }
 }
