@@ -17,6 +17,9 @@
 
 package wooga.gradle.github.tasks
 
+import com.wooga.gradle.test.PropertyLocation
+import com.wooga.gradle.test.writers.PropertyGetterTaskWriter
+import com.wooga.gradle.test.writers.PropertySetterWriter
 import spock.lang.Ignore
 import spock.lang.Retry
 import spock.lang.Unroll
@@ -53,25 +56,8 @@ class GithubPublishTaskIntegrationSpec extends AbstractGithubTaskIntegrationSpec
     @Unroll("can set property #property with #method and type #type")
     def "can set property"() {
 
-        given: "a task to read back the value"
-        buildFile << """
-            task("readValue") {
-                doLast {
-                    println("property: " + ${testTaskName}.${property}.get())
-                }
-            }
-        """.stripIndent()
-
-        and: "a set property"
-        buildFile << """
-            ${testTaskName}.${method}($value)
-        """.stripIndent()
-
-        when:
-        def result = runTasksSuccessfully("readValue")
-
-        then:
-        outputContains(result, "property: " + expectedValue.toString())
+        expect:
+        runPropertyQuery(getter, setter).matches(rawValue)
 
         where:
         property          | method                | rawValue                     | type
@@ -109,16 +95,12 @@ class GithubPublishTaskIntegrationSpec extends AbstractGithubTaskIntegrationSpec
         "publishMethod"   | "setPublishMethod"    | "update"                     | "String"
         "publishMethod"   | "setPublishMethod"    | "createOrUpdate"             | "String"
 
-        value = wrapValueBasedOnType(rawValue, type.toString()) { type ->
-            switch (type) {
-                case PublishMethod.class.simpleName:
-                    return "${PublishMethod.class.name}.${rawValue.toString()}"
-                default:
-                    return rawValue
-            }
+        setter = new PropertySetterWriter(testTaskName, property)
+            .set(rawValue, type)
+            .toScript()
+            .serialize(PropertyLocation.script, PublishMethod, { "${PublishMethod.class.name}.${it.toString()}" })
 
-        }
-        expectedValue = rawValue
+        getter = new PropertyGetterTaskWriter(setter)
     }
 
     @Unroll
@@ -182,7 +164,7 @@ class GithubPublishTaskIntegrationSpec extends AbstractGithubTaskIntegrationSpec
         then:
         result.success != expectedFailure
 
-        if(result.success) {
+        if (result.success) {
             assert hasRelease(tagName)
             def release = getRelease(tagName)
             assert release.body == releaseBody

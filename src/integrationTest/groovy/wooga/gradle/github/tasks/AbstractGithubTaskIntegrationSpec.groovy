@@ -1,5 +1,7 @@
 package wooga.gradle.github.tasks
 
+import com.wooga.gradle.test.writers.PropertyGetterTaskWriter
+import com.wooga.gradle.test.writers.PropertySetterWriter
 import spock.lang.Specification
 import spock.lang.Unroll
 import wooga.gradle.github.AbstractGithubIntegrationSpec
@@ -18,25 +20,8 @@ abstract class AbstractGithubTaskIntegrationSpec extends AbstractGithubIntegrati
     @Unroll("can set property #property with #method and type #type")
     def "can set base property"() {
 
-        given: "a task to read back the value"
-        buildFile << """
-            task("readValue") {
-                doLast {
-                    println("property: " + ${testTaskName}.${property}.get())
-                }
-            }
-        """.stripIndent()
-
-        and: "a set property"
-        buildFile << """
-            ${testTaskName}.${method}($value)
-        """.stripIndent()
-
-        when:
-        def result = runTasksSuccessfully("readValue")
-
-        then:
-        outputContains(result, "property: " + expectedValue.toString())
+        expect:
+        runPropertyQuery(getter, setter)
 
         where:
         property         | method               | rawValue | type
@@ -56,8 +41,11 @@ abstract class AbstractGithubTaskIntegrationSpec extends AbstractGithubIntegrati
         "token"          | "token.set"          | "bar"    | "Provider<String>"
         "token"          | "setToken"           | "bar"    | "Provider<String>"
 
-        value = wrapValueBasedOnType(rawValue, type)
-        expectedValue = rawValue
+        setter = new PropertySetterWriter(testTaskName, property)
+            .set(rawValue, type)
+            .toScript()
+
+        getter = new PropertyGetterTaskWriter(setter)
     }
 
 }
