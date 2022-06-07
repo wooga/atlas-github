@@ -8,8 +8,10 @@ import com.wooga.gradle.test.writers.PropertySetterWriter
 import org.ajoberstar.grgit.Grgit
 import spock.lang.Shared
 import spock.lang.Unroll
+import wooga.gradle.github.publish.GithubPublishPluginConvention
 
 import static wooga.gradle.github.base.GithubBasePluginConvention.*
+import static wooga.gradle.github.base.GithubBasePluginConvention.userName
 
 class GithubPluginExtensionIntegrationSpec extends IntegrationSpec {
 
@@ -93,13 +95,14 @@ class GithubPluginExtensionIntegrationSpec extends IntegrationSpec {
         "baseUrl"        | PropertySetInvocation.setter      | "https://api.github.com/8"                | "Provider<String>" | PropertyLocation.script
         "baseUrl"        | PropertySetInvocation.method      | null                                      | "String"           | PropertyLocation.none
 
-        "branchName"     | _                                 | TestValue.set(null).expect(currentBranch) | "String"           | PropertyLocation.none
+        "branchName"     | PropertySetInvocation.none        | TestValue.set(null).expect(currentBranch) | "String"           | PropertyLocation.none
 
         extensionName = "github"
         setter = new PropertySetterWriter(extensionName, property)
             .set(value, type)
             .to(location)
             .use(method)
+
         getter = new PropertyGetterTaskWriter(setter)
     }
 
@@ -110,13 +113,13 @@ class GithubPluginExtensionIntegrationSpec extends IntegrationSpec {
         runPropertyQuery(getter, setter).matches(value)
 
         where:
-        extProperty      | gradleProperty                | value
-        "repositoryName" | GITHUB_REPOSITORY_NAME_OPTION | "owner/reponame"
-        "username"       | GITHUB_USER_NAME_OPTION       | "user"
-        "password"       | GITHUB_USER_PASSWORD_OPTION   | "pword"
-        "token"          | GITHUB_TOKEN_OPTION           | "tkn"
-        "baseUrl"        | GITHUB_BASE_URL_OPTION        | "url"
-        "branchName"     | GITHUB_BRANCH_NAME_OPTION     | "branch"
+        extProperty      | gradleProperty          | value
+        "repositoryName" | "github.repositoryName" | "owner/reponame"
+        "username"       | "github.username"       | "user"
+        "password"       | "github.password"       | "pword"
+        "token"          | "github.token"          | "tkn"
+        "baseUrl"        | "github.baseUrl"        | "url"
+        "branchName"     | "github.branch.name"    | "branch"
 
         extensionName = "github"
         setter = new PropertySetterWriter(extensionName, extProperty)

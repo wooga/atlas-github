@@ -22,6 +22,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import wooga.gradle.github.base.internal.DefaultGithubPluginExtension
+import wooga.gradle.github.base.internal.GithubClientFactory
 import wooga.gradle.github.base.internal.RepositoryInfo
 import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
 
@@ -57,8 +58,15 @@ class GithubBasePlugin implements Plugin<Project> {
         extension.token.set(GithubBasePluginConvention.token.getStringValueProvider(project))
         extension.baseUrl.set(GithubBasePluginConvention.baseUrl.getStringValueProvider(project))
 
-        extension.repositoryName.set(GithubBasePluginConvention.repositoryName.getStringValueProvider(project, repoInfo.repositoryNameFromLocalGit))
-        extension.branchName.set(GithubBasePluginConvention.branchName.getStringValueProvider(project, repoInfo.branchNameFromLocalGit))
+        extension.repositoryName.set(GithubBasePluginConvention.repositoryName.getStringValueProvider(project).orElse(repoInfo.repositoryNameFromLocalGit))
+        extension.branchName.set(GithubBasePluginConvention.branchName.getStringValueProvider(project).orElse(repoInfo.branchNameFromLocalGit))
+
+        extension.clientProvider.convention(project.provider({
+            GithubClientFactory.clientProvider(extension.username, extension.password, extension.token).
+                orElse(project.provider( {
+                    throw new IOException("could not find valid credentials for github client")
+                }))
+        }))
 
         project.tasks.withType(AbstractGithubTask).configureEach { task ->
             task.baseUrl.set(extension.baseUrl)

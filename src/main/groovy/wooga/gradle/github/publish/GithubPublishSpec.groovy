@@ -21,6 +21,8 @@ import org.gradle.api.Task
 import org.gradle.api.file.CopySourceSpec
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.util.PatternFilterable
 import wooga.gradle.github.base.GithubSpec
 
@@ -53,21 +55,31 @@ import wooga.gradle.github.base.GithubSpec
  *     }
  * }
  */
-interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterable {
+trait GithubPublishSpec extends GithubSpec implements CopySourceSpec, PatternFilterable {
+
+    private final Property<String> tagName = objects.property(String)
 
     /**
      * Returns the name of the Git tag from which to create the release.
      *
      * @return the Git tag name
      */
-    Property<String> getTagName()
+    @Input
+    Property<String> getTagName() {
+        tagName
+    }
+
 
     /**
      * Sets the tag name for the release.
      *
      * @param the {@code String} tagName value
      */
-    void setTagName(Provider<String> tagName)
+    void setTagName(Provider<String> value) {
+        tagName.set(value)
+    }
+
+    private final Property<String> targetCommitish = objects.property(String)
 
     /**
      * Returns the commitish value that determines where the Git tag is created from.
@@ -77,7 +89,11 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @default the repository's default branch (usually master).
      * @return this
      */
-    Property<String> getTargetCommitish()
+    @Optional
+    @Input
+    Property<String> getTargetCommitish() {
+        targetCommitish
+    }
 
     /**
      * Sets the commitish value.
@@ -85,14 +101,21 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @param targetCommitish the commitish value, can be any branch or commit SHA
      * @return this
      */
-    void setTargetCommitish(Provider<String> targetCommitish)
+    void setTargetCommitish(Provider<String> value) {
+        targetCommitish.set(value)
+    }
+
+    private final Property<String> releaseName = objects.property(String)
 
     /**
      * Returns the name of the release.
      *
      * @return the name of the release
      */
-    Property<String> getReleaseName()
+    @Input
+    Property<String> getReleaseName() {
+        releaseName
+    }
 
     /**
      * Sets the name of the release.
@@ -100,14 +123,22 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @param name the name to use for the release
      * @return this
      */
-    void setReleaseName(Provider<String> name)
+    void setReleaseName(Provider<String> value) {
+        releaseName.set(value)
+    }
+
+    private final Property<String> body = objects.property(String)
 
     /**
      * Returns the description text of the release
      *
      * @return the release description
      */
-    Property<String> getBody()
+    @Optional
+    @Input
+    Property<String> getBody() {
+        body
+    }
 
     /**
      * Sets the description text for the release.
@@ -115,7 +146,11 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @param body the release description
      * @return this
      */
-    void setBody(Provider<String> body)
+    void setBody(Provider<String> value) {
+        body.set(value)
+    }
+
+    private final Property<Boolean> prerelease = objects.property(Boolean)
 
     /**
      * Returns a {@code boolean} value indicating if the release as a prerelease.
@@ -123,7 +158,9 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @return {@code true} to identify the release as a prerelease. {@code false} to identify the release as a full release.
      * @default {@code false}
      */
-    Property<Boolean> getPrerelease()
+    Property<Boolean> getPrerelease() {
+        prerelease
+    }
 
     /**
      * Sets the prerelease status of the release.
@@ -131,8 +168,11 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @param prerelease the prerelease status. Set {@code true} to identify the release as a prerelease.
      * @return this
      */
-    void setPrerelease(Provider<Boolean> prerelease)
+    void setPrerelease(Provider<Boolean> value) {
+        prerelease.set(value)
+    }
 
+    private final Property<Boolean> draft = objects.property(Boolean)
 
     /**
      * Returns a {@code boolean} value indicating if the release will be automatically published.
@@ -140,7 +180,10 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @return {@code true} to create a draft (unpublished) release, {@code false} to create a published one.
      * @default {@code false}
      */
-    Property<Boolean> getDraft()
+    @Input
+    Property<Boolean> getDraft() {
+        draft
+    }
 
     /**
      * Sets the publication status for the release.
@@ -148,7 +191,11 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @param draft the status. Set to {@code true} to create a draft (unpublished) release.
      * @return this
      */
-    void setDraft(Provider<Boolean> draft)
+    void setDraft(Provider<Boolean> value) {
+        draft.set(value)
+    }
+
+    private final Property<PublishMethod> publishMethod = objects.property(PublishMethod)
 
     /**
      * Returns a {@code PublishMethod} value indicating if a release should be created or updated.
@@ -168,7 +215,10 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @default {@code PublishMethod.create}
      * @see wooga.gradle.github.publish.tasks.GithubPublish* @see wooga.gradle.github.publish.PublishMethod
      */
-    Property<PublishMethod> getPublishMethod()
+    @Input
+    Property<PublishMethod> getPublishMethod() {
+        publishMethod
+    }
 
     /**
      * Sets the publish method.
@@ -177,5 +227,13 @@ interface GithubPublishSpec extends GithubSpec, CopySourceSpec, PatternFilterabl
      * @return this*
      * @see #getPublishMethod()
      */
-    void setPublishMethod(Provider<PublishMethod> method)
+    void setPublishMethod(Provider<PublishMethod> value) {
+        publishMethod.set(value)
+    }
+
+    void setPublishMethod(String value) {
+        publishMethod.set(PublishMethod.valueOf(value))
+    }
+
+
 }
