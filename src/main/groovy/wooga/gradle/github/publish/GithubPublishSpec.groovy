@@ -158,6 +158,7 @@ trait GithubPublishSpec extends GithubSpec implements CopySourceSpec, PatternFil
      * @return {@code true} to identify the release as a prerelease. {@code false} to identify the release as a full release.
      * @default {@code false}
      */
+    @Input
     Property<Boolean> getPrerelease() {
         prerelease
     }

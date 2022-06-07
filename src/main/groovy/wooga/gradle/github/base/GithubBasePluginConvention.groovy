@@ -29,41 +29,46 @@ class GithubBasePluginConvention {
      * @value "github.username"
      * @see GithubSpec#getUsername()
      */
-    static final PropertyLookup userName = new PropertyLookup(null, "github.username", null)
+    static final PropertyLookup userName = new PropertyLookup(null, GITHUB_USER_NAME_OPTION, null)
+    static final String GITHUB_USER_NAME_OPTION = "github.username"
 
     /**
      * Gradle property name to set the default value for {@code password}.
      * @value "github.password"
      * @see GithubSpec#getPassword()
      */
-    static final PropertyLookup password = new PropertyLookup(null, "github.password", null)
+    static final PropertyLookup password = new PropertyLookup(null, GITHUB_USER_PASSWORD_OPTION, null)
+    static final String GITHUB_USER_PASSWORD_OPTION = "github.password"
 
     /**
      * Gradle property name to set the default value for {@code token}.
      * @value "github.token"
      * @see GithubSpec#getToken()
      */
-    static final PropertyLookup token = new PropertyLookup(null, "github.token", null)
+    static final PropertyLookup token = new PropertyLookup(null, GITHUB_TOKEN_OPTION, null)
+    static final String GITHUB_TOKEN_OPTION = "github.token"
 
     /**
      * Gradle property name to set the default value for {@code repository}.
      * @value "github.repository"
      * @see GithubSpec#getRepositoryName()
      */
-    static final PropertyLookup repositoryName = new PropertyLookup(null, "github.repositoryName", null)
+    static final PropertyLookup repositoryName = new PropertyLookup(null, GITHUB_REPOSITORY_NAME_OPTION, null)
+    static final String GITHUB_REPOSITORY_NAME_OPTION = "github.repositoryName"
 
     /**
      * Gradle property name to set the default value for {@code baseUrl}.
      * @value "github.baseUrl"
      * @see GithubSpec#getBaseUrl()
      */
-    static final PropertyLookup baseUrl = new PropertyLookup(null, "github.baseUrl", null)
+    static final PropertyLookup baseUrl = new PropertyLookup(null, GITHUB_BASE_URL_OPTION, null)
+    static final String GITHUB_BASE_URL_OPTION = "github.baseUrl"
 
     /**
      * Gradle property name to set the default value for {@code branchName}.
      * @value "github.branchName"
      * @see GithubSpec#getBranchName()
      */
-    static final PropertyLookup branchName = new PropertyLookup(null, "github.branch.name", null)
-
+    static final PropertyLookup branchName = new PropertyLookup(null, GITHUB_BRANCH_NAME_OPTION, null)
+    static final String GITHUB_BRANCH_NAME_OPTION = "github.branch.name"
 }

@@ -54,6 +54,7 @@ import wooga.gradle.github.publish.tasks.GithubPublish
  *}*}
  * </pre>
  */
+// TODO: Extend from the GithubPlugin, not apply GitHubBasePlugin
 class GithubPublishPlugin implements Plugin<Project> {
 
     /**
@@ -66,6 +67,7 @@ class GithubPublishPlugin implements Plugin<Project> {
     void apply(Project project) {
         def tasks = project.tasks
 
+        // TODO: Next major, don't apply
         project.pluginManager.apply(GithubBasePlugin)
         project.pluginManager.apply(PublishingPlugin)
 

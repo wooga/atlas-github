@@ -32,6 +32,7 @@ import java.nio.file.Paths
  * A base {@link org.gradle.api.Plugin} to register and set conventions for all {@link AbstractGithubTask} types.
  *
  */
+// TODO: Next major, rename into GithubPlugin (remove old one)
 class GithubBasePlugin implements Plugin<Project> {
 
     /**
@@ -61,12 +62,12 @@ class GithubBasePlugin implements Plugin<Project> {
         extension.repositoryName.set(GithubBasePluginConvention.repositoryName.getStringValueProvider(project).orElse(repoInfo.repositoryNameFromLocalGit))
         extension.branchName.set(GithubBasePluginConvention.branchName.getStringValueProvider(project).orElse(repoInfo.branchNameFromLocalGit))
 
-        extension.clientProvider.convention(project.provider({
+        extension.clientProvider.convention(
             GithubClientFactory.clientProvider(extension.username, extension.password, extension.token).
-                orElse(project.provider( {
+                orElse(project.provider({
                     throw new IOException("could not find valid credentials for github client")
                 }))
-        }))
+        )
 
         project.tasks.withType(AbstractGithubTask).configureEach { task ->
             task.baseUrl.set(extension.baseUrl)

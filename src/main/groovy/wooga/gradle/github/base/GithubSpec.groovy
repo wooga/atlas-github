@@ -21,6 +21,9 @@ import com.wooga.gradle.BaseSpec
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
 import wooga.gradle.github.base.internal.GithubClientFactory
@@ -48,6 +51,7 @@ trait GithubSpec extends BaseSpec {
      * @return the github repository name. May be {@code Null}
      * @see GithubBasePluginConvention#repositoryName
      */
+    @Input
     Property<String> getRepositoryName() {
         repositoryName
     }
@@ -80,6 +84,8 @@ trait GithubSpec extends BaseSpec {
      * @return the base url
      * @default https://api.github.com
      */
+    @Optional
+    @Input
     Property<String> getBaseUrl() {
         baseUrl
     }
@@ -108,6 +114,8 @@ trait GithubSpec extends BaseSpec {
      * @return the github username. May be {@code Null}
      * @see GithubBasePluginConvention#userName
      */
+    @Optional
+    @Input
     Property<String> getUsername() {
         username
     }
@@ -136,6 +144,8 @@ trait GithubSpec extends BaseSpec {
      * @return the github username. May be {@code Null}
      * @see GithubBasePluginConvention#password
      */
+    @Optional
+    @Input
     Property<String> getPassword() {
         password
     }
@@ -164,6 +174,8 @@ trait GithubSpec extends BaseSpec {
      * @return the github access token. May be {@code Null}
      * @see GithubBasePluginConvention#token
      */
+    @Optional
+    @Input
     Property<String> getToken() {
         token
     }
@@ -197,6 +209,7 @@ trait GithubSpec extends BaseSpec {
      * @return the current branch name. May be {@code Null} if there is no set up git repository
      * @see GithubBasePluginConvention#branchName
      */
+    @Internal
     Provider<String> getBranchName() {
         branchName
     }
@@ -215,16 +228,8 @@ trait GithubSpec extends BaseSpec {
      * @return Provider for github client with given credentials
      * @throws IOException if no credentials are found
      */
+    @Internal
     Property<GitHub> getClientProvider() {
         clientProvider
-    }
-
-    void setDefaultClientProvider() {
-        clientProvider.set(providers.provider({
-            GithubClientFactory.clientProvider(getUsername(), getPassword(), getToken()).
-                orElse(providers.provider( {
-                    throw new IOException("could not find valid credentials for github client")
-                }))
-        }))
     }
 }
