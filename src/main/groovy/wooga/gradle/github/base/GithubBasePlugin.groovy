@@ -52,29 +52,13 @@ class GithubBasePlugin implements Plugin<Project> {
 
         GithubPluginExtension extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
 
-        extension.username.set(project.provider({
-            project.properties.get(GithubBasePluginConvention.GITHUB_USER_NAME_OPTION)?.toString()
-        }))
+        extension.username.set(GithubBasePluginConvention.userName.getStringValueProvider(project))
+        extension.password.set(GithubBasePluginConvention.password.getStringValueProvider(project))
+        extension.token.set(GithubBasePluginConvention.token.getStringValueProvider(project))
+        extension.baseUrl.set(GithubBasePluginConvention.baseUrl.getStringValueProvider(project))
 
-        extension.password.set(project.provider({
-            project.properties.get(GithubBasePluginConvention.GITHUB_USER_PASSWORD_OPTION)?.toString()
-        }))
-
-        extension.token.set(project.provider({
-            project.properties.get(GithubBasePluginConvention.GITHUB_TOKEN_OPTION)?.toString()
-        }))
-
-        extension.baseUrl.set(project.provider({
-            project.properties.get(GithubBasePluginConvention.GITHUB_BASE_URL_OPTION)?.toString()
-        }))
-
-        extension.repositoryName.set(project.provider{
-            project.properties.get(GithubBasePluginConvention.GITHUB_REPOSITORY_NAME_OPTION)?.toString()
-        }.orElse(repoInfo.repositoryNameFromLocalGit))
-
-        extension.branchName.set(project.provider {
-            project.properties.get(GithubBasePluginConvention.GITHUB_BRANCH_NAME_OPTION)?.toString()
-        }.orElse(repoInfo.branchNameFromLocalGit))
+        extension.repositoryName.set(GithubBasePluginConvention.repositoryName.getStringValueProvider(project, repoInfo.repositoryNameFromLocalGit))
+        extension.branchName.set(GithubBasePluginConvention.branchName.getStringValueProvider(project, repoInfo.branchNameFromLocalGit))
 
         project.tasks.withType(AbstractGithubTask).configureEach { task ->
             task.baseUrl.set(extension.baseUrl)
