@@ -22,6 +22,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import wooga.gradle.github.base.internal.DefaultGithubPluginExtension
+import wooga.gradle.github.base.internal.GithubClientFactory
 import wooga.gradle.github.base.internal.RepositoryInfo
 import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
 
@@ -31,6 +32,7 @@ import java.nio.file.Paths
  * A base {@link org.gradle.api.Plugin} to register and set conventions for all {@link AbstractGithubTask} types.
  *
  */
+// TODO: Next major, rename into GithubPlugin (remove old one)
 class GithubBasePlugin implements Plugin<Project> {
 
     /**
@@ -52,29 +54,20 @@ class GithubBasePlugin implements Plugin<Project> {
 
         GithubPluginExtension extension = project.extensions.create(EXTENSION_NAME, DefaultGithubPluginExtension.class, project)
 
-        extension.username.set(project.provider({
-            project.properties.get(GithubBasePluginConvention.GITHUB_USER_NAME_OPTION)?.toString()
-        }))
+        extension.username.set(GithubBasePluginConvention.userName.getStringValueProvider(project))
+        extension.password.set(GithubBasePluginConvention.password.getStringValueProvider(project))
+        extension.token.set(GithubBasePluginConvention.token.getStringValueProvider(project))
+        extension.baseUrl.set(GithubBasePluginConvention.baseUrl.getStringValueProvider(project))
 
-        extension.password.set(project.provider({
-            project.properties.get(GithubBasePluginConvention.GITHUB_USER_PASSWORD_OPTION)?.toString()
-        }))
+        extension.repositoryName.set(GithubBasePluginConvention.repositoryName.getStringValueProvider(project).orElse(repoInfo.repositoryNameFromLocalGit))
+        extension.branchName.set(GithubBasePluginConvention.branchName.getStringValueProvider(project).orElse(repoInfo.branchNameFromLocalGit))
 
-        extension.token.set(project.provider({
-            project.properties.get(GithubBasePluginConvention.GITHUB_TOKEN_OPTION)?.toString()
-        }))
-
-        extension.baseUrl.set(project.provider({
-            project.properties.get(GithubBasePluginConvention.GITHUB_BASE_URL_OPTION)?.toString()
-        }))
-
-        extension.repositoryName.set(project.provider{
-            project.properties.get(GithubBasePluginConvention.GITHUB_REPOSITORY_NAME_OPTION)?.toString()
-        }.orElse(repoInfo.repositoryNameFromLocalGit))
-
-        extension.branchName.set(project.provider {
-            project.properties.get(GithubBasePluginConvention.GITHUB_BRANCH_NAME_OPTION)?.toString()
-        }.orElse(repoInfo.branchNameFromLocalGit))
+        extension.clientProvider.convention(
+            GithubClientFactory.clientProvider(extension.username, extension.password, extension.token).
+                orElse(project.provider({
+                    throw new IOException("could not find valid credentials for github client")
+                }))
+        )
 
         project.tasks.withType(AbstractGithubTask).configureEach { task ->
             task.baseUrl.set(extension.baseUrl)

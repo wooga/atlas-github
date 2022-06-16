@@ -37,6 +37,7 @@ import org.kohsuke.github.GHRelease
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.HttpException
 import org.zeroturnaround.zip.ZipUtil
+import wooga.gradle.github.base.GithubSpec
 import wooga.gradle.github.base.tasks.internal.AbstractGithubTask
 import wooga.gradle.github.publish.GithubPublishSpec
 import wooga.gradle.github.publish.PublishMethod
@@ -73,114 +74,12 @@ class GithubPublish extends AbstractGithubTask implements GithubPublishSpec {
     private Boolean processAssets
     private Boolean isNewlyCreatedRelease = false
 
-    @Input
-    private final Property<String> tagName
-
-    @Override
-    Property<String> getTagName() {
-        tagName
-    }
-
-    @Override
-    void setTagName(Provider<String> value) {
-        tagName.set(value)
-    }
-
-    @Optional
-    @Input
-    private final Property<String> targetCommitish
-
-    @Override
-    Property<String> getTargetCommitish() {
-        targetCommitish
-    }
-
-    @Override
-    void setTargetCommitish(Provider<String> value) {
-        targetCommitish.set(value)
-    }
-
-    @Input
-    private final Property<String> releaseName
-
-    @Override
-    Property<String> getReleaseName() {
-        releaseName
-    }
-
-    @Override
-    void setReleaseName(Provider<String> value) {
-        releaseName.set(value)
-    }
-
-    @Optional
-    @Input
-    private final Property<String> body
-
-    @Override
-    Property<String> getBody() {
-        body
-    }
-
-    @Override
-    void setBody(Provider<String> value) {
-        body.set(value)
-    }
-
-    @Input
-    private final Property<Boolean> prerelease
-
-    Property<Boolean> getPrerelease() {
-        prerelease
-    }
-
-    void setPrerelease(Provider<Boolean> value) {
-        prerelease.set(value)
-    }
-
-    @Input
-    private final Property<Boolean> draft
-
-    @Override
-    Property<Boolean> getDraft() {
-        draft
-    }
-
-    @Override
-    void setDraft(Provider<Boolean> value) {
-        draft.set(value)
-    }
-
-    @Input
-    private final Property<PublishMethod> publishMethod
-
-    Property<PublishMethod> getPublishMethod() {
-        publishMethod
-    }
-
-    void setPublishMethod(Provider<PublishMethod> value) {
-        publishMethod.set(value)
-    }
-
-    void setPublishMethod(String value) {
-        publishMethod.set(PublishMethod.valueOf(value))
-    }
-
     GithubPublish() {
         super(GithubPublish.class)
         assetsCopySpec = project.copySpec()
 
         assetCollectDirectory = project.file("${temporaryDir}/collect")
         assetUploadDirectory = project.file("${temporaryDir}/prepare")
-
-        tagName = project.objects.property(String)
-        targetCommitish = project.objects.property(String)
-        releaseName = project.objects.property(String)
-        body = project.objects.property(String)
-
-        prerelease = project.objects.property(Boolean)
-        draft = project.objects.property(Boolean)
-        publishMethod = project.objects.property(PublishMethod)
     }
 
     @OutputDirectory

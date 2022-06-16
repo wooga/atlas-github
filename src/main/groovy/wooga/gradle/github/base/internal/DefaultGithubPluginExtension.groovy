@@ -26,56 +26,9 @@ import wooga.gradle.github.base.GithubPluginExtension
 
 class DefaultGithubPluginExtension implements GithubPluginExtension {
 
-    final Property<String> repositoryName
-    @Override
-    void setRepositoryName(Provider<String> name) {
-        this.repositoryName.set(name)
-    }
-
-    final Property<String> baseUrl
-    @Override
-    void setBaseUrl(Provider<String> baseUrl) {
-        this.baseUrl.set(baseUrl)
-    }
-
-    final Property<String> username
-    @Override
-    void setUsername(Provider<String> username) {
-        this.username.set(username)
-    }
-
-    final Property<String> password
-    @Override
-    void setPassword(Provider<String> password) {
-        this.password.set(password)
-    }
-
-    final Property<String> token
-    @Override
-    void setToken(Provider<String> token) {
-        this.token.set(token)
-    }
-
-    @Override @Internal
-    Provider<GitHub> getClientProvider() {
-        return GithubClientFactory.clientProvider(username, password, token).
-        orElse(project.provider {
-          throw new IOException("could not find valid credentials for github client")
-        })
-    }
-
-    final Property<String> branchName
-
     private final Project project
 
     DefaultGithubPluginExtension(Project project) {
         this.project = project
-
-        repositoryName = project.objects.property(String)
-        baseUrl = project.objects.property(String)
-        username = project.objects.property(String)
-        password = project.objects.property(String)
-        token = project.objects.property(String)
-        branchName = project.objects.property(String)
     }
 }

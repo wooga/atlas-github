@@ -17,15 +17,19 @@
 
 package wooga.gradle.github.base
 
+import com.wooga.gradle.PropertyLookup
+
 /**
  * Constant values for github plugin.
  */
 class GithubBasePluginConvention {
+
     /**
      * Gradle property name to set the default value for {@code username}.
      * @value "github.username"
      * @see GithubSpec#getUsername()
      */
+    static final PropertyLookup userName = new PropertyLookup(null, GITHUB_USER_NAME_OPTION, null)
     static final String GITHUB_USER_NAME_OPTION = "github.username"
 
     /**
@@ -33,6 +37,7 @@ class GithubBasePluginConvention {
      * @value "github.password"
      * @see GithubSpec#getPassword()
      */
+    static final PropertyLookup password = new PropertyLookup(null, GITHUB_USER_PASSWORD_OPTION, null)
     static final String GITHUB_USER_PASSWORD_OPTION = "github.password"
 
     /**
@@ -40,6 +45,7 @@ class GithubBasePluginConvention {
      * @value "github.token"
      * @see GithubSpec#getToken()
      */
+    static final PropertyLookup token = new PropertyLookup(null, GITHUB_TOKEN_OPTION, null)
     static final String GITHUB_TOKEN_OPTION = "github.token"
 
     /**
@@ -47,6 +53,7 @@ class GithubBasePluginConvention {
      * @value "github.repository"
      * @see GithubSpec#getRepositoryName()
      */
+    static final PropertyLookup repositoryName = new PropertyLookup(null, GITHUB_REPOSITORY_NAME_OPTION, null)
     static final String GITHUB_REPOSITORY_NAME_OPTION = "github.repositoryName"
 
     /**
@@ -54,6 +61,7 @@ class GithubBasePluginConvention {
      * @value "github.baseUrl"
      * @see GithubSpec#getBaseUrl()
      */
+    static final PropertyLookup baseUrl = new PropertyLookup(null, GITHUB_BASE_URL_OPTION, null)
     static final String GITHUB_BASE_URL_OPTION = "github.baseUrl"
 
     /**
@@ -61,5 +69,6 @@ class GithubBasePluginConvention {
      * @value "github.branchName"
      * @see GithubSpec#getBranchName()
      */
+    static final PropertyLookup branchName = new PropertyLookup(null, GITHUB_BRANCH_NAME_OPTION, null)
     static final String GITHUB_BRANCH_NAME_OPTION = "github.branch.name"
 }

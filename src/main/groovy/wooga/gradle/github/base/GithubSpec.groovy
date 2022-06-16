@@ -17,15 +17,25 @@
 
 package wooga.gradle.github.base
 
+import com.wooga.gradle.BaseSpec
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub
+import wooga.gradle.github.base.internal.GithubClientFactory
+import wooga.gradle.github.base.internal.GithubRepositoryValidator
+import wooga.gradle.github.base.tasks.Github
 
 /**
  * Base Task spec definitions for a github tasks/actions.
  */
-interface GithubSpec {
+trait GithubSpec extends BaseSpec {
+
+    private final Property<String> repositoryName = objects.property(String)
 
     /**
      * Returns the github repository name.
@@ -39,9 +49,12 @@ interface GithubSpec {
      *    <li><b>gradle properties</b>
      * </ul>
      * @return the github repository name. May be {@code Null}
-     * @see GithubBasePluginConvention#GITHUB_REPOSITORY_NAME_OPTION
+     * @see GithubBasePluginConvention#repositoryName
      */
-    Property<String> getRepositoryName()
+    @Input
+    Property<String> getRepositoryName() {
+        repositoryName
+    }
 
     /**
      * Sets the github repository name.
@@ -51,7 +64,19 @@ interface GithubSpec {
      * @param name the repository name. Must not be {@code Null} or {@code empty}
      * @return this* @throws IllegalArgumentException
      */
-    void setRepositoryName(Provider<String> name)
+    void setRepositoryName(Provider<String> name) {
+        repositoryName.set(name)
+    }
+
+    void setRepositoryName(String name) {
+        if (!GithubRepositoryValidator.validateRepositoryName(name)) {
+            throw new IllegalArgumentException("Repository value '$name' is not a valid github repository name. Expecting `owner/repo`.")
+        }
+
+        repositoryName.set(name)
+    }
+
+    private final Property<String> baseUrl = objects.property(String)
 
     /**
      * Returns the github api base url.
@@ -59,7 +84,11 @@ interface GithubSpec {
      * @return the base url
      * @default https://api.github.com
      */
-    Property<String> getBaseUrl()
+    @Optional
+    @Input
+    Property<String> getBaseUrl() {
+        baseUrl
+    }
 
     /**
      * Sets the github api base url.
@@ -67,7 +96,11 @@ interface GithubSpec {
      * @param baseUrl the base url for github api. Must not be {@code Null} or {@code empty}
      * @return this* @throws IllegalArgumentException
      */
-    void setBaseUrl(Provider<String> baseUrl)
+    void setBaseUrl(Provider<String> baseUrl) {
+        this.baseUrl.set(baseUrl)
+    }
+
+    final Property<String> username = objects.property(String)
 
     /**
      * Returns the github username.
@@ -79,9 +112,13 @@ interface GithubSpec {
      *    <li><b>gradle properties</b>
      * </ul>
      * @return the github username. May be {@code Null}
-     * @see GithubBasePluginConvention#GITHUB_USER_NAME_OPTION
+     * @see GithubBasePluginConvention#userName
      */
-    Property<String> getUsername()
+    @Optional
+    @Input
+    Property<String> getUsername() {
+        username
+    }
 
     /**
      * Sets the github username.
@@ -89,7 +126,11 @@ interface GithubSpec {
      * @param username the username. Must not be {@code Null} or {@code empty}
      * @return this* @throws IllegalArgumentException
      */
-    void setUsername(Provider<String> username)
+    void setUsername(Provider<String> username) {
+        this.username.set(username)
+    }
+
+    private final Property<String> password = objects.property(String)
 
     /**
      * Returns the github user password.
@@ -101,9 +142,13 @@ interface GithubSpec {
      *    <li><b>gradle properties</b>
      * </ul>
      * @return the github username. May be {@code Null}
-     * @see GithubBasePluginConvention#GITHUB_USER_PASSWORD_OPTION
+     * @see GithubBasePluginConvention#password
      */
-    Property<String> getPassword()
+    @Optional
+    @Input
+    Property<String> getPassword() {
+        password
+    }
 
     /**
      * Sets the github user password.
@@ -111,7 +156,11 @@ interface GithubSpec {
      * @param password the password. Must not be {@code Null} or {@code empty}
      * @return this* @throws IllegalArgumentException
      */
-    void setPassword(Provider<String> password)
+    void setPassword(Provider<String> password) {
+        this.password.set(password)
+    }
+
+    private final Property<String> token = objects.property(String)
 
     /**
      * Returns the github authentication token.
@@ -123,9 +172,13 @@ interface GithubSpec {
      *    <li><b>gradle properties</b>
      * </ul>
      * @return the github access token. May be {@code Null}
-     * @see GithubBasePluginConvention#GITHUB_TOKEN_OPTION
+     * @see GithubBasePluginConvention#token
      */
-    Property<String> getToken()
+    @Optional
+    @Input
+    Property<String> getToken() {
+        token
+    }
 
     /**
      * Sets the github access token.
@@ -133,21 +186,11 @@ interface GithubSpec {
      * @param token the token. Must not be {@code Null} or {@code empty}
      * @return this* @throws IllegalArgumentException
      */
-    void setToken(Provider<String> token)
+    void setToken(Provider<String> token) {
+        this.token.set(token)
+    }
 
-    /**
-     * Gets a client for github REST API operations, using
-     * credential providers set on this object in the following order:
-     * 1. username and password,
-     * 2. username and token
-     * 3. token,
-     * 4. external credentials (environment variables, .github file, etc)
-     *
-     * See org.kohsuke.github.GitHub for more details on the client.
-     * @return Provider for github client with given credentials
-     * @throws IOException if no credentials are found
-     */
-    Provider<GitHub> getClientProvider()
+    private final Property<String> branchName = objects.property(String)
 
     /**
      * Returns the current git branch. Default value is in order of precedence:
@@ -164,7 +207,29 @@ interface GithubSpec {
      *    <li><b>gradle properties</b>
      * </ul>
      * @return the current branch name. May be {@code Null} if there is no set up git repository
-     * @see GithubBasePluginConvention#GITHUB_BRANCH_NAME_OPTION
+     * @see GithubBasePluginConvention#branchName
      */
-    Provider<String> getBranchName()
+    @Internal
+    Provider<String> getBranchName() {
+        branchName
+    }
+
+    private final Property<GitHub> clientProvider = objects.property(GitHub)
+
+    /**
+     * Gets a client for github REST API operations, using
+     * credential providers set on this object in the following order:
+     * 1. username and password,
+     * 2. username and token
+     * 3. token,
+     * 4. external credentials (environment variables, .github file, etc)
+     *
+     * See org.kohsuke.github.GitHub for more details on the client.
+     * @return Provider for github client with given credentials
+     * @throws IOException if no credentials are found
+     */
+    @Internal
+    Property<GitHub> getClientProvider() {
+        clientProvider
+    }
 }
