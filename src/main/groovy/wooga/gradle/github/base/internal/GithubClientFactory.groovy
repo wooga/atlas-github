@@ -12,14 +12,15 @@ class GithubClientFactory {
                                            Provider<String> password,
                                            Provider<String> token) {
         //a non-empty provider if any credentials are available
-        Provider hasCredsProvider = username.orElse(password).orElse(token).orElse("").
-        map({
-            return it == "" && !hasExternalCredentials()? null : true
-        })
-        return hasCredsProvider.map({
+        return username.orElse(password).orElse(token).orElse("").
+        map {
+            def hasCreds = it == "" && !hasExternalCredentials()? null : true
+            if (hasCreds == null) {
+                return null
+            }
             return new GithubClientFactory().
                     createGithubClient(username.getOrNull(), password.getOrNull(), token.getOrNull())
-        })
+        }
     }
 
     private static boolean hasExternalCredentials() {
