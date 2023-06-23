@@ -24,8 +24,10 @@ class RepositoryInfo {
 
     Provider<String> getRepositoryNameFromLocalGit() {
         return grgitProvider.map { git ->
-            git.remote.list().find {it.name == DEFAULT_REMOTE && it.url.contains(GITHUB_DOMAIN)}?: null
-        }.map{remote ->
+            def remote = git.remote.list().find {it.name == DEFAULT_REMOTE && it.url.contains(GITHUB_DOMAIN)}?: null
+            if (remote == null) {
+                return null
+            }
             def remoteURL = remote.url
             def domainIndex = remoteURL.indexOf(GITHUB_DOMAIN)
             def urlAfterDomain = remoteURL.substring(domainIndex + GITHUB_DOMAIN.length() + 1)
@@ -34,11 +36,16 @@ class RepositoryInfo {
     }
 
     Provider<String> getBranchNameFromLocalGit() {
-        return grgitProvider.
-                map { git -> git.branch.current() }.
-                map { currentBranch ->
-                        currentBranch.trackingBranch != null ? currentBranch.trackingBranch : currentBranch
-                }.
-                map{branch -> branch.name }
+        return grgitProvider.map { git ->
+            def currentBranch = git.branch.current()
+            if (currentBranch == null) {
+                return null
+            }
+            def branch = currentBranch.trackingBranch != null ? currentBranch.trackingBranch : currentBranch
+            if (branch == null) {
+                return null
+            }
+            branch.name
+        }
     }
 }
