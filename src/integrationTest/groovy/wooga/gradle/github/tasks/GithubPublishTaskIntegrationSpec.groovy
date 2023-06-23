@@ -25,14 +25,13 @@ import spock.lang.Retry
 import spock.lang.Unroll
 import wooga.gradle.github.publish.PublishMethod
 import wooga.gradle.github.publish.tasks.GithubPublish
-import wooga.gradle.github.tasks.AbstractGithubTaskIntegrationSpec
 
 @Ignore
 @Retry(mode = Retry.Mode.SETUP_FEATURE_CLEANUP)
 class GithubPublishTaskIntegrationSpec extends AbstractGithubTaskIntegrationSpec {
 
-    String testTaskName = "publishTestTask"
-    Class testTaskType = GithubPublish
+    String getTestTaskName() { return "publishTestTask" }
+    Class getTestTaskType() {  return GithubPublish  }
 
     def "task skips if repository is not set"() {
         given: "files to publish"

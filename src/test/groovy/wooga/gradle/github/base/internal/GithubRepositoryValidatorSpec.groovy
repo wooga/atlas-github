@@ -26,7 +26,7 @@ import wooga.gradle.github.base.internal.GithubRepositoryValidator
 class GithubRepositoryValidatorSpec extends Specification {
 
     @Unroll
-    def "validates repositoryName value #repository correctly"() {
+    def "validates repositoryName value #repositoryName correctly"() {
         expect:
         isValid == GithubRepositoryValidator.validateRepositoryName(repositoryName)
 
