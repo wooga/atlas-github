@@ -55,7 +55,7 @@ dependencies {
     implementation 'org.zeroturnaround:zt-zip:1.14'
     implementation 'org.apache.tika:tika-core:1.24.1'
     implementation 'org.ajoberstar.grgit:grgit-core:[4.1.1,5)'
-    implementation 'com.wooga.gradle:gradle-commons:[1,2['
+    api 'com.wooga.gradle:gradle-commons:[1,2['
 
     testImplementation "com.wooga.gradle:gradle-commons-test:[1.2,2["
 
